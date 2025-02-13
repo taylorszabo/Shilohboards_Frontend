@@ -48,18 +48,24 @@ export const Numbers1 = () => {
                     <Image source={require("./assets/ear.png")} style={styles.ear} />
                 </View>
 
-                {/* Cube + Shadow + Oval */}
-                <View style={styles.cubeContainer}>
-                    {/* Oval Shape (Behind Cube) */}
-                    <View style={styles.ovalShape} />
-                    {/* Cube with Image Inside */}
-                    <View style={styles.cube}>
-                        <Image 
-                            source={require("./assets/1.png")} 
-                            style={styles.numberImage} 
-                        />
-                    </View>
-                </View>
+                <View style={styles.stackedCubeContainer}>
+    {/* Top Cube (Door) */}
+    <View style={styles.cube}>
+        <Image 
+            source={require("./assets/1-Car.png")}  
+            style={styles.numberImage} 
+        />
+    </View>
+
+    {/* Bottom Cube (Back Panel) */}
+    <View style={styles.cubeBackContainer}>
+        <View style={styles.ovalShape} />
+        <View style={styles.cube}>
+          
+        </View>
+    </View>
+</View>
+
    {/* Voiceover Section */}
    <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Swipe left to open door</Text>
@@ -129,7 +135,7 @@ const styles = StyleSheet.create({
         marginLeft: 5,  
     },
     
-    /*  Name Box */
+
     nameBox: {
         width: 113,
         height: 107,
@@ -156,7 +162,7 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
     
-    /*  Back Button */
+
     backButton: {
         position: "absolute",
         top: 10,  
@@ -180,7 +186,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
     },
 
-    /*  Title */
+
     title: {
         fontSize: 32,
         fontWeight: "700",
@@ -188,41 +194,51 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 
-    /* Cube and Shadow */
-    cubeContainer: {
-        position: "relative", 
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    cube: {
-        width: 200, 
-        height: 250,
-        borderRadius: 20,
-        justifyContent: "center",
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 5, 
-        backgroundColor: "#FAEDDC",
-    },
+   stackedCubeContainer: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+    left: 50,
+},
 
-    ovalShape: {
-        width: 70, 
-        height: 150, 
-        backgroundColor: "rgba(0, 0, 0, 0.2)", 
-        position: "absolute",
-        right: -15, 
-        borderRadius: 50, 
-        zIndex: -1, 
-    },
+cubeBackContainer: {
+    position: "absolute",
+    top: 0,
+    right: 200,
+},
 
-    numberImage: {
-        width: "90%", 
-        height: "90%",
-        resizeMode: "contain",
-    },
+cube: {
+    width: 200, 
+    height: 250,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5, 
+    backgroundColor: "#FAEDDC",
+    
+},
+
+ovalShape: {
+    width: 70, 
+    height: 150, 
+    backgroundColor: "rgba(0, 0, 0, 0.2)", 
+    position: "absolute",
+    left: 350, 
+    top: 50,
+    borderRadius: 50, 
+    zIndex: -1,  // Ensures it's behind the cube?
+},
+
+numberImage: {
+    width: "90%", 
+    height: "90%",
+    resizeMode: "contain",
+},
+
 
     /* Next Button */
     button: {
