@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, Image, ImageBackground, StyleSheet } from "react-native";
 
-const LinkPage = () => {
+const SiteLink = () => {
     return (
         <ImageBackground 
             source={require("../assets/background.png")}
@@ -36,18 +36,19 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     logo: {
-        width: 200,
-        height: 200,
+        width: 400,
+        height: 400,
         resizeMode: "contain",
-        marginBottom: 20,
     },
     text: {
-        fontSize: 18,
+        fontSize: 22,
+        textDecorationLine: 'underline',
         fontWeight: "600",
         color: "#3E1911",
         textAlign: "center",
         marginHorizontal: 20,
+        paddingBottom: 130
     },
 });
 
-export default LinkPage;
+export default SiteLink;

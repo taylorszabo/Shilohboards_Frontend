@@ -9,15 +9,17 @@ import {
     ImageBackground,
     Alert  
 } from "react-native";
+import { useRouter } from 'expo-router';
 
-export const Login = ({ navigation }: any) => { 
+const Login = () => { 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
 
     const handleLogin = () => {
         if (email === "test@example.com" && password === "password") {
             Alert.alert("Login Successful!");
-            navigation.navigate("Home"); 
+            router.push('/Character')
         } else {
             Alert.alert("Invalid email or password.");
         }
@@ -51,11 +53,11 @@ export const Login = ({ navigation }: any) => {
                     onChangeText={setPassword} 
                 />
                 
-                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push('/Character')}>
                     <Text style={styles.buttonText}>Sign In</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+                <TouchableOpacity onPress={() => router.push('/Register')}>
                     <Text style={styles.registerText}>Register New Account</Text>
                 </TouchableOpacity>
             </View>
@@ -71,24 +73,22 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
     },
-        container: {
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingBottom: 60,
-        },
- 
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingBottom: 60,
+    },
     logo: {
         width: 400,
         height: 400,
         resizeMode: "contain",
-        marginBottom: 100,
     },
     title: {
         fontSize: 32,
         fontWeight: "700",
         color: "#3E1911",
-        marginBottom: 10,
+        marginBottom: 40,
         
     },
     label: {
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     input: {
-        width: "90%",
+        width: 300,
         height: 57,
         backgroundColor: "#fff",
         borderRadius: 10,
@@ -140,4 +140,5 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
     }
 });
- export default Login;
+
+export default Login;

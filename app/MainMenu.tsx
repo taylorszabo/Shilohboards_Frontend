@@ -1,19 +1,23 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
 import { useLocalSearchParams } from 'expo-router';
+import { useRouter } from 'expo-router';
 
 export default function MainMenu() {
     const { playerName = '[name]' } = useLocalSearchParams();
+    const router = useRouter();
 
     return (
       <BackgroundLayout>
         <View style={styles.container}> 
             <View style={styles.hamburgerMenuContainer}>
-                <CustomButton text='Menu'/>
+              <Pressable onPress={() => router.push('/SiteLink')}>
+                <CustomButton text='Site'/>
+              </Pressable>
             </View>
             <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
             <Text style={styles.headerText}>Welcome {playerName}! Which game would you like to play? </Text>

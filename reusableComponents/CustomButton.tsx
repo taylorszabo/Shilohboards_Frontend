@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, Text, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
 
 type Props = {
     text: string;
@@ -10,9 +11,10 @@ type Props = {
 
 export default function CustomButton(props: Props) {
     const { bgColor = '#C3E2E5', text } = props;
+    const router = useRouter();
 
     return (
-        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => alert('Button Pressed')}>
+        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => router.push('/SiteLink')}>
             <Text style={styles.text}>{text}</Text>
         </Pressable>
     );
