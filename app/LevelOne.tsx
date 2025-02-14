@@ -7,72 +7,68 @@ import {
     Image, 
     ImageBackground
 } from "react-native";
+import { useRouter } from 'expo-router';
 
-export const numbersImages = () => {
+export const LevelOne = () => {
+    const router = useRouter();
+    
     return (
         <ImageBackground 
             source={require("../assets/background.png")}
             style={styles.background}
             resizeMode="cover" 
         >
-          
+           
             <TouchableOpacity style={styles.backButton} onPress={() => console.log("Back Clicked")}>
                 <Image source={require("../assets/back.png")} style={styles.backIcon} />
             </TouchableOpacity>
 
-        
+          
             <View style={styles.container}>
                 
-              
+           
                 <View style={styles.nameBox}>
                     <Image 
-                        source={require("../assets/hotdog.png")}
+                        source={require("../assets/Hotdog.png")}
                         style={styles.hotdog}
                     />
                     <Text style={styles.nameText}>Shiloh</Text>
                 </View>
 
-            
+           
                 <Text style={styles.title}>Numbers - Level 1</Text>
 
-                
                 <View style={styles.progressBarContainer}>
                     <View style={styles.progressBar}>
                         <View style={styles.progressBarFill} />
                     </View>
                 </View>
 
-         
+              
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
                     <Image source={require("../assets/ear.png")} style={styles.ear} />
                 </View>
 
-                <View style={styles.stackedCubeContainer}>
-  
-    <View style={styles.cube}>
-        <Image 
-            source={require("../assets/1-Car.png")}
-            style={styles.numberImage} 
-        />
-    </View>
-
-  
-    <View style={styles.cubeBackContainer}>
-        <View style={styles.ovalShape} />
-        <View style={styles.cube}>
-          
-        </View>
-    </View>
-</View>
-
-  
+               
+                <View style={styles.cubeContainer}>
+                 
+                    <View style={styles.ovalShape} />
+                  
+                    <View style={styles.cube}>
+                        <Image 
+                            source={require("../assets/1.png")}
+                            style={styles.numberImage} 
+                        />
+                    </View>
+                </View>
+ 
    <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Swipe left to open door</Text>
                     <Image source={require("../assets/swipe.png")} style={styles.ear} />
                 </View>
               
-                <TouchableOpacity style={styles.button} onPress={() => console.log("Next Clicked")}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push('/LevelOneOpen')}>
                     <Text style={styles.buttonText}>Next</Text>
                 </TouchableOpacity>
             </View>
@@ -111,7 +107,7 @@ const styles = StyleSheet.create({
     },
     
     progressBarFill: {
-        width: "10%",  
+        width: "10%", 
         height: "100%",
         backgroundColor: "#6B3E26", 
         borderRadius: 50,
@@ -134,8 +130,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
         marginLeft: 5,  
     },
-    
-
+ 
     nameBox: {
         width: 113,
         height: 107,
@@ -186,7 +181,6 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
     },
 
-
     title: {
         fontSize: 32,
         fontWeight: "700",
@@ -194,51 +188,41 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 
-   stackedCubeContainer: {
-    position: "relative",
-    alignItems: "center",
-    justifyContent: "center",
-    left: 50,
-},
 
-cubeBackContainer: {
-    position: "absolute",
-    top: 0,
-    right: 200,
-},
+    cubeContainer: {
+        position: "relative", 
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    cube: {
+        width: 200, 
+        height: 250,
+        borderRadius: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 5, 
+        backgroundColor: "#FAEDDC",
+    },
 
-cube: {
-    width: 200, 
-    height: 250,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5, 
-    backgroundColor: "#FAEDDC",
-    
-},
+    ovalShape: {
+        width: 70, 
+        height: 150, 
+        backgroundColor: "rgba(0, 0, 0, 0.2)", 
+        position: "absolute",
+        right: -15, 
+        borderRadius: 50, 
+        zIndex: -1, 
+    },
 
-ovalShape: {
-    width: 70, 
-    height: 150, 
-    backgroundColor: "rgba(0, 0, 0, 0.2)", 
-    position: "absolute",
-    left: 350, 
-    top: 50,
-    borderRadius: 50, 
-    zIndex: -1,  
-},
-
-numberImage: {
-    width: "90%", 
-    height: "90%",
-    resizeMode: "contain",
-},
-
+    numberImage: {
+        width: "90%", 
+        height: "90%",
+        resizeMode: "contain",
+    },
 
 
     button: {
@@ -261,4 +245,4 @@ numberImage: {
     },
 });
 
-export default numbersImages;
+ export default LevelOne;

@@ -18,7 +18,7 @@ export default function LevelChoice() {
             <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
             <Text style={styles.headerText}>Choose a level for the {game} Activity: </Text>
             <View style={styles.cardDiv}>
-                <OptionCard upperText='Level 1' lowerText='(Recommended for ages 1-2)' customWidth={0.8} onPressRoute='/LevelTwo?game=Numbers'/>
+                <OptionCard upperText='Level 1' lowerText='(Recommended for ages 1-2)' customWidth={0.8} onPressRoute='/LevelOne'/>
                 <OptionCard upperText='Level 2' lowerText='(Recommended for ages 3-4)' customWidth={0.8} onPressRoute='/LevelTwo?game=Alphabet'/>
                 {game === 'Alphabet' &&
                     <OptionCard upperText='Level 3' lowerText='(Recommended for ages 5-6)' customWidth={0.8} onPressRoute=''/>
