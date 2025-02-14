@@ -1,7 +1,7 @@
 import { StyleSheet} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
-import LinkPage from "./linkPage";
+import Login from "./Login";
 
 type RootStackParamList = {
   LinkPage: undefined;
@@ -10,7 +10,7 @@ type RootStackParamList = {
 export default function App() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   return (
-      <LinkPage navigation={navigation} />
+      <Login navigation={navigation} />
   );
 }
 

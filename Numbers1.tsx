@@ -15,15 +15,15 @@ export const Numbers1 = () => {
             style={styles.background}
             resizeMode="cover" 
         >
-            {/* Back Button - Positioned at Top Left */}
+           
             <TouchableOpacity style={styles.backButton} onPress={() => console.log("Back Clicked")}>
                 <Image source={require("./assets/back.png")} style={styles.backIcon} />
             </TouchableOpacity>
 
-            {/* Full-Screen Container */}
+          
             <View style={styles.container}>
                 
-                {/* Green Box with Image */}
+           
                 <View style={styles.nameBox}>
                     <Image 
                         source={require("./assets/hotdog.png")}  
@@ -32,27 +32,26 @@ export const Numbers1 = () => {
                     <Text style={styles.nameText}>Shiloh</Text>
                 </View>
 
-                {/* Title */}
+           
                 <Text style={styles.title}>Numbers - Level 1</Text>
 
-                {/* Progress Bar */}
                 <View style={styles.progressBarContainer}>
                     <View style={styles.progressBar}>
                         <View style={styles.progressBarFill} />
                     </View>
                 </View>
 
-                {/* Voiceover Section */}
+              
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
                     <Image source={require("./assets/ear.png")} style={styles.ear} />
                 </View>
 
-                {/* Cube + Shadow + Oval */}
+               
                 <View style={styles.cubeContainer}>
-                    {/* Oval Shape (Behind Cube) */}
+                 
                     <View style={styles.ovalShape} />
-                    {/* Cube with Image Inside */}
+                  
                     <View style={styles.cube}>
                         <Image 
                             source={require("./assets/1.png")} 
@@ -60,12 +59,12 @@ export const Numbers1 = () => {
                         />
                     </View>
                 </View>
-   {/* Voiceover Section */}
+ 
    <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Swipe left to open door</Text>
                     <Image source={require("./assets/swipe.png")} style={styles.ear} />
                 </View>
-                {/* Next Button */}
+              
                 <TouchableOpacity style={styles.button} onPress={() => console.log("Next Clicked")}>
                     <Text style={styles.buttonText}>Next</Text>
                 </TouchableOpacity>
@@ -97,17 +96,17 @@ const styles = StyleSheet.create({
     progressBarContainer: {
         width: 351,
         height: 18,
-        backgroundColor: "#E3D1B9", // Light brown background
+        backgroundColor: "#E3D1B9", 
         borderRadius: 50,
         borderWidth: 1,
         borderColor: "#3E1911",
-        overflow: "hidden", // Ensures progress stays within rounded edges
+        overflow: "hidden", 
     },
     
     progressBarFill: {
-        width: "10%",  // Adjust progress level (smaller value)
+        width: "10%", 
         height: "100%",
-        backgroundColor: "#6B3E26", // Dark brown fill
+        backgroundColor: "#6B3E26", 
         borderRadius: 50,
     },
     voiceoverContainer: {
@@ -128,8 +127,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
         marginLeft: 5,  
     },
-    
-    /*  Name Box */
+ 
     nameBox: {
         width: 113,
         height: 107,
@@ -156,7 +154,7 @@ const styles = StyleSheet.create({
         marginTop: 50,
     },
     
-    /*  Back Button */
+
     backButton: {
         position: "absolute",
         top: 10,  
@@ -180,7 +178,6 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
     },
 
-    /*  Title */
     title: {
         fontSize: 32,
         fontWeight: "700",
@@ -188,7 +185,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 
-    /* Cube and Shadow */
+
     cubeContainer: {
         position: "relative", 
         alignItems: "center",
@@ -224,7 +221,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
     },
 
-    /* Next Button */
+
     button: {
         width: 214,
         height: 61,
@@ -245,4 +242,4 @@ const styles = StyleSheet.create({
     },
 });
 
-// export default Numbers1;
+ export default Numbers1;
