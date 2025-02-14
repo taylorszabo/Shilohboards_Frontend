@@ -261,4 +261,4 @@ numberImage: {
     },
 });
 
-export default Numbers1;
+//export default Numbers1;
