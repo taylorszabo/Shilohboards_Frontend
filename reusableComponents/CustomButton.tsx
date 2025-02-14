@@ -1,8 +1,9 @@
 import * as React from 'react';
-import { Button, ImageBackground, StyleSheet, Text, View, Alert, Pressable } from 'react-native';
+import { StyleSheet, Text, Pressable } from 'react-native';
 
 type Props = {
     text: string;
+    //optional
     bgColor?: string;
     img?: string;
 };
@@ -11,7 +12,7 @@ export default function CustomButton(props: Props) {
     const { bgColor = '#C3E2E5', text } = props;
 
     return (
-        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => alert('Card Pressed')}>
+        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => alert('Button Pressed')}>
             <Text style={styles.text}>{text}</Text>
         </Pressable>
     );
@@ -24,16 +25,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 25,
         paddingVertical: 10,
-
-        shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
+        borderWidth: 1,
+        borderColor: '#d3d3d3',
+        //iOS shadow
+        shadowColor: 'rgba(0, 0, 0, 0.25)', 
         shadowOffset: {
             width: 1,
             height: 4
         },
         shadowRadius: 4,
         shadowOpacity: 0.2,
-
-        elevation: 3, //android shadow
+        //android shadow
+        elevation: 3, 
         
     },
     text: {
