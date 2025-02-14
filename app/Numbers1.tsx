@@ -11,13 +11,13 @@ import {
 export const Numbers1 = () => {
     return (
         <ImageBackground 
-            source={require("./assets/background.png")}
+            source={require("../assets/background.png")}
             style={styles.background}
             resizeMode="cover" 
         >
            
             <TouchableOpacity style={styles.backButton} onPress={() => console.log("Back Clicked")}>
-                <Image source={require("./assets/back.png")} style={styles.backIcon} />
+                <Image source={require("../assets/back.png")} style={styles.backIcon} />
             </TouchableOpacity>
 
           
@@ -26,7 +26,7 @@ export const Numbers1 = () => {
            
                 <View style={styles.nameBox}>
                     <Image 
-                        source={require("./assets/hotdog.png")}  
+                        source={require("../assets/hotdog.png")}
                         style={styles.hotdog}
                     />
                     <Text style={styles.nameText}>Shiloh</Text>
@@ -44,7 +44,7 @@ export const Numbers1 = () => {
               
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
-                    <Image source={require("./assets/ear.png")} style={styles.ear} />
+                    <Image source={require("../assets/ear.png")} style={styles.ear} />
                 </View>
 
                
@@ -54,7 +54,7 @@ export const Numbers1 = () => {
                   
                     <View style={styles.cube}>
                         <Image 
-                            source={require("./assets/1.png")} 
+                            source={require("../assets/1.png")}
                             style={styles.numberImage} 
                         />
                     </View>
@@ -62,7 +62,7 @@ export const Numbers1 = () => {
  
    <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Swipe left to open door</Text>
-                    <Image source={require("./assets/swipe.png")} style={styles.ear} />
+                    <Image source={require("../assets/swipe.png")} style={styles.ear} />
                 </View>
               
                 <TouchableOpacity style={styles.button} onPress={() => console.log("Next Clicked")}>

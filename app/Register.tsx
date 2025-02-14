@@ -25,13 +25,13 @@ export const Login = ({ navigation }: any) => {
 
     return (
         <ImageBackground 
-            source={require("./assets/background.png")}
+            source={require("../assets/background.png")}
             style={styles.background}
             resizeMode="cover"
         >
             <View style={styles.container}>
                 <Image 
-                    source={require("./assets/logo.png")} 
+                    source={require("../assets/logo.png")}
                     style={styles.logo} 
                 />
                 <Text style={styles.title}>Register New Account</Text>
