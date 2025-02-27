@@ -20,31 +20,53 @@ const images: Record<ImageKey, any> = {
 const screenWidth = Dimensions.get('window').width; //get device width
 
 type Props = {
-    onPressRoute: string;
-    lowerText: string;
     customWidth: number;
     //optional
     height?: number;
     bgColor?: string;
     image?: ImageKey;
     upperText?: string;
+    lowerText?: string;
     disabled?: boolean;
+    onPressRoute?: string;
+    textSize?: number;
 };
 
 export default function OptionCard(props: Props) {
-    const { bgColor = '#FFF8F0', image = 'default', lowerText, upperText = 'Option', customWidth, disabled = false, height = 100, onPressRoute } = props;
+    const { bgColor = '#FFF8F0', 
+            image = 'default', 
+            lowerText, 
+            upperText = 'Option', 
+            customWidth, 
+            disabled = false, 
+            height = 100, 
+            onPressRoute, 
+            textSize = 24 } = props;
+
     const router = useRouter();
 
+    //------------------- FUNCTION ------------------
+    function handlePressEvent() {
+
+    if (onPressRoute) {
+        router.push(onPressRoute)
+    }
+
+  }
+
     return (
-        <Pressable disabled={disabled} style={[styles.card, { backgroundColor: bgColor, width: screenWidth * customWidth, height: height }]} 
-        onPress={() => router.push(onPressRoute)}>
+        <Pressable disabled={disabled} 
+        style={[styles.card, { backgroundColor: bgColor, width: screenWidth * customWidth, height: height, ...(image !== 'default' ? { padding: 20 } : {}) }]} 
+        onPress={() => handlePressEvent()}>
             {image !== 'default' ?
                 <Image source={images[image]} style={styles.image} />
                 :
-                <Text style={styles.highText}>{upperText}</Text>
+                <Text style={[styles.highText, {fontSize: textSize}]}>{upperText}</Text>
             }
             
-            <Text style={styles.lowText}>{lowerText}</Text>
+            {lowerText &&
+                <Text style={styles.lowText}>{lowerText}</Text>
+            }
         </Pressable>
     );
 }
@@ -55,7 +77,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20,
 
         shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
         shadowOffset: {
@@ -80,10 +101,8 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     highText: {
-        marginTop: 10,
-        fontSize: 24,
         textAlign: 'center',
         color: '#3E1911',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
     }
 });

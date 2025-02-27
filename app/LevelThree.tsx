@@ -6,18 +6,11 @@ import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
 import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
-import { useEffect } from 'react';
 import SoundIcon from '../reusableComponents/SoundIcon';
 
-export default function LevelTwo() {
+export default function LevelThree() {
     const { game = '[game]' } = useLocalSearchParams(); //for use later
-    const instructionText = 'Choose the correct picture and word for the letter shown:';
-
-    useEffect(() => {
-      console.log('level 2 loaded');
-      //fetch user?
-      //start game?
-    }, []);
+    const instructionText = 'Choose the correct letter of the sound or beginning of the word:';
 
     return (
         <BackgroundLayout>
@@ -31,30 +24,45 @@ export default function LevelTwo() {
                 <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.25}/>
 
                 {/* =============== Game/Level Title =============== */}
-                <Text style={styles.headerText}>{game} - Level 2 </Text>
+                <Text style={styles.headerText}>{game} - Level 3 </Text>
 
                 {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={30}/>
 
-                {/* =============== Top Instruction =============== */}
+                <View style={styles.topPortion}>
+                    <SoundIcon size='25%'/>
+                    <View style={{gap: 10}}>
+                        <OptionCard upperText='Sound' customWidth={0.3} height={50}/>
+                        <OptionCard upperText='Word' customWidth={0.3} height={50}/>
+                    </View>
+                </View>
+
+                {/* =============== Instructions =============== */}
                 <Text style={styles.headerText}>{instructionText}</Text>
 
 
-                <View style={{flexDirection: 'row'}}>
+                <View style={styles.answerContainer}>
+                    <OptionCard customWidth={0.38} height={140} image='moon'/>
+                    <OptionCard customWidth={0.38} height={140} image='apple'/>
+                    <OptionCard customWidth={0.38} height={140} image='tree'/>
+                    <OptionCard customWidth={0.38} height={140} image='tree'/>
+
+
+
+
                     {/* ========================================= LEFT SIDE ============================================ */}
-                    <View style={styles.leftSideContainer}>
+                    {/* <View style={styles.leftSideContainer}>
                         <Image source={require('../assets/Alphabet/Letters/A.png')} style={styles.alphaNumLeftImage} />
                         <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                        {/* <Image source={require('../assets/listen.png')} style={styles.listenImg} /> */}
-                        <SoundIcon size='9%'/>
-                    </View>
+                        <Image source={require('../assets/listen.png')} style={styles.listenImg} />
+                    </View> */}
                     
                     {/* ========================================= RIGHT SIDE ============================================ */}
-                    <View style={styles.rightSideContainer}>
+                    {/* <View style={styles.rightSideContainer}>
                         <OptionCard lowerText='Moon' customWidth={0.38} height={140} onPressRoute='' image='moon'/>
                         <OptionCard lowerText='Apple' customWidth={0.38} height={140} onPressRoute='' image='apple'/>
                         <OptionCard lowerText='Tree' customWidth={0.38} height={140} onPressRoute='' image='tree'/>
-                    </View>
+                    </View> */}
                 </View>
                 
                 {/* =============== Submit Button =============== */}
@@ -75,40 +83,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative'
   },
-  progressBarImg: {
-    width: '80%', 
-    height: 25
+  topPortion: {
+    flexDirection: 'row',
+    marginTop: 20,
+    alignItems: 'center',
+    gap: 30
   },
-  leftSideContainer: {
-    width: '35%', 
-    maxHeight: '100%', 
-    alignItems: 'center', 
+  answerContainer: {
+    flexDirection: 'row', 
     justifyContent: 'center', 
-    paddingRight: 25
-  },
-  rightSideContainer: {
+    flexWrap: 'wrap', 
     gap: 15
   },
   headerText: {
     verticalAlign: 'middle',
-    padding: 10,
+    padding: 20,
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 20,
     color: '#3E1911',
-  },
-  alphaNumLeftImage: {
-    width: '100%',
-    height: 100,
-    resizeMode: 'contain' 
-  },
-  alphaNumLeftInstructionText: {
-    textAlign: 'center', 
-    fontWeight: 'bold', 
-    fontSize: 18, 
-    paddingVertical: 10, 
-    color: '#3E1911'
   },
   submitBtnContainer: {
     alignSelf: 'flex-end', 
@@ -122,9 +116,3 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   }
 });
-
-
-
-
-
-//for use later maybe: source={lowerText === 'Alphabet' ? require('../assets/A.png') : require('../assets/1.png')}
