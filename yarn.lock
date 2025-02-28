@@ -3398,6 +3398,11 @@ expo-asset@~11.0.3:
     invariant "^2.2.4"
     md5-file "^3.2.3"
 
+expo-av@^15.0.2:
+  version "15.0.2"
+  resolved "https://registry.npmjs.org/expo-av/-/expo-av-15.0.2.tgz"
+  integrity sha512-AHIHXdqLgK1dfHZF0JzX3YSVySGMrWn9QtPzaVjw54FAzvXfMt4sIoq4qRL/9XWCP9+ICcCs/u3EcvmxQjrfcA==
+
 expo-constants@*, expo-constants@^17.0.5, expo-constants@~17.0.5:
   version "17.0.5"
   resolved "https://registry.npmjs.org/expo-constants/-/expo-constants-17.0.5.tgz"
@@ -5583,7 +5588,7 @@ react-native-vector-icons@^10.2.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-web@^0.19.13:
+react-native-web@*, react-native-web@^0.19.13:
   version "0.19.13"
   resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.19.13.tgz"
   integrity sha512-etv3bN8rJglrRCp/uL4p7l8QvUNUC++QwDbdZ8CB7BvZiMvsxfFIRM1j04vxNldG3uo2puRd6OSWR3ibtmc29A==

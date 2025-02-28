@@ -4,20 +4,45 @@ import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import SoundIcon from '../reusableComponents/SoundIcon';
+import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
+import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
+import GameComplete from '../reusableComponents/GameComplete';
 
 export default function LevelTwo() {
     const { game = '[game]' } = useLocalSearchParams(); //for use later
-    const instructionText = 'Choose the correct picture and word for the letter shown:';
+    const router = useRouter();
+
+    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
+    const [correctAnswers, setCorrectAnswers] = useState<number>(0);
+
+    const randomizedGameQuestions: Letter[] | Number[] = shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray);
+    const resultText: string = 'Green = Correct, Red = Incorrect';
+    const instructionText = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown:' :
+                                                  'Choose the correct number that matches how many objects are shown:';
+
+    let options: Letter[] | Number[] = currentQuestion !== randomizedGameQuestions.length ? getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id) : [];
 
     useEffect(() => {
-      console.log('level 2 loaded');
-      //fetch user?
-      //start game?
-    }, []);
+      //game completed
+      if (currentQuestion === randomizedGameQuestions.length) {
+        //update records??
+      }
+    }, [currentQuestion]);
+
+    function markAnswer() {
+      setAnswerDisplayed(true);
+      //update records??
+    }
+
+    function moveToNextQuestion() {
+      setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+      setAnswerDisplayed(false);
+    }
 
     return (
         <BackgroundLayout>
@@ -34,33 +59,55 @@ export default function LevelTwo() {
                 <Text style={styles.headerText}>{game} - Level 2 </Text>
 
                 {/* =============== Progress Bar =============== */}
-                <ProgressBar fillPercent={30}/>
+                <ProgressBar fillPercent={(currentQuestion / randomizedGameQuestions.length) * 100}/>
 
-                {/* =============== Top Instruction =============== */}
-                <Text style={styles.headerText}>{instructionText}</Text>
+                {currentQuestion !== randomizedGameQuestions.length ?
 
+                  <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
 
-                <View style={{flexDirection: 'row'}}>
-                    {/* ========================================= LEFT SIDE ============================================ */}
-                    <View style={styles.leftSideContainer}>
-                        <Image source={require('../assets/Alphabet/Letters/A.png')} style={styles.alphaNumLeftImage} />
-                        <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                        {/* <Image source={require('../assets/listen.png')} style={styles.listenImg} /> */}
-                        <SoundIcon size='9%'/>
+                    {/* =============== Top Instruction =============== */}
+                    <Text style={styles.headerText}>{answerDisplayed ? resultText : instructionText}</Text>
+
+                    <View style={{flexDirection: 'row'}}>
+                        {/* ========================================= LEFT SIDE ============================================ */}
+                        <View style={styles.leftSideContainer}>
+                            <Image source={game === 'Alphabet' ? randomizedGameQuestions[currentQuestion].idImage : randomizedGameQuestions[currentQuestion].exampleImage} 
+                                    style={styles.alphaNumLeftImage} />
+                            <Text style={styles.alphaNumLeftInstructionText}>Tap {game === 'Alphabet' ? 'letter' : 'picture'} to hear sound</Text>
+                            <SoundIcon size='9%'/>
+                        </View>
+                        
+                        {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
+                        <View style={styles.rightSideContainer}>
+                          {options.map((item: Letter | Number) => (
+                            <View key={item.id}> 
+                              <OptionCard 
+                                customWidth={0.38} 
+                                height={140} 
+                                image={game === 'Alphabet' ? item.exampleImage : item.idImage} 
+                                lowerText={item.writtenWord} 
+                                functionToExecute={() => moveToNextQuestion()}
+                              />
+                            </View>
+                          ))}
+                        </View>
                     </View>
                     
-                    {/* ========================================= RIGHT SIDE ============================================ */}
-                    <View style={styles.rightSideContainer}>
-                        <OptionCard lowerText='Moon' customWidth={0.38} height={140} onPressRoute='' image='moon'/>
-                        <OptionCard lowerText='Apple' customWidth={0.38} height={140} onPressRoute='' image='apple'/>
-                        <OptionCard lowerText='Tree' customWidth={0.38} height={140} onPressRoute='' image='tree'/>
+                    {/* =============== Submit Button =============== */}
+                    <View style={styles.submitBtnContainer}>
+                        {answerDisplayed ?
+                          <CustomButton text='Next' functionToExecute={() => moveToNextQuestion()}/>
+                          :
+                          <CustomButton text='Submit' functionToExecute={() => markAnswer()}/>
+                        }
+                        
                     </View>
-                </View>
-                
-                {/* =============== Submit Button =============== */}
-                <View style={styles.submitBtnContainer}>
-                    <CustomButton text='Submit'/>
-                </View>
+                  </View>
+
+                  :
+
+                  <GameComplete score={correctAnswers + '/' + randomizedGameQuestions.length} />
+                }
                 
             </View>
         </BackgroundLayout>
@@ -91,7 +138,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     verticalAlign: 'middle',
-    padding: 10,
+    padding: 20,
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
@@ -124,7 +171,26 @@ const styles = StyleSheet.create({
 });
 
 
+//console.log('currentQuestion updated');
+
+      // if (currentQuestion !== randomizedGameQuestions.length) {
+      //   //router.push('/LevelChoice?game=Alphabet');
+      //   options = getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id);
+      // }
+
+      
+
+      // console.log(currentQuestion / randomizedGameQuestions.length);
+
+      // randomizedGameQuestions.forEach(element => {
+      //       console.log(element.id);
+      //   });
 
 
 
-//for use later maybe: source={lowerText === 'Alphabet' ? require('../assets/A.png') : require('../assets/1.png')}
+
+    // useEffect(() => {
+    //   console.log('level 2 loaded');
+    //   //fetch user?
+    //   //start game?
+    // }, []);

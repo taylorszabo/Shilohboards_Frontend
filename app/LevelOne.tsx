@@ -57,7 +57,7 @@ export const LevelOne = () => {
                   
                     <View style={styles.cube}>
                         <Image 
-                            source={require("../assets/1.png")}
+                            source={require("../assets/Numbers/Digits/1.png")}
                             style={styles.numberImage} 
                         />
                     </View>

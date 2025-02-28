@@ -1,21 +1,7 @@
 import * as React from 'react';
 import { Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-
-type ImageKey = 'default' | 'hotdog' | 'flower' | 'tree' | 'whale' | 'moon' | 'penguin' | 'num' | 'alpha' | 'apple' ;
-
-const images: Record<ImageKey, any> = {
-    default: require('../assets/defaultImage.png'),
-    hotdog: require('../assets/Hotdog.png'),
-    flower: require('../assets/Flower.png'),
-    tree: require('../assets/Tree.png'),
-    whale: require('../assets/Whale.png'),
-    moon: require('../assets/Moon.png'),
-    penguin: require('../assets/Penguin.png'),
-    num: require('../assets/123.png'),
-    alpha: require('../assets/ABC.png'),
-    apple: require('../assets/Apple.png'),
-};
+import { useState } from 'react';
 
 const screenWidth = Dimensions.get('window').width; //get device width
 
@@ -24,42 +10,61 @@ type Props = {
     //optional
     height?: number;
     bgColor?: string;
-    image?: ImageKey;
+    image?: any;
     upperText?: string;
     lowerText?: string;
     disabled?: boolean;
     onPressRoute?: string;
     textSize?: number;
+    functionToExecute?: Function;
 };
 
 export default function OptionCard(props: Props) {
     const { bgColor = '#FFF8F0', 
-            image = 'default', 
+            image, 
             lowerText, 
             upperText = 'Option', 
             customWidth, 
             disabled = false, 
             height = 100, 
             onPressRoute, 
-            textSize = 24 } = props;
+            textSize = 24,
+            functionToExecute
+    } = props;
 
     const router = useRouter();
 
+    const [isPressed, setIsPressed] = useState(false);
+
     //------------------- FUNCTION ------------------
     function handlePressEvent() {
+        //console.log('here0');
+        setIsPressed(!isPressed);
+    
+        if (functionToExecute) {
+            functionToExecute();
+            //console.log('here');
+        }
 
-    if (onPressRoute) {
-        router.push(onPressRoute)
-    }
+        if (onPressRoute) {
+            router.push(onPressRoute)
+        }
 
-  }
+    } 
 
     return (
         <Pressable disabled={disabled} 
-        style={[styles.card, { backgroundColor: bgColor, width: screenWidth * customWidth, height: height, ...(image !== 'default' ? { padding: 20 } : {}) }]} 
+        style={[styles.card, isPressed && {borderWidth: 5, borderColor: '#0098A6'}, 
+            { 
+                backgroundColor: bgColor, 
+                width: screenWidth * customWidth, 
+                height: height, 
+                ...(image && { padding: 20 }) 
+            }
+        ]} 
         onPress={() => handlePressEvent()}>
-            {image !== 'default' ?
-                <Image source={images[image]} style={styles.image} />
+            {image ?
+                <Image source={image} style={styles.image} />
                 :
                 <Text style={[styles.highText, {fontSize: textSize}]}>{upperText}</Text>
             }

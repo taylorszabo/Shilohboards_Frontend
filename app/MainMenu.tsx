@@ -16,14 +16,14 @@ export default function MainMenu() {
         <View style={styles.container}> 
             <View style={styles.hamburgerMenuContainer}>
               <Pressable onPress={() => router.push('/SiteLink')}>
-                <CustomButton text='Site'/>
+                <CustomButton text='Site' onPressRoute='/SiteLink'/>
               </Pressable>
             </View>
             <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
             <Text style={styles.headerText}>Welcome {playerName}! Which game would you like to play? </Text>
             <View style={styles.cardDiv}>
-                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Alphabet' image='alpha'/>
-                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Numbers' image='num'/>
+                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Alphabet' image={require('../assets/ABC.png')}/>
+                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Numbers' image={require('../assets/123.png')}/>
             </View>
         </View>
       </BackgroundLayout>

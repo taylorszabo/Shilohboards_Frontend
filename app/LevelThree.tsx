@@ -7,10 +7,46 @@ import BackgroundLayout from '../reusableComponents/BackgroundImage';
 import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import SoundIcon from '../reusableComponents/SoundIcon';
+import { Audio } from 'expo-av';
+import { useState, useEffect } from 'react';
+import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
+import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
 
 export default function LevelThree() {
-    const { game = '[game]' } = useLocalSearchParams(); //for use later
+    const { game = '[game]' } = useLocalSearchParams();
+
+    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+    const randomizedGameQuestions: Letter[] | Number[] = shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray);
     const instructionText = 'Choose the correct letter of the sound or beginning of the word:';
+    let options: Letter[] | Number[] = currentQuestion !== randomizedGameQuestions.length ? getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id) : [];
+
+    async function playAudio(soundFile: any) {
+        const { sound } = await Audio.Sound.createAsync(soundFile);
+        setSound(sound);
+        await sound.playAsync();
+    }
+
+    useEffect(() => {
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [sound]);
+
+    useEffect(() => {
+
+        console.log('-----------------------------' + randomizedGameQuestions.length);
+        randomizedGameQuestions.forEach(element => {
+            console.log(element.id);
+        });
+    }, []);
+
+    function moveToNextQuestion() {
+        setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+    }
 
     return (
         <BackgroundLayout>
@@ -24,45 +60,36 @@ export default function LevelThree() {
                 <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.25}/>
 
                 {/* =============== Game/Level Title =============== */}
-                <Text style={styles.headerText}>{game} - Level 3 </Text>
+                {/* TODO: DELETE ANSWER PART LATER!!! */}
+                <Text style={styles.headerText}>{game} - Level 3 --- {randomizedGameQuestions[currentQuestion].id}</Text>  
 
                 {/* =============== Progress Bar =============== */}
-                <ProgressBar fillPercent={30}/>
+                <ProgressBar fillPercent={(currentQuestion / randomizedGameQuestions.length) * 100}/>
 
+                {/* =============== Sound & Word =============== */}
                 <View style={styles.topPortion}>
                     <SoundIcon size='25%'/>
                     <View style={{gap: 10}}>
-                        <OptionCard upperText='Sound' customWidth={0.3} height={50}/>
-                        <OptionCard upperText='Word' customWidth={0.3} height={50}/>
+                        <OptionCard upperText='Sound' customWidth={0.3} height={50} functionToExecute={() => playAudio(alphabetArray[0].idAudio)}/>
+                        <OptionCard upperText='Word' customWidth={0.3} height={50} functionToExecute={() => playAudio(alphabetArray[0].exampleAudio)}/>
                     </View>
                 </View>
 
                 {/* =============== Instructions =============== */}
                 <Text style={styles.headerText}>{instructionText}</Text>
 
-
+                {/* =============== Answers to Select =============== */}
                 <View style={styles.answerContainer}>
-                    <OptionCard customWidth={0.38} height={140} image='moon'/>
-                    <OptionCard customWidth={0.38} height={140} image='apple'/>
-                    <OptionCard customWidth={0.38} height={140} image='tree'/>
-                    <OptionCard customWidth={0.38} height={140} image='tree'/>
-
-
-
-
-                    {/* ========================================= LEFT SIDE ============================================ */}
-                    {/* <View style={styles.leftSideContainer}>
-                        <Image source={require('../assets/Alphabet/Letters/A.png')} style={styles.alphaNumLeftImage} />
-                        <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                        <Image source={require('../assets/listen.png')} style={styles.listenImg} />
-                    </View> */}
-                    
-                    {/* ========================================= RIGHT SIDE ============================================ */}
-                    {/* <View style={styles.rightSideContainer}>
-                        <OptionCard lowerText='Moon' customWidth={0.38} height={140} onPressRoute='' image='moon'/>
-                        <OptionCard lowerText='Apple' customWidth={0.38} height={140} onPressRoute='' image='apple'/>
-                        <OptionCard lowerText='Tree' customWidth={0.38} height={140} onPressRoute='' image='tree'/>
-                    </View> */}
+                    {options.map((item: Letter | Number) => (
+                        <View key={item.id}> 
+                            <OptionCard 
+                                customWidth={0.38} 
+                                height={140} 
+                                image={item.idImage} 
+                                functionToExecute={() => moveToNextQuestion()}
+                            />
+                        </View>
+                    ))}
                 </View>
                 
                 {/* =============== Submit Button =============== */}

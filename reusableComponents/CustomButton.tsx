@@ -4,17 +4,33 @@ import { useRouter } from 'expo-router';
 
 type Props = {
     text: string;
+    functionToExecute?: Function; //make not optional later? will need to add to all current components though as this will cause errors
     //optional
+    onPressRoute?: string;
     bgColor?: string;
     img?: string;
 };
 
 export default function CustomButton(props: Props) {
-    const { bgColor = '#C3E2E5', text } = props;
+    const { bgColor = '#C3E2E5', text, functionToExecute, onPressRoute } = props;
     const router = useRouter();
 
+    //------------------- FUNCTION ------------------
+    function handlePressEvent() {
+        //console.log('custom button pressed');
+    
+        if (functionToExecute) {
+            functionToExecute();
+        }
+
+        if (onPressRoute) {
+            router.push(onPressRoute)
+        }
+
+    } 
+
     return (
-        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => router.push('/SiteLink')}>
+        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => handlePressEvent()}>
             <Text style={styles.text}>{text}</Text>
         </Pressable>
     );
