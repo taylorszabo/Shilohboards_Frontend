@@ -4,46 +4,73 @@ import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import { useEffect, useState } from 'react';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
 import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
 import GameComplete from '../reusableComponents/GameComplete';
+import SoundPressable from '../reusableComponents/SoundPressable';
 
 export default function LevelTwo() {
     const { game = '[game]' } = useLocalSearchParams(); //for use later
-    const router = useRouter();
 
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const [randomizedGameQuestions, setRandomizedGameQuestions] = useState<Letter[] | Number[]>(shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray));                                      
+    const [options, setOptions] = useState<Letter[] | Number[]>([]);
+    const [answerSelected, setAnswerSelected] = useState<string>('');
     const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
 
-    const randomizedGameQuestions: Letter[] | Number[] = shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray);
-    const resultText: string = 'Green = Correct, Red = Incorrect';
-    const instructionText = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown:' :
-                                                  'Choose the correct number that matches how many objects are shown:';
+    const resultText: string = currentQuestion < randomizedGameQuestions.length ? 
+                                  answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
+                                                                                                   'Good try! Unfortunately, that is incorrect.' 
+                               : '';
+    const instructionText: string = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown:' :
+                                             'Choose the correct number that matches how many objects are shown:';
 
-    let options: Letter[] | Number[] = currentQuestion !== randomizedGameQuestions.length ? getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id) : [];
-
+    //-----------------------------------------------------------------------
     useEffect(() => {
-      //game completed
-      if (currentQuestion === randomizedGameQuestions.length) {
+      setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id));
+    }, [randomizedGameQuestions]);
+
+    //-----------------------------------------------------------------------
+    useEffect(() => {
+      if (currentQuestion === randomizedGameQuestions.length) { //game completed
         //update records??
+      } else if (currentQuestion !== 0) {
+        setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id));
       }
     }, [currentQuestion]);
 
-    function markAnswer() {
+    //-----------------------------------------------------------------------
+    useEffect(() => {
+      //updates option card borders each time a new answer is selected
+    }, [answerSelected]);
+
+    //-----------------------------------------------------------------------
+    function markAnswer(answerSubmitted: string) {
       setAnswerDisplayed(true);
+
+      if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
+        setCorrectAnswers((prev) => prev + 1);
+        console.log('correct');
+      } else {
+        console.log('wrong');
+      }
+
       //update records??
     }
 
+    //-----------------------------------------------------------------------
     function moveToNextQuestion() {
       setCurrentQuestion((prevQuestion) => prevQuestion + 1);
       setAnswerDisplayed(false);
+      setAnswerSelected('');
     }
 
+    //-----------------------------------------------------------------------
     return (
         <BackgroundLayout>
             <View style={styles.container}> 
@@ -71,8 +98,10 @@ export default function LevelTwo() {
                     <View style={{flexDirection: 'row'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <Image source={game === 'Alphabet' ? randomizedGameQuestions[currentQuestion].idImage : randomizedGameQuestions[currentQuestion].exampleImage} 
-                                    style={styles.alphaNumLeftImage} />
+                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio} styling={styles.alphaNumLeftImage}>
+                              <Image source={game === 'Alphabet' ? randomizedGameQuestions[currentQuestion].idImage : randomizedGameQuestions[currentQuestion].exampleImage} 
+                                      style={styles.alphaNumLeftImage} />
+                            </SoundPressable>
                             <Text style={styles.alphaNumLeftInstructionText}>Tap {game === 'Alphabet' ? 'letter' : 'picture'} to hear sound</Text>
                             <SoundIcon size='9%'/>
                         </View>
@@ -86,7 +115,14 @@ export default function LevelTwo() {
                                 height={140} 
                                 image={game === 'Alphabet' ? item.exampleImage : item.idImage} 
                                 lowerText={item.writtenWord} 
-                                functionToExecute={() => moveToNextQuestion()}
+                                functionToExecute={() => setAnswerSelected(item.id)}
+                                disabled={answerDisplayed}
+                                selected={item.id === answerSelected}
+                                bgColor={answerDisplayed && item.id === answerSelected ? 
+                                  item.id === randomizedGameQuestions[currentQuestion].id ? '#CFFFC0' : '#F69292' 
+                                  : 
+                                  '#FFF8F0' 
+                                }
                               />
                             </View>
                           ))}
@@ -98,7 +134,7 @@ export default function LevelTwo() {
                         {answerDisplayed ?
                           <CustomButton text='Next' functionToExecute={() => moveToNextQuestion()}/>
                           :
-                          <CustomButton text='Submit' functionToExecute={() => markAnswer()}/>
+                          answerSelected !== '' && <CustomButton text='Submit' functionToExecute={() => markAnswer(answerSelected)}/>
                         }
                         
                     </View>
@@ -169,28 +205,3 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   }
 });
-
-
-//console.log('currentQuestion updated');
-
-      // if (currentQuestion !== randomizedGameQuestions.length) {
-      //   //router.push('/LevelChoice?game=Alphabet');
-      //   options = getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id);
-      // }
-
-      
-
-      // console.log(currentQuestion / randomizedGameQuestions.length);
-
-      // randomizedGameQuestions.forEach(element => {
-      //       console.log(element.id);
-      //   });
-
-
-
-
-    // useEffect(() => {
-    //   console.log('level 2 loaded');
-    //   //fetch user?
-    //   //start game?
-    // }, []);

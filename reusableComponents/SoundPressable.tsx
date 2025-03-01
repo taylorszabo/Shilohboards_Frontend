@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleProp, ViewStyle } from 'react-native';
 import { Audio } from 'expo-av';
 
 type SoundPressableProps = {
   soundFile: any;
   children: React.ReactNode;
+  //optional
+  styling?: StyleProp<ViewStyle>;
 };
 
-export default function SoundPressable({ soundFile, children }: SoundPressableProps) {
+export default function SoundPressable({ soundFile, styling, children }: SoundPressableProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
 
+  //---------------------------------
   async function playSound() {
     if (sound) {
       await sound.unloadAsync(); //ensure previous sound is unloaded
@@ -21,20 +24,10 @@ export default function SoundPressable({ soundFile, children }: SoundPressablePr
     await newSound.playAsync();
   }
 
+  //---------------------------------
   return (
-    <Pressable onPress={playSound}>
+    <Pressable onPress={playSound} style={styling}>
       {children}
     </Pressable>
   );
 }
-
-// const styles = StyleSheet.create({
-//   button: {
-//     padding: 10,
-//     borderRadius: 10,
-//     backgroundColor: '#ddd',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//});
-//style={styles.button}

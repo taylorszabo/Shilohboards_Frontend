@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
+import CustomButton from './CustomButton';
 
 export default function GameComplete(props: {score: string}) {
     const { score } = props;
@@ -10,6 +11,10 @@ export default function GameComplete(props: {score: string}) {
             <Text style={styles.textCSS}>{score} Correct</Text>
             <Text style={styles.textCSS}>You've earned 1 star!</Text>
             <Image source={require('../assets/GameOverStar.png')}  style={styles.starImg} />
+
+            <View style={styles.submitBtnContainer}>
+                <CustomButton text='Main Menu' onPressRoute='/MainMenu?playerName=Shiloh'/>                     
+            </View>
         </View>
     );
 }
@@ -27,5 +32,10 @@ const styles = StyleSheet.create({
     },
     starImg: {
         marginTop: 30
-    }
+    },
+    submitBtnContainer: {
+        alignSelf: 'flex-end', 
+        marginTop: 'auto', 
+        padding: 10
+      },
 });

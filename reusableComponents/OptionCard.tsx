@@ -17,6 +17,7 @@ type Props = {
     onPressRoute?: string;
     textSize?: number;
     functionToExecute?: Function;
+    selected?: boolean;
 };
 
 export default function OptionCard(props: Props) {
@@ -29,32 +30,27 @@ export default function OptionCard(props: Props) {
             height = 100, 
             onPressRoute, 
             textSize = 24,
-            functionToExecute
+            functionToExecute,
+            selected
     } = props;
 
     const router = useRouter();
 
-    const [isPressed, setIsPressed] = useState(false);
-
     //------------------- FUNCTION ------------------
-    function handlePressEvent() {
-        //console.log('here0');
-        setIsPressed(!isPressed);
-    
+    function handlePressEvent() {   
         if (functionToExecute) {
             functionToExecute();
-            //console.log('here');
         }
 
         if (onPressRoute) {
             router.push(onPressRoute)
         }
-
     } 
 
+    //-----------------------------------------------
     return (
         <Pressable disabled={disabled} 
-        style={[styles.card, isPressed && {borderWidth: 5, borderColor: '#0098A6'}, 
+        style={[styles.card, selected && {borderWidth: 5, borderColor: '#0098A6'}, 
             { 
                 backgroundColor: bgColor, 
                 width: screenWidth * customWidth, 
