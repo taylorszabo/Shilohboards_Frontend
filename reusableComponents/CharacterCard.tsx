@@ -7,7 +7,7 @@ const screenWidth = Dimensions.get('window').width; //get device width
 type ImageKey = 'hotdog' | 'flower' | 'tree' | 'whale' | 'moon' | 'penguin';
 
 const images: Record<ImageKey, any> = {
-    hotdog: require('../assets/Hotdog.png'),
+    hotdog: require('../assets/Alphabet/Images/Hotdog.png'),
     flower: require('../assets/Flower.png'),
     tree: require('../assets/Tree.png'),
     whale: require('../assets/Whale.png'),
