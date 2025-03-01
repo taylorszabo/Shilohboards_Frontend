@@ -11,6 +11,7 @@ import { Audio } from 'expo-av';
 import { useState, useEffect } from 'react';
 import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
 import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
+import SoundPressable from '../reusableComponents/SoundPressable';
 
 export default function LevelThree() {
     const { game = '[game]' } = useLocalSearchParams();
@@ -70,8 +71,12 @@ export default function LevelThree() {
                 <View style={styles.topPortion}>
                     <SoundIcon size='25%'/>
                     <View style={{gap: 10}}>
-                        <OptionCard upperText='Sound' customWidth={0.3} height={50} functionToExecute={() => playAudio(alphabetArray[0].idAudio)}/>
-                        <OptionCard upperText='Word' customWidth={0.3} height={50} functionToExecute={() => playAudio(alphabetArray[0].exampleAudio)}/>
+                        <SoundPressable soundFile={alphabetArray[0].idAudio}>
+                            <Text style={styles.soundBtn}>Sound</Text>
+                        </SoundPressable>
+                        <SoundPressable soundFile={alphabetArray[0].exampleAudio}>
+                            <Text style={styles.soundBtn}>Word</Text>
+                        </SoundPressable>
                     </View>
                 </View>
 
@@ -141,5 +146,26 @@ const styles = StyleSheet.create({
     top: 0, 
     left: 0, 
     paddingLeft: 10
+  },
+  soundBtn: {
+    backgroundColor: '#FFF8F0',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
+    shadowOffset: {
+        width: 1,
+        height: 4
+    },
+    shadowRadius: 4,
+    shadowOpacity: 0.2,
+
+    elevation: 5, //android shadow
   }
 });
