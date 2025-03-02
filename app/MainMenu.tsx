@@ -1,24 +1,18 @@
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
 import { useLocalSearchParams } from 'expo-router';
-import { useRouter } from 'expo-router';
 
 export default function MainMenu() {
     const { playerName = '[name]' } = useLocalSearchParams();
-    const router = useRouter();
 
     return (
       <BackgroundLayout>
         <View style={styles.container}> 
-            <View style={styles.hamburgerMenuContainer}>
-              <Pressable onPress={() => router.push('/SiteLink')}>
-                <CustomButton text='Site' onPressRoute='/SiteLink'/>
-              </Pressable>
-            </View>
+            <CustomButton image={require('../assets/hamburgerMenuIcon.png')} uniqueButtonStyling={styles.hamburgerMenuContainer} onPressRoute='/SiteLink' uniqueImageStyling={{width: 28, height: 28}}/>
             <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
             <Text style={styles.headerText}>Welcome {playerName}! Which game would you like to play? </Text>
             <View style={styles.cardDiv}>
@@ -34,7 +28,6 @@ export default function MainMenu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
     alignItems: 'center',
   },
   headerText: {
@@ -52,6 +45,5 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 0, 
     left: 0, 
-    paddingLeft: 10
   }
 });

@@ -1,24 +1,24 @@
 import * as React from 'react';
-import { StyleSheet, Text, Pressable } from 'react-native';
+import { StyleSheet, Text, Image, Pressable, ViewStyle, TextStyle, ImageStyle  } from 'react-native';
 import { useRouter } from 'expo-router';
 
 type Props = {
-    text: string;
-    functionToExecute?: Function; //make not optional later? will need to add to all current components though as this will cause errors
     //optional
+    functionToExecute?: Function;
     onPressRoute?: string;
-    bgColor?: string;
-    img?: string;
+    text?: string;
+    image?: any;
+    uniqueButtonStyling?: ViewStyle;
+    uniqueTextStyling?: TextStyle; 
+    uniqueImageStyling?: ImageStyle; 
 };
 
 export default function CustomButton(props: Props) {
-    const { bgColor = '#C3E2E5', text, functionToExecute, onPressRoute } = props;
+    const { functionToExecute, onPressRoute, text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling } = props;
     const router = useRouter();
 
     //------------------- FUNCTION ------------------
     function handlePressEvent() {
-        //console.log('custom button pressed');
-    
         if (functionToExecute) {
             functionToExecute();
         }
@@ -26,23 +26,31 @@ export default function CustomButton(props: Props) {
         if (onPressRoute) {
             router.push(onPressRoute)
         }
-
     } 
 
+    //-----------------------------------------------
     return (
-        <Pressable style={[styles.btn, { backgroundColor: bgColor }]} onPress={() => handlePressEvent()}>
-            <Text style={styles.text}>{text}</Text>
+        <Pressable style={[styles.btn, uniqueButtonStyling]} onPress={() => handlePressEvent()}>
+            {text &&
+                <Text style={[styles.defaultTextStyle, uniqueTextStyling]}>{text}</Text>
+            }
+            {image &&
+                <Image source={image} style={uniqueImageStyling ? uniqueImageStyling : undefined} />
+            }
         </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
     btn: {
-        borderRadius: 8,
+        margin: 10,
+        backgroundColor: '#C3E2E5',
         justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 25,
-        paddingVertical: 10,
+        gap: 10,
+        paddingHorizontal: 15,
+        paddingVertical: 15,
+        borderRadius: 8,
         borderWidth: 1,
         borderColor: '#d3d3d3',
         //iOS shadow
@@ -55,9 +63,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         //android shadow
         elevation: 3, 
-        
     },
-    text: {
+    defaultTextStyle: {
         fontSize: 20,
         textAlign: 'center',
         color: '#3E1911',

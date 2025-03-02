@@ -12,9 +12,7 @@ export default function LevelChoice() {
     return (
       <BackgroundLayout>
         <View style={styles.container}> 
-            <View style={styles.backBtnContainer}>
-                <CustomButton text='<'/>
-            </View>
+            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute='/MainMenu?playerName=Shiloh'/>
             <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
             <Text style={styles.headerText}>Choose a level for the {game} Activity: </Text>
             <View style={styles.cardDiv}>
@@ -33,7 +31,6 @@ export default function LevelChoice() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
     alignItems: 'center',
   },
   headerText: {
@@ -51,6 +48,6 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 0, 
     left: 0, 
-    paddingLeft: 10
+    paddingVertical: 20
   }
 });

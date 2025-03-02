@@ -28,7 +28,7 @@ export default function LevelTwo() {
                                                                                                    'Good try! Unfortunately, that is incorrect.' 
                                : '';
     const instructionText: string = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
-                                             'Choose the correct number that matches how many objects are shown on the left:';
+                                             'Choose the correct number that matches how many objects are shown:';
 
     //-----------------------------------------------------------------------
     useEffect(() => {
@@ -70,9 +70,7 @@ export default function LevelTwo() {
         <BackgroundLayout>
             <View style={styles.container}> 
                 {/* =============== Back Button =============== */}
-                <View style={styles.backBtnContainer}>
-                    <CustomButton text='<'/>
-                </View>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}`}/>
 
                 {/* =============== Player Card =============== */}
                 <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.25}/>
@@ -146,7 +144,6 @@ export default function LevelTwo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
     alignItems: 'center',
     position: 'relative'
   },
@@ -188,12 +185,11 @@ const styles = StyleSheet.create({
   submitBtnContainer: {
     alignSelf: 'flex-end', 
     marginTop: 'auto', 
-    padding: 10
   },
   backBtnContainer: {
     position: 'absolute', 
     top: 0, 
-    left: 0, 
-    paddingLeft: 10
+    left: 0,
+    paddingVertical: 20
   }
 });

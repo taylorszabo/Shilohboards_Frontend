@@ -43,6 +43,7 @@ export default function CharacterCard(props: Props) {
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
     card: {
+        marginTop: 20,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',

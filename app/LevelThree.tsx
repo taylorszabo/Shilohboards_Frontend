@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -86,9 +86,7 @@ export default function LevelThree() {
         <BackgroundLayout>
             <View style={styles.container}> 
                 {/* =============== Back Button =============== */}
-                <View style={styles.backBtnContainer}>
-                    <CustomButton text='<'/>
-                </View>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}`}/>
 
                 {/* =============== Player Card =============== */}
                 <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.25}/>
@@ -161,7 +159,6 @@ export default function LevelThree() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
     alignItems: 'center',
     position: 'relative'
   },
@@ -189,13 +186,12 @@ const styles = StyleSheet.create({
   submitBtnContainer: {
     alignSelf: 'flex-end', 
     marginTop: 'auto', 
-    padding: 10
   },
   backBtnContainer: {
     position: 'absolute', 
     top: 0, 
     left: 0, 
-    paddingLeft: 10
+    paddingVertical: 20
   },
   soundBtn: {
     backgroundColor: '#FFF8F0',
@@ -219,13 +215,3 @@ const styles = StyleSheet.create({
     elevation: 5, //android shadow
   }
 });
-
-
-    //-----------------------------------------------------------------------
-    // useEffect(() => {
-
-    //     console.log('-----------------------------' + randomizedGameQuestions.length);
-    //     randomizedGameQuestions.forEach(element => {
-    //         console.log(element.id);
-    //     });
-    // }, []);
