@@ -17,7 +17,7 @@ export default function LevelTwo() {
     const { game = '[game]' } = useLocalSearchParams(); //for use later
 
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-    const [randomizedGameQuestions, setRandomizedGameQuestions] = useState<Letter[] | Number[]>(shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray));                                      
+    const [randomizedGameQuestions] = useState<Letter[] | Number[]>(shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray));                                      
     const [options, setOptions] = useState<Letter[] | Number[]>([]);
     const [answerSelected, setAnswerSelected] = useState<string>('');
     const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
@@ -27,8 +27,8 @@ export default function LevelTwo() {
                                   answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
                                                                                                    'Good try! Unfortunately, that is incorrect.' 
                                : '';
-    const instructionText: string = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown:' :
-                                             'Choose the correct number that matches how many objects are shown:';
+    const instructionText: string = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
+                                             'Choose the correct number that matches how many objects are shown on the left:';
 
     //-----------------------------------------------------------------------
     useEffect(() => {
@@ -43,11 +43,6 @@ export default function LevelTwo() {
         setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 3, randomizedGameQuestions[currentQuestion].id));
       }
     }, [currentQuestion]);
-
-    //-----------------------------------------------------------------------
-    useEffect(() => {
-      //updates option card borders each time a new answer is selected
-    }, [answerSelected]);
 
     //-----------------------------------------------------------------------
     function markAnswer(answerSubmitted: string) {
@@ -136,12 +131,9 @@ export default function LevelTwo() {
                           :
                           answerSelected !== '' && <CustomButton text='Submit' functionToExecute={() => markAnswer(answerSelected)}/>
                         }
-                        
                     </View>
                   </View>
-
                   :
-
                   <GameComplete score={correctAnswers + '/' + randomizedGameQuestions.length} />
                 }
                 
