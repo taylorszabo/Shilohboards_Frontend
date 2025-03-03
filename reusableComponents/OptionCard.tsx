@@ -18,6 +18,7 @@ type Props = {
     textSize?: number;
     functionToExecute?: Function;
     selected?: boolean;
+    boldFirstLetter?: boolean;
 };
 
 export default function OptionCard(props: Props) {
@@ -31,10 +32,19 @@ export default function OptionCard(props: Props) {
             onPressRoute, 
             textSize = 24,
             functionToExecute,
-            selected
+            selected,
+            boldFirstLetter = false
     } = props;
 
     const router = useRouter();
+
+    let firstLetter;
+    let restOfText;
+
+    if (lowerText) {
+        firstLetter = lowerText.charAt(0);
+        restOfText = lowerText.slice(1);
+    }
 
     //------------------- FUNCTION ------------------
     function handlePressEvent() {   
@@ -66,7 +76,14 @@ export default function OptionCard(props: Props) {
             }
             
             {lowerText &&
-                <Text style={styles.lowText}>{lowerText}</Text>
+                <Text style={styles.lowText}>
+                    {boldFirstLetter ? (
+                        <Text style={styles.boldUnderline}>{firstLetter}</Text>
+                    ) : (
+                        firstLetter
+                    )}
+                    {restOfText}
+                </Text>
             }
         </Pressable>
     );
@@ -96,10 +113,13 @@ const styles = StyleSheet.create({
     },
     lowText: {
         marginTop: 10,
-        fontSize: 14,
+        fontSize: 18,
         textAlign: 'center',
         color: '#3E1911',
-        fontWeight: 'bold'
+    },
+    boldUnderline: {
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
     },
     highText: {
         textAlign: 'center',

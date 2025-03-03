@@ -90,14 +90,21 @@ export default function LevelTwo() {
 
                     <View style={{flexDirection: 'row'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
-                        <View style={styles.leftSideContainer}>
-                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio} styling={styles.alphaNumLeftImage}>
-                              <Image source={game === 'Alphabet' ? randomizedGameQuestions[currentQuestion].idImage : randomizedGameQuestions[currentQuestion].exampleImage} 
-                                      style={styles.alphaNumLeftImage} />
-                            </SoundPressable>
-                            <Text style={styles.alphaNumLeftInstructionText}>Tap {game === 'Alphabet' ? 'letter' : 'picture'} to hear sound</Text>
-                            <SoundIcon size='9%'/>
-                        </View>
+                        {game === 'Alphabet' ?
+                          <View style={styles.leftSideContainer}>
+                              <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio} styling={styles.alphaNumLeftImage}>
+                                <Image source={randomizedGameQuestions[currentQuestion].idImage} 
+                                       style={styles.alphaNumLeftImage} />
+                              </SoundPressable>
+                              <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
+                              <SoundIcon size='9%'/>
+                          </View>
+                          :
+                          <View style={styles.leftSideContainer}>
+                              <Image source={randomizedGameQuestions[currentQuestion].exampleImage} 
+                                     style={styles.alphaNumLeftImage} />
+                          </View>
+                        }
                         
                         {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
                         <View style={styles.rightSideContainer}>
@@ -108,6 +115,7 @@ export default function LevelTwo() {
                                 height={140} 
                                 image={game === 'Alphabet' ? item.exampleImage : item.idImage} 
                                 lowerText={item.writtenWord} 
+                                boldFirstLetter={game === 'Alphabet'}
                                 functionToExecute={() => setAnswerSelected(item.id)}
                                 disabled={answerDisplayed}
                                 selected={item.id === answerSelected}
@@ -144,6 +152,7 @@ export default function LevelTwo() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
     position: 'relative'
   },
@@ -152,7 +161,7 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    width: '35%', 
+    width: '40%', 
     maxHeight: '100%', 
     alignItems: 'center', 
     justifyContent: 'center', 
