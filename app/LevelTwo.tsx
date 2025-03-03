@@ -61,9 +61,9 @@ export default function LevelTwo() {
 
       if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
         setCorrectAnswers((prev) => prev + 1);
-        playAudio(require('../assets/correctSound.mp3'));
+        playAudio(require('../assets/Sounds/correctSound.mp3'));
       } else {
-        playAudio(require('../assets/incorrectSound.mp3'));
+        playAudio(require('../assets/Sounds/incorrectSound.mp3'));
       }
 
       //update records??

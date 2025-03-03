@@ -5,7 +5,7 @@ import CustomButton from '../reusableComponents/CustomButton';
 import { useRouter } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundImage';
 
-export default function Character() {
+export default function SelectCharacter() {
   const router = useRouter();
 
   return (

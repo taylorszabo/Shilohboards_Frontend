@@ -26,9 +26,9 @@ export default function LevelThree() {
     const [sound, setSound] = useState<Audio.Sound | null>(null);
 
     const resultText: string = currentQuestion < randomizedGameQuestions.length ? 
-                                    answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
-                                                                                                    'Good try! Unfortunately, that is incorrect.' 
-                                : '';
+                               answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
+                                                                                                'Good try! Unfortunately, that is incorrect.' 
+                               : '';
     const instructionText = 'Choose the correct letter for the sound or beginning of the word:';
 
     //-----------------------------------------------------------------------
@@ -60,9 +60,9 @@ export default function LevelThree() {
 
         if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
             setCorrectAnswers((prev) => prev + 1);
-            playAudio(require('../assets/correctSound.mp3'));
+            playAudio(require('../assets/Sounds/correctSound.mp3'));
         } else {
-            playAudio(require('../assets/incorrectSound.mp3'));
+            playAudio(require('../assets/Sounds/incorrectSound.mp3'));
         }
 
         //update records??

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ImageBackground, StyleSheet } from 'react-native';
-import Character from '../app/Character';
 import Login from './Login';
 
 //starting entry point on app load

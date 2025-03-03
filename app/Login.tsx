@@ -19,7 +19,7 @@ const Login = () => {
     const handleLogin = () => {
         if (email === "test@example.com" && password === "password") {
             Alert.alert("Login Successful!");
-            router.push('/Character')
+            router.push('/SelectCharacter')
         } else {
             Alert.alert("Invalid email or password.");
         }
@@ -53,7 +53,7 @@ const Login = () => {
                     onChangeText={setPassword} 
                 />
                 
-                <TouchableOpacity style={styles.button} onPress={() => router.push('/Character')}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push('/SelectCharacter')}>
                     <Text style={styles.buttonText}>Sign In</Text>
                 </TouchableOpacity>
 
