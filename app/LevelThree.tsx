@@ -43,14 +43,16 @@ export default function LevelThree() {
     //-----------------------------------------------------------------------
     useEffect(() => {
         setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id));
+        playAudio(randomizedGameQuestions[currentQuestion].idAudio);
     }, [randomizedGameQuestions]);
 
     //-----------------------------------------------------------------------
     useEffect(() => {
         if (currentQuestion === randomizedGameQuestions.length) { //game completed
-        //update records??
+            //update records??
         } else if (currentQuestion !== 0) {
-        setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id));
+            setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id));
+            playAudio(randomizedGameQuestions[currentQuestion].idAudio);
         }
     }, [currentQuestion]);
 
@@ -105,10 +107,10 @@ export default function LevelThree() {
                     <View style={styles.topPortion}>
                         <SoundIcon size='25%'/>
                         <View style={{gap: 10}}>
-                            <SoundPressable soundFile={alphabetArray[currentQuestion].idAudio}>
+                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}>
                                 <Text style={styles.soundBtn}>Sound</Text>
                             </SoundPressable>
-                            <SoundPressable soundFile={alphabetArray[currentQuestion].exampleAudio}>
+                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].exampleAudio}>
                                 <Text style={styles.soundBtn}>Word</Text>
                             </SoundPressable>
                         </View>
