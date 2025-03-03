@@ -60,9 +60,9 @@ export default function LevelThree() {
 
         if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
             setCorrectAnswers((prev) => prev + 1);
-            console.log('correct');
+            playAudio(require('../assets/correctSound.mp3'));
         } else {
-            console.log('wrong');
+            playAudio(require('../assets/incorrectSound.mp3'));
         }
 
         //update records??

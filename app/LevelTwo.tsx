@@ -8,6 +8,7 @@ import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import { useEffect, useState } from 'react';
 import SoundIcon from '../reusableComponents/SoundIcon';
+import { Audio } from 'expo-av';
 import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
 import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
 import GameComplete from '../reusableComponents/GameComplete';
@@ -22,6 +23,7 @@ export default function LevelTwo() {
     const [answerSelected, setAnswerSelected] = useState<string>('');
     const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
+    const [sound, setSound] = useState<Audio.Sound | null>(null);
 
     const resultText: string = currentQuestion < randomizedGameQuestions.length ? 
                                   answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
@@ -29,6 +31,15 @@ export default function LevelTwo() {
                                : '';
     const instructionText: string = game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
                                              'Choose the correct number that matches how many objects are shown:';
+
+    //-----------------------------------------------------------------------
+    useEffect(() => {
+        return () => {
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [sound]);
 
     //-----------------------------------------------------------------------
     useEffect(() => {
@@ -50,9 +61,9 @@ export default function LevelTwo() {
 
       if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
         setCorrectAnswers((prev) => prev + 1);
-        console.log('correct');
+        playAudio(require('../assets/correctSound.mp3'));
       } else {
-        console.log('wrong');
+        playAudio(require('../assets/incorrectSound.mp3'));
       }
 
       //update records??
@@ -64,6 +75,13 @@ export default function LevelTwo() {
       setAnswerDisplayed(false);
       setAnswerSelected('');
     }
+
+    //-----------------------------------------------------------------------
+        async function playAudio(soundFile: any) {
+            const { sound } = await Audio.Sound.createAsync(soundFile);
+            setSound(sound);
+            await sound.playAsync();
+        }
 
     //-----------------------------------------------------------------------
     return (
