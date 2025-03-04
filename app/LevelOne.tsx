@@ -29,7 +29,7 @@ export const LevelOne = () => {
            
                 <View style={styles.nameBox}>
                     <Image 
-                        source={require("../assets/Hotdog.png")}
+                        source={require("../assets/Alphabet/Images/Hotdog.png")}
                         style={styles.hotdog}
                     />
                     <Text style={styles.nameText}>Shiloh</Text>
@@ -57,7 +57,7 @@ export const LevelOne = () => {
                   
                     <View style={styles.cube}>
                         <Image 
-                            source={require("../assets/1.png")}
+                            source={require("../assets/Numbers/Digits/1.png")}
                             style={styles.numberImage} 
                         />
                     </View>
