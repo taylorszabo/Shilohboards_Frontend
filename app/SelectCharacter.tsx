@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import { useRouter } from 'expo-router';
-import BackgroundLayout from '../reusableComponents/BackgroundImage';
+import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 
 export default function SelectCharacter() {
   const router = useRouter();

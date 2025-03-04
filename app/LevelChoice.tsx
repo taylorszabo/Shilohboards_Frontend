@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import OptionCard from '../reusableComponents/OptionCard';
-import BackgroundLayout from '../reusableComponents/BackgroundImage';
+import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams } from 'expo-router';
 import CustomButton from '../reusableComponents/CustomButton';
 

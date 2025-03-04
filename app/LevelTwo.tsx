@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, Image } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
-import BackgroundLayout from '../reusableComponents/BackgroundImage';
+import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import { useEffect, useState } from 'react';

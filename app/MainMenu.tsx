@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
-import BackgroundLayout from '../reusableComponents/BackgroundImage';
+import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 
 type HamburgerMenuItem = {
