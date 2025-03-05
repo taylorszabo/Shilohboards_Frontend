@@ -96,15 +96,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
 
-        shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
-        shadowOffset: {
-            width: 1,
-            height: 4
-        },
-        shadowRadius: 4,
-        shadowOpacity: 0.2,
-
-        elevation: 5, //android shadow
+        borderRightWidth: 2,
+        borderBottomWidth: 3,
+        borderColor: '#A9A9A9',
     },
     image: {
         width: '80%',

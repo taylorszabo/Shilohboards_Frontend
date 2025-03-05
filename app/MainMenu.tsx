@@ -15,6 +15,7 @@ type HamburgerMenuItem = {
 
 const hamburgerMenuOptions: HamburgerMenuItem[] = [
   {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
+  {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: '/CharacterCreation?isNewOrUpdateId=Update'},
   {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/'},
   {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
   {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/'},

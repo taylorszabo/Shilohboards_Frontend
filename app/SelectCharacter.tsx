@@ -17,9 +17,8 @@ export default function SelectCharacter() {
             <CharacterCard bgColor='#FFDDF6' image='flower' name='Jessica' customWidth={0.4} />
             <CharacterCard bgColor='#FFD195' image='penguin' name='Mina' customWidth={0.4} />
           </View>
-          <View style={styles.createNewBtnContainer}>
-            <CustomButton text='Create New Character'/>
-          </View>
+
+          <CustomButton text='Create New Character' uniqueButtonStyling={styles.createNewBtnContainer} onPressRoute={`/CharacterCreation?isNewOrUpdateId=New`} />
           
       </View>
     </BackgroundLayout>
@@ -49,6 +48,6 @@ const styles = StyleSheet.create({
   },
   createNewBtnContainer: {
     marginTop: 'auto',
-    marginBottom: 60
+    alignSelf: 'flex-end'
   }
 });
