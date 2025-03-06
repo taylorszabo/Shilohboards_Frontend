@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { tempCharacterArray } from "../CharacterOptions";
 
 type HamburgerMenuItem = {
   text: string;
@@ -23,11 +24,17 @@ const hamburgerMenuOptions: HamburgerMenuItem[] = [
   {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
 ];
 
+//======================================================================================
 export default function MainMenu() {
-    const { playerName = '[name]' } = useLocalSearchParams();
+    const { playerId = '[name]' } = useLocalSearchParams();
     const router = useRouter();
 
     const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
+
+    //--------------------------------------------------------------------------
+    useEffect(() => {
+        console.log(tempCharacterArray);
+    }, []);
 
     return (
       <BackgroundLayout>
@@ -56,6 +63,7 @@ export default function MainMenu() {
 
           :
 
+          // ----------------------------- game menu options ----------------------------
           <View style={styles.container}> 
               <CustomButton 
                 image={require('../assets/hamburgerMenuIcon.png')} 
@@ -63,11 +71,11 @@ export default function MainMenu() {
                 uniqueImageStyling={{width: 28, height: 28}}
                 functionToExecute={() => setHamburgerMenuOpen(true)}
               />
-              <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
-              <Text style={styles.headerText}>Welcome {playerName}! Which game would you like to play? </Text>
+              <CharacterCard id={parseInt(playerId.toString())} customWidth={0.3}/>
+              <Text style={styles.headerText}>Welcome {playerId ? tempCharacterArray[parseInt(playerId.toString())].name : playerId}! Which game would you like to play? </Text>
               <View style={styles.cardDiv}>
-                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Alphabet' image={require('../assets/ABC_2.png')}/>
-                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute='/LevelChoice?game=Numbers' image={require('../assets/123_2.png')}/>
+                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')}/>
+                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')}/>
               </View>
           </View>
         }

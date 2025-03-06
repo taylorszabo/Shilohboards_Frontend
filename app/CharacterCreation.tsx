@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -7,42 +7,26 @@ import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useEffect, useState } from 'react';
 import OptionCard from '../reusableComponents/OptionCard';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { tempCharacterArray } from "../CharacterOptions";
+import { CharacterBuild, Character, characterOptions, bgColorOptions } from "../CharacterOptions";
 
-type CharacterBuild = {
-    name: string;
-    picture: string;
-    bgColor: string;
-};
-
-type Character = {
-    id: string;
-    picture: any;
-};
-
+//=============================================================================================================
 export default function CharacterCreation() {
     const router = useRouter();
+    const windowHeight = useWindowDimensions().height;
     const { isNewOrUpdateId } = useLocalSearchParams(); //a new character or one being updated
-    const numberOfSteps = 3 - 1;
-    const [characterCreated, setCharacterCreated] = useState<CharacterBuild>({name: '' , picture: '', bgColor: ''});
-    const [processStep, setProcessStep] = useState<number>(0);
-
-    const characterOptions: Character[] = [
-        {id: 'hotdog', picture: require('../assets/Alphabet/Images/Hotdog.png')},
-        {id: 'flower', picture: require('../assets/Alphabet/Images/Flower.png')},
-        {id: 'tree', picture: require('../assets/Alphabet/Images/Tree.png')},
-        {id: 'whale', picture: require('../assets/Alphabet/Images/Whale.png')},
-        {id: 'moon', picture: require('../assets/Alphabet/Images/Moon.png')},
-        {id: 'penguin', picture: require('../assets/Alphabet/Images/Penguin.png')},
-    ];
-
-    const bgColorOptions: string[] = ['#C3E2E5', '#C0E3B9', '#FDFFB8', '#FFDDF6', '#FFD195', '#FFA3A3'];
+    const numberOfSteps = 3;
+    const [characterCreated, setCharacterCreated] = useState<CharacterBuild>({id: isNewOrUpdateId === "New" ? tempCharacterArray.length : parseInt(isNewOrUpdateId.toString()), name: '' , picture: '', bgColor: ''});
+    const [processStep, setProcessStep] = useState<number>(1);
+    const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
 
     //--------------------------------------------------------------------------
+    //Error check
     useEffect(() => {
         console.log(isNewOrUpdateId);
         // if (isNewOrUpdate !== "New" && isNewOrUpdate !== "Update") { //2nd part -- change to: check array of current user Id's stored to see if it's located/exists
         //     router.push('/SelectCharacter');
-        //     console.log('Error: param passed to component CharacterCreation must be either "New" or "Update"');
+        //     console.log('Error: param passed to component CharacterCreation must be either "New" or an Id to "Update"');
         // }
     }, [isNewOrUpdateId]);
 
@@ -53,25 +37,52 @@ export default function CharacterCreation() {
 
         if (isNew) {
             //save new record with characterCreated info
-            return;
+            tempCharacterArray.push(characterCreated);
+        } else {
+            //update a current record with characterCreated info
         }
 
-        //update a current record with characterCreated info
+        router.push(`/MainMenu?playerId=${characterCreated.id}`);
+    }
+
+    //--------------------------------------------------------------------------
+    function verifyInformationEntered() {
+        let missingInfo: boolean = false;
+        setInfoBeingVerified(true);
+
+        if (processStep === 1) {
+            if (characterCreated.name.trim().length < 2 || !characterOptions.find(option => option.id === characterCreated.picture)) {
+                missingInfo = true;
+            }
+        }
+
+        if (processStep === 2) {
+            if (!bgColorOptions.find(option => option === characterCreated.bgColor)) {
+                missingInfo = true;
+            }
+        }
+
+        if (!missingInfo) {
+            setProcessStep((prev) => prev + 1);
+            setInfoBeingVerified(false);
+        }
     }
 
     //--------------------------------------------------------------------------
     return (
         <BackgroundLayout>
-            <View style={styles.container}> 
+            <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}> 
                     {/* ---------------------------- title ------------------------ */}
                     <Text style={[styles.headerText, { fontSize: RFPercentage(4.5) }]}>{processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}</Text>
 
                     {/* -------------------------------------------------------- body ------------------------------------------------------ */}
                     {/* ======= STEP 1 ======= */}
-                    {processStep === 0 &&
+                    {processStep === 1 &&
                         <View style={styles.body}>
                             {/* name */}
-                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please enter your name:</Text>
+                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && characterCreated.name.trim().length < 2 && {color: 'red'}]}>
+                                Please enter your name:
+                            </Text>
                             <TextInput 
                                 style={[styles.input, { fontSize: RFPercentage(2.5) }]} 
                                 value={characterCreated.name} 
@@ -79,7 +90,9 @@ export default function CharacterCreation() {
                             />
 
                             {/* character */}
-                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your character:</Text>
+                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && !characterOptions.find(option => option.id === characterCreated.picture) && {color: 'red'}]}>
+                                Please choose your character:
+                            </Text>
                             <View style={styles.optionCardContainer}>                
                                 {characterOptions.map((item: Character, index) => (
                                     <View key={index}> 
@@ -97,10 +110,12 @@ export default function CharacterCreation() {
                     }
 
                     {/* ======= STEP 2 ======= */}
-                    {processStep === 1 && 
+                    {processStep === 2 && 
                         <View style={styles.body}>
                             {/* bg color */}
-                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your background colour:</Text>
+                            <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && !bgColorOptions.find(option => option === characterCreated.bgColor) && {color: 'red'}]}>
+                                Please choose your background colour:
+                            </Text>
                             <View style={styles.optionCardContainer}>                
                                 {bgColorOptions.map((item: string, index) => (
                                     <View key={index}> 
@@ -119,24 +134,25 @@ export default function CharacterCreation() {
                     }
 
                     {/* ======= STEP 3 ======= */}
-                    {processStep === 2 && 
+                    {processStep === 3 && 
                         <View style={styles.body}>
                             {/* character review */}
-                            <OptionCard 
-                                customWidth={0.80} 
-                                height={300} 
-                                upperText = ''
-                                lowerText={characterCreated.name}
-                                bgColor={characterCreated.bgColor}
-                                image={characterOptions.find(option => option.id === characterCreated.picture)?.picture}
-                                disabled={true}
+                            <CharacterCard 
+                                name={characterCreated.name} 
+                                image={characterOptions.find(option => option.id === characterCreated.picture)?.picture} 
+                                bgColor={characterCreated.bgColor} 
+                                customWidth={0.8}
                             />
                         </View>
                     }
 
                     {/* ---------------------------- bottom buttons ------------------------ */}
-                    <View style={styles.bottomBtns}>
-                        {processStep === 0 ? 
+                    <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? "padding" : "height"}
+                        enabled={false}
+                        style={styles.bottomBtns}
+                    >
+                        {processStep === 1 ? 
                             <CustomButton text='Cancel' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/SelectCharacter`}/>
                             :
                             <CustomButton text='Back' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setProcessStep((prev) => prev - 1)}/>
@@ -144,11 +160,26 @@ export default function CharacterCreation() {
 
                         {processStep === numberOfSteps ?
                             <CustomButton text='Finish' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} 
-                                          onPressRoute={`/MainMenu?playerName=${characterCreated.name}`} functionToExecute={() => saveCharacter(characterCreated, isNewOrUpdateId === "New")}/>
+                                          functionToExecute={() => saveCharacter(characterCreated, isNewOrUpdateId === "New")}/>
                             :
-                            <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => setProcessStep((prev) => prev + 1)}/>
+                            <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => verifyInformationEntered()}/>
                         }
-                    </View>
+                    </KeyboardAvoidingView>
+
+                    {/* <View style={styles.bottomBtns}>
+                        {processStep === 1 ? 
+                            <CustomButton text='Cancel' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/SelectCharacter`}/>
+                            :
+                            <CustomButton text='Back' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setProcessStep((prev) => prev - 1)}/>
+                        }
+
+                        {processStep === numberOfSteps ?
+                            <CustomButton text='Finish' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} 
+                                          functionToExecute={() => saveCharacter(characterCreated, isNewOrUpdateId === "New")}/>
+                            :
+                            <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => verifyInformationEntered()}/>
+                        }
+                    </View> */}
                 
             </View>
         </BackgroundLayout>
@@ -160,6 +191,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    position: 'relative'
   },
   headerText: {
     padding: '5%',
@@ -198,7 +230,9 @@ const styles = StyleSheet.create({
   },
   bottomBtns: {
     width: '100%',
-    marginTop: 'auto',
+    //marginTop: 'auto',
+    position: 'absolute',
+    bottom: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
