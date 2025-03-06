@@ -14,22 +14,22 @@ type HamburgerMenuItem = {
   route: string;
 }
 
-const hamburgerMenuOptions: HamburgerMenuItem[] = [
-  {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
-  {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: '/CharacterCreation?isNewOrUpdateId=Update'},
-  {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/'},
-  {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
-  {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/'},
-  {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
-  {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
-];
-
 //======================================================================================
 export default function MainMenu() {
     const { playerId = '[name]' } = useLocalSearchParams();
     const router = useRouter();
 
     const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
+
+    const hamburgerMenuOptions: HamburgerMenuItem[] = [
+      {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
+      {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}`},
+      {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/'},
+      {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
+      {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/'},
+      {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
+      {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
+    ];
 
     //--------------------------------------------------------------------------
     useEffect(() => {

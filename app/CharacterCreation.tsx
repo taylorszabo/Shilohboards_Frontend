@@ -28,6 +28,15 @@ export default function CharacterCreation() {
         //     router.push('/SelectCharacter');
         //     console.log('Error: param passed to component CharacterCreation must be either "New" or an Id to "Update"');
         // }
+
+        if (isNewOrUpdateId !== "New") {
+            setCharacterCreated({
+                id: parseInt(isNewOrUpdateId.toString()), 
+                name: tempCharacterArray[parseInt(isNewOrUpdateId.toString())].name, 
+                picture: tempCharacterArray[parseInt(isNewOrUpdateId.toString())].picture,  
+                bgColor: tempCharacterArray[parseInt(isNewOrUpdateId.toString())].bgColor, 
+            });
+        }
     }, [isNewOrUpdateId]);
 
     //--------------------------------------------------------------------------
