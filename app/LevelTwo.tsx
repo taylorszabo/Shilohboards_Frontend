@@ -15,7 +15,7 @@ import GameComplete from '../reusableComponents/GameComplete';
 import SoundPressable from '../reusableComponents/SoundPressable';
 
 export default function LevelTwo() {
-    const { game = '[game]' } = useLocalSearchParams(); //for use later
+    const { game = '[game]', playerId = '0' } = useLocalSearchParams(); //for use later
 
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [randomizedGameQuestions] = useState<Letter[] | Number[]>(shuffleArray(game === 'Alphabet' ? alphabetArray : numbersArray));                                      
@@ -88,10 +88,10 @@ export default function LevelTwo() {
         <BackgroundLayout>
             <View style={styles.container}> 
                 {/* =============== Back Button =============== */}
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}`}/>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
 
                 {/* =============== Player Card =============== */}
-                <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.25}/>
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
 
                 {/* =============== Game/Level Title =============== */}
                 <Text style={styles.headerText}>{game} - Level 2 </Text>

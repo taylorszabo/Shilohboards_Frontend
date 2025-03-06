@@ -1,41 +1,46 @@
 import * as React from 'react';
-import { Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { Text, Image, Pressable, StyleSheet, Dimensions, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
+import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
+import { useEffect, useCallback, useState } from 'react';
+import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "../CharacterOptions";
 
 const screenWidth = Dimensions.get('window').width; //get device width
 
-type ImageKey = 'hotdog' | 'flower' | 'tree' | 'whale' | 'moon' | 'penguin';
-
-const images: Record<ImageKey, any> = {
-    hotdog: require('../assets/Alphabet/Images/Hotdog.png'),
-    flower: require('../assets/Flower.png'),
-    tree: require('../assets/Tree.png'),
-    whale: require('../assets/Whale.png'),
-    moon: require('../assets/Moon.png'),
-    penguin: require('../assets/Penguin.png')
-  };
-
 type Props = {
-    bgColor: string;
-    image: ImageKey;
-    name: string;
     customWidth: number;
-    //optional
+    id?: number;
+    bgColor?: string;
+    image?: any;
+    name?: string;
     disabled?: boolean;
     onPressRoute?: string;
-    id?: string;
+    customCardStyling?: ViewStyle;
 };
 
 // ============================================================================
 export default function CharacterCard(props: Props) {
-    const { bgColor, image, name, customWidth, disabled = true, onPressRoute = ''} = props;
+    const { id, bgColor, image, name = '', customWidth, disabled = true, onPressRoute = '', customCardStyling} = props;
     const router = useRouter();
+    const [containerWidth, setContainerWidth] = useState(1);    
 
+    //-----------------------------------------------------------------------------------------
+    const onLayout = useCallback((event: { nativeEvent: { layout: { width: any; }; }; }) => {
+      const { width } = event.nativeEvent.layout;
+      setContainerWidth(width); //set parent container width
+    }, []);
+
+    const fontSize = containerWidth * 0.1; //% of parent container width
+
+    //-----------------------------------------------------------------------------------------
     return (
-        <Pressable disabled={disabled} style={[styles.card, { backgroundColor: bgColor, width: screenWidth * customWidth, height: screenWidth * customWidth }]} 
-        onPress={() => router.push(onPressRoute)}>
-            <Image source={images[image]} style={styles.image} />
-            <Text style={styles.text}>{name}</Text>
+        <Pressable disabled={disabled} 
+                   onLayout={onLayout} 
+                   style={[styles.card, { backgroundColor: id !== undefined ? tempCharacterArray[id].bgColor : bgColor, width: screenWidth * customWidth, height: screenWidth * customWidth }, customCardStyling]} 
+                   onPress={() => router.push(onPressRoute)}
+        >
+            <Image source={id !== undefined ? characterOptions.find(option => option.id === tempCharacterArray[id].picture)?.picture : image} style={styles.image} />
+            <Text style={[styles.text, { fontSize: fontSize }]}>{id !== undefined ? formatNameWithCapitals(tempCharacterArray[id].name) : formatNameWithCapitals(name)}</Text>
         </Pressable>
     );
 }
@@ -47,27 +52,18 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#d3d3d3',
-        //iOS shadow
-        shadowColor: 'rgba(0, 0, 0, 0.25)', 
-        shadowOffset: {
-            width: 1,
-            height: 4
-        },
-        shadowRadius: 4,
-        shadowOpacity: 0.2,
-        //android shadow
-        elevation: 5, 
+        borderRightWidth: 2,
+        borderBottomWidth: 3,
+        borderColor: '#A9A9A9',
       },
       image: {
         width: '60%',
-        height: '60%',
+        height: undefined,
+        aspectRatio: 1,
         resizeMode: 'contain', //keep aspect ratio
       },
       text: {
-        marginTop: 10,
-        fontSize: 14,
+        marginTop: '5%',
         textAlign: 'center',
         color: '#3E1911',
         fontWeight: 'bold'
