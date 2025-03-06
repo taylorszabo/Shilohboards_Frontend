@@ -157,11 +157,7 @@ export default function CharacterCreation() {
                     }
 
                     {/* ---------------------------- bottom buttons ------------------------ */}
-                    <KeyboardAvoidingView
-                        behavior={Platform.OS === "ios" ? "padding" : "height"}
-                        enabled={false}
-                        style={styles.bottomBtns}
-                    >
+                    <View style={styles.bottomBtns}>
                         {processStep === 1 ? 
                             <CustomButton text='Cancel' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/SelectCharacter`}/>
                             :
@@ -174,22 +170,7 @@ export default function CharacterCreation() {
                             :
                             <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => verifyInformationEntered()}/>
                         }
-                    </KeyboardAvoidingView>
-
-                    {/* <View style={styles.bottomBtns}>
-                        {processStep === 1 ? 
-                            <CustomButton text='Cancel' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/SelectCharacter`}/>
-                            :
-                            <CustomButton text='Back' image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setProcessStep((prev) => prev - 1)}/>
-                        }
-
-                        {processStep === numberOfSteps ?
-                            <CustomButton text='Finish' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} 
-                                          functionToExecute={() => saveCharacter(characterCreated, isNewOrUpdateId === "New")}/>
-                            :
-                            <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => verifyInformationEntered()}/>
-                        }
-                    </View> */}
+                    </View>
                 
             </View>
         </BackgroundLayout>
