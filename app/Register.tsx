@@ -14,10 +14,45 @@ import { useRouter } from 'expo-router';
 const Register = () => { 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const router = useRouter();
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
+        console.log("Register button pressed");
 
+        // Check if fields are empty or missing
+        if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+            console.log("Empty fields detected");
+            Alert.alert("Error", "Please fill in all fields.");
+            return;
+        }
+
+    
+
+        try {
+            const response = await fetch("/register", { //add in API
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                console.log("Registration Successful!");
+                Alert.alert("Success", "Account created successfully!", [
+                    { text: "OK", onPress: () => router.push('/Login') }
+                ]);
+            } else {
+                console.log("Registration Failed:", data.message);
+                Alert.alert("Error", data.message || "Registration failed. Try again.");
+            }
+        } catch (error) {
+            console.error("Network error:", error);
+            Alert.alert("Error", "Something went wrong. Please check your connection.");
+        }
     };
 
     return (
@@ -38,6 +73,8 @@ const Register = () => {
                     placeholder="Email" 
                     value={email} 
                     onChangeText={setEmail} 
+                    keyboardType="email-address"
+                    autoCapitalize="none"
                 />
                 
                 <TextInput 
@@ -46,6 +83,14 @@ const Register = () => {
                     secureTextEntry 
                     value={password} 
                     onChangeText={setPassword} 
+                />
+
+                <TextInput 
+                    style={styles.input} 
+                    placeholder="Confirm Password" 
+                    secureTextEntry 
+                    value={confirmPassword} 
+                    onChangeText={setConfirmPassword} 
                 />
                 
                 <TouchableOpacity style={styles.button} onPress={handleRegister}>
@@ -84,15 +129,6 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: "#3E1911",
         marginBottom: 40,
-        
-    },
-    label: {
-        width: "90%",
-        fontSize: 20,
-        fontWeight: "400",
-        color: "#3E1911",
-        textAlign: "left",
-        marginTop: 10,
     },
     input: {
         width: 300,
