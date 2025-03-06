@@ -35,15 +35,19 @@ export default function LevelTwo() {
     const params = useLocalSearchParams();
     const game = Array.isArray(params.game) ? params.game[0] : params.game || "Alphabet";
 
+    // ✅ Generate a unique gameId
+    const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
+
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
-    const [options, setOptions] = useState<GameOption[]>([]);
     const [answerSelected, setAnswerSelected] = useState<string | null>(null);
     const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [gameComplete, setGameComplete] = useState<boolean>(false);
+
 
     const getLocalImage = (gameType: string, key: string | number): number => {
         if (gameType === "Alphabet" && typeof key === "string" && alphabetImages[key]) {
@@ -128,13 +132,6 @@ export default function LevelTwo() {
         };
     }, [game]);
 
-    // ✅ Load options whenever question changes
-    useEffect(() => {
-        if (gameQuestions.length > 0 && currentQuestion < gameQuestions.length) {
-            setOptions(gameQuestions[currentQuestion].options);
-        }
-    }, [currentQuestion, gameQuestions]);
-
     // ✅ Handle answer selection and submission
     function markAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
@@ -158,12 +155,21 @@ export default function LevelTwo() {
         } else {
             playAudio(require("../assets/Sounds/incorrectSound.mp3"));
         }
+    }
 
-        axios.post(`${API_BASE_URL}/${game.toLowerCase()}/score`, {
-            childId: "mocked_child_id",
-            level: 2,
-            scoreChange: isCorrect ? 1 : 0,
-        }).catch(error => console.error("Failed to update score:", error));
+    async function endGame() {
+        setGameComplete(true);
+
+        try {
+            await axios.post(`${API_BASE_URL}/${game.toLowerCase()}/score`, {
+                gameId,
+                childId: "mocked_child_id",
+                level: 2,
+                score: correctAnswers,
+            });
+        } catch (error) {
+            console.error("Failed to send final score:", error);
+        }
     }
 
     function moveToNextQuestion() {
@@ -171,6 +177,8 @@ export default function LevelTwo() {
             setCurrentQuestion(prev => prev + 1);
             setAnswerDisplayed(false);
             setAnswerSelected(null);
+        } else {
+            endGame();
         }
     }
 
@@ -188,6 +196,10 @@ export default function LevelTwo() {
         return <Text style={{ color: "red" }}>{error}</Text>;
     }
 
+    if (gameComplete) {
+        return <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />;
+    }
+
     return (
         <BackgroundLayout>
             <View style={styles.container}>
@@ -199,40 +211,38 @@ export default function LevelTwo() {
 
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                {currentQuestion !== gameQuestions.length ? (
-                    <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
-                        <Text style={styles.headerText}>
-                            {answerDisplayed
-                                ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
-                                    ? "Great job! Your answer is correct."
-                                    : "Good try! Unfortunately, that is incorrect."
-                                : "Choose the correct answer:"}
-                        </Text>
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
+                    <Text style={styles.headerText}>
+                        {answerDisplayed
+                            ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
+                                ? "Great job! Your answer is correct."
+                                : "Good try! Unfortunately, that is incorrect."
+                            : "Choose the correct answer:"}
+                    </Text>
 
-                        <View style={{ flexDirection: "row" }}>
-                            <View style={styles.leftSideContainer}>
-                                <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
-                            </View>
-
-                            <View style={styles.rightSideContainer}>
-                                {gameQuestions[currentQuestion].options.map((option, index) => (
-                                    <OptionCard
-                                        key={index}
-                                        customWidth={0.38}
-                                        height={140}
-                                        image={option.image}
-                                        lowerText={game === "Alphabet" ? option.object : option.number?.toString()}
-                                        functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
-                                        disabled={answerDisplayed}
-                                        selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
-                                    />
-                                ))}
-                            </View>
+                    <View style={{ flexDirection: "row" }}>
+                        <View style={styles.leftSideContainer}>
+                            <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
                         </View>
 
-                        {answerDisplayed ? <CustomButton text="Next" functionToExecute={moveToNextQuestion} /> : answerSelected && <CustomButton text="Submit" functionToExecute={submitAnswer} />}
+                        <View style={styles.rightSideContainer}>
+                            {gameQuestions[currentQuestion].options.map((option, index) => (
+                                <OptionCard
+                                    key={index}
+                                    customWidth={0.38}
+                                    height={140}
+                                    image={option.image}
+                                    lowerText={game === "Alphabet" ? option.object : option.number?.toString()}
+                                    functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
+                                    disabled={answerDisplayed}
+                                    selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
+                                />
+                            ))}
+                        </View>
                     </View>
-                ) : <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />}
+
+                    {answerDisplayed ? <CustomButton text="Next" functionToExecute={moveToNextQuestion} /> : answerSelected && <CustomButton text="Submit" functionToExecute={submitAnswer} />}
+                </View>
             </View>
         </BackgroundLayout>
     );
@@ -247,14 +257,14 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   progressBarImg: {
-    width: '80%', 
+    width: '80%',
     height: 25
   },
   leftSideContainer: {
-    width: '40%', 
-    maxHeight: '100%', 
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    width: '40%',
+    maxHeight: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingRight: 25
   },
   rightSideContainer: {
@@ -272,22 +282,22 @@ const styles = StyleSheet.create({
   alphaNumLeftImage: {
     width: '100%',
     height: 100,
-    resizeMode: 'contain' 
+    resizeMode: 'contain'
   },
   alphaNumLeftInstructionText: {
-    textAlign: 'center', 
-    fontWeight: 'bold', 
-    fontSize: 18, 
-    paddingVertical: 10, 
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    paddingVertical: 10,
     color: '#3E1911'
   },
   submitBtnContainer: {
-    alignSelf: 'flex-end', 
-    marginTop: 'auto', 
+    alignSelf: 'flex-end',
+    marginTop: 'auto',
   },
   backBtnContainer: {
-    position: 'absolute', 
-    top: 0, 
+    position: 'absolute',
+    top: 0,
     left: 0,
     paddingVertical: 20
   }
