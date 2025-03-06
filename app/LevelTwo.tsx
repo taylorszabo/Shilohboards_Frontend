@@ -35,7 +35,6 @@ export default function LevelTwo() {
     const params = useLocalSearchParams();
     const game = Array.isArray(params.game) ? params.game[0] : params.game || "Alphabet";
 
-    // ✅ Generate a unique gameId
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
@@ -132,7 +131,6 @@ export default function LevelTwo() {
         };
     }, [game]);
 
-    // ✅ Handle answer selection and submission
     function markAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
             setAnswerSelected(answerSubmitted);
