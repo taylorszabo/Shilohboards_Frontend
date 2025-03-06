@@ -3,7 +3,7 @@ import { Text, Image, Pressable, StyleSheet, Dimensions, ViewStyle } from 'react
 import { useRouter } from 'expo-router';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import { useEffect, useCallback, useState } from 'react';
-import { tempCharacterArray, characterOptions } from "../CharacterOptions";
+import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "../CharacterOptions";
 
 const screenWidth = Dimensions.get('window').width; //get device width
 
@@ -20,7 +20,7 @@ type Props = {
 
 // ============================================================================
 export default function CharacterCard(props: Props) {
-    const { id, bgColor, image, name, customWidth, disabled = true, onPressRoute = '', customCardStyling} = props;
+    const { id, bgColor, image, name = '', customWidth, disabled = true, onPressRoute = '', customCardStyling} = props;
     const router = useRouter();
     const [containerWidth, setContainerWidth] = useState(1);
 
@@ -50,7 +50,7 @@ export default function CharacterCard(props: Props) {
                    onPress={() => router.push(onPressRoute)}
         >
             <Image source={id !== undefined ? characterOptions.find(option => option.id === tempCharacterArray[id].picture)?.picture : image} style={styles.image} />
-            <Text style={[styles.text, { fontSize: fontSize }]}>{id !== undefined ? tempCharacterArray[id].name : name}</Text>
+            <Text style={[styles.text, { fontSize: fontSize }]}>{id !== undefined ? formatNameWithCapitals(tempCharacterArray[id].name) : formatNameWithCapitals(name)}</Text>
         </Pressable>
     );
 }

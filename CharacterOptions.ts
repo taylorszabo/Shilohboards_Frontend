@@ -41,3 +41,7 @@ export var tempCharacterArray: CharacterBuild[] = [
         bgColor: bgColorOptions[4],
     },
 ];
+
+export const formatNameWithCapitals = (str: string) => 
+    str.toLowerCase().replace(/\b\w|(?<=[-'])\w/g, char => char.toUpperCase());
+    

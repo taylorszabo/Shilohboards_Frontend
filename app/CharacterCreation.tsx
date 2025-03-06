@@ -141,6 +141,7 @@ export default function CharacterCreation() {
                                 name={characterCreated.name} 
                                 image={characterOptions.find(option => option.id === characterCreated.picture)?.picture} 
                                 bgColor={characterCreated.bgColor} 
+                                //id={characterCreated.id}
                                 customWidth={0.8}
                             />
                         </View>
