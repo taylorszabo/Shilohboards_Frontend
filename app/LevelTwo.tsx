@@ -11,7 +11,6 @@ import { Audio } from 'expo-av';
 import GameComplete from '../reusableComponents/GameComplete';
 import axios from "axios";
 import {alphabetImages, alphabetLetters, numberDigits, numberImages} from "../assets/imageMapping";
-import {shuffleArray} from "../GameFunctions";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
