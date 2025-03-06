@@ -57,29 +57,6 @@ export const alphabetLetters: Record<string, number> = {
 };
 
 export const numberImages: Record<string, number> = {
-    1: require("../assets/Numbers/Images/1-Car.png"),
-    2: require("../assets/Numbers/Images/2-Shoes.png"),
-    3: require("../assets/Numbers/Images/3-Guitars.png"),
-    4: require("../assets/Numbers/Images/4-Icecreams.png"),
-    5: require("../assets/Numbers/Images/5-Stars.png"),
-    6: require("../assets/Numbers/Images/6-Eggs.png"),
-    7: require("../assets/Numbers/Images/7-Bananas.png"),
-    8: require("../assets/Numbers/Images/8-Crayons.png"),
-    9: require("../assets/Numbers/Images/9-Spoons.png"),
-    10: require("../assets/Numbers/Images/10-Apples.png"),
-    11: require("../assets/Numbers/Images/11-Jellyfish.png"),
-    12: require("../assets/Numbers/Images/12-Hats.png"),
-    13: require("../assets/Numbers/Images/13-Balloons.png"),
-    14: require("../assets/Numbers/Images/14-Socks.png"),
-    15: require("../assets/Numbers/Images/15-Trees.png"),
-    16: require("../assets/Numbers/Images/16-Penguins.png"),
-    17: require("../assets/Numbers/Images/17-Shells.png"),
-    18: require("../assets/Numbers/Images/18-Sweets.png"),
-    19: require("../assets/Numbers/Images/19-Books.png"),
-    20: require("../assets/Numbers/Images/20-Cupcakes.png"),
-};
-
-export const numberDigits: Record<string, number> = {
     1: require("../assets/Numbers/Digits/1.png"),
     2: require("../assets/Numbers/Digits/2.png"),
     3: require("../assets/Numbers/Digits/3.png"),
@@ -100,5 +77,28 @@ export const numberDigits: Record<string, number> = {
     18: require("../assets/Numbers/Digits/18.png"),
     19: require("../assets/Numbers/Digits/19.png"),
     20: require("../assets/Numbers/Digits/20.png"),
+};
+
+export const numberDigits: Record<string, number> = {
+    1: require("../assets/Numbers/Images/1-Car.png"),
+    2: require("../assets/Numbers/Images/2-Shoes.png"),
+    3: require("../assets/Numbers/Images/3-Guitars.png"),
+    4: require("../assets/Numbers/Images/4-Icecreams.png"),
+    5: require("../assets/Numbers/Images/5-Stars.png"),
+    6: require("../assets/Numbers/Images/6-Eggs.png"),
+    7: require("../assets/Numbers/Images/7-Bananas.png"),
+    8: require("../assets/Numbers/Images/8-Crayons.png"),
+    9: require("../assets/Numbers/Images/9-Spoons.png"),
+    10: require("../assets/Numbers/Images/10-Apples.png"),
+    11: require("../assets/Numbers/Images/11-Jellyfish.png"),
+    12: require("../assets/Numbers/Images/12-Hats.png"),
+    13: require("../assets/Numbers/Images/13-Balloons.png"),
+    14: require("../assets/Numbers/Images/14-Socks.png"),
+    15: require("../assets/Numbers/Images/15-Trees.png"),
+    16: require("../assets/Numbers/Images/16-Penguins.png"),
+    17: require("../assets/Numbers/Images/17-Shells.png"),
+    18: require("../assets/Numbers/Images/18-Sweets.png"),
+    19: require("../assets/Numbers/Images/19-Books.png"),
+    20: require("../assets/Numbers/Images/20-Cupcakes.png"),
 };
 
