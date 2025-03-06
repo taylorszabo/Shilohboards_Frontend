@@ -9,60 +9,79 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import CharacterCard from "../reusableComponents/CharacterCard";
+
 import { router } from "expo-router";
+import LevelOneLetters from "./LevelOneLetters";
+
 
 export const LevelOne = () => {
     const [doorOpened, setDoorOpened] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
-    const [progress, setProgress] = useState(0); // Tracks progress
+        const [progress, setProgress] = useState(0); // Tracks progress
 
     // Array of images for the closed door
     const doorImages = [
-        require("../assets/Numbers/Digits/1.png"),
-        require("../assets/Numbers/Digits/2.png"),
-        require("../assets/Numbers/Digits/3.png"),
-        require("../assets/Numbers/Digits/4.png"),
-        require("../assets/Numbers/Digits/5.png"),
-        require("../assets/Numbers/Digits/6.png"),
-        require("../assets/Numbers/Digits/7.png"),
-        require("../assets/Numbers/Digits/8.png"),
-        require("../assets/Numbers/Digits/9.png"),
-        require("../assets/Numbers/Digits/10.png"),
-        require("../assets/Numbers/Digits/11.png"),
-        require("../assets/Numbers/Digits/12.png"),
-        require("../assets/Numbers/Digits/13.png"),
-        require("../assets/Numbers/Digits/14.png"),
-        require("../assets/Numbers/Digits/15.png"),
-        require("../assets/Numbers/Digits/16.png"),
-        require("../assets/Numbers/Digits/17.png"),
-        require("../assets/Numbers/Digits/18.png"),
-        require("../assets/Numbers/Digits/19.png"),
-        require("../assets/Numbers/Digits/20.png"),
+        require("../assets/Alphabet/Letters/A.png"),
+        require("../assets/Alphabet/Letters/B.png"),
+        require("../assets/Alphabet/Letters/C.png"),
+        require("../assets/Alphabet/Letters/D.png"),
+        require("../assets/Alphabet/Letters/E.png"), 
+        require("../assets/Alphabet/Letters/F.png"),
+        require("../assets/Alphabet/Letters/G.png"),
+        require("../assets/Alphabet/Letters/H.png"),
+        require("../assets/Alphabet/Letters/I.png"),
+        require("../assets/Alphabet/Letters/J.png"),
+        require("../assets/Alphabet/Letters/K.png"),
+        require("../assets/Alphabet/Letters/L.png"),
+        require("../assets/Alphabet/Letters/M.png"),
+        require("../assets/Alphabet/Letters/N.png"),
+        require("../assets/Alphabet/Letters/O.png"),
+        require("../assets/Alphabet/Letters/P.png"),
+        require("../assets/Alphabet/Letters/Q.png"),
+        require("../assets/Alphabet/Letters/R.png"),
+        require("../assets/Alphabet/Letters/S.png"),
+        require("../assets/Alphabet/Letters/T.png"),
+        require("../assets/Alphabet/Letters/U.png"),
+        require("../assets/Alphabet/Letters/V.png"),
+        require("../assets/Alphabet/Letters/W.png"),
+        require("../assets/Alphabet/Letters/X.png"),
+        require("../assets/Alphabet/Letters/Y.png"),
+        require("../assets/Alphabet/Letters/Z.png"),
+
+        
     ];
 
     // Array of images for the opened door
     const doorOpenedImages = [
-        require("../assets/Numbers/Images/1-Car.png"),
-        require("../assets/Numbers/Images/2-Shoes.png"),
-        require("../assets/Numbers/Images/3-Guitars.png"),
-        require("../assets/Numbers/Images/4-Icecreams.png"),
-        require("../assets/Numbers/Images/5-Stars.png"),
-        require("../assets/Numbers/Images/6-Eggs.png"),
-        require("../assets/Numbers/Images/7-Bananas.png"),
-        require("../assets/Numbers/Images/8-Crayons.png"),
-        require("../assets/Numbers/Images/9-Spoons.png"),
-        require("../assets/Numbers/Images/10-Apples.png"),
-        require("../assets/Numbers/Images/11-Jellyfish.png"),
-        require("../assets/Numbers/Images/12-Hats.png"),
-        require("../assets/Numbers/Images/13-Balloons.png"),
-        require("../assets/Numbers/Images/14-Socks.png"),
-        require("../assets/Numbers/Images/15-Trees.png"),
-        require("../assets/Numbers/Images/16-Penguins.png"),
-        require("../assets/Numbers/Images/17-Shells.png"),
-        require("../assets/Numbers/Images/18-Sweets.png"),
-        require("../assets/Numbers/Images/19-Books.png"),
-        require("../assets/Numbers/Images/20-Cupcakes.png"),
+        require("../assets/Alphabet/Images/Apple.png"),
+        require("../assets/Alphabet/Images/Balloons.png"),
+        require("../assets/Alphabet/Images/Car.png"),
+        require("../assets/Alphabet/Images/Drum.png"),
+        require("../assets/Alphabet/Images/Egg.png"),
+        require("../assets/Alphabet/Images/Flower.png"),
+        require("../assets/Alphabet/Images/Guitar.png"),
+        require("../assets/Alphabet/Images/Hotdog.png"),
+        require("../assets/Alphabet/Images/Igloo.png"),
+        require("../assets/Alphabet/Images/Jam.png"),
+        require("../assets/Alphabet/Images/Kite.png"),
+        require("../assets/Alphabet/Images/Leaf.png"),
+        require("../assets/Alphabet/Images/Moon.png"),
+        require("../assets/Alphabet/Images/Nest.png"),
+        require("../assets/Alphabet/Images/Orange.png"),
+        require("../assets/Alphabet/Images/Penguin.png"),
+        require("../assets/Alphabet/Images/Queen.png"),
+        require("../assets/Alphabet/Images/Rainbow.png"),
+        require("../assets/Alphabet/Images/Sun.png"),
+        require("../assets/Alphabet/Images/Tree.png"),
+        require("../assets/Alphabet/Images/Umbrella.png"),
+        require("../assets/Alphabet/Images/Violin.png"),
+        require("../assets/Alphabet/Images/Whale.png"),
+        require("../assets/Alphabet/Images/Xray.png"),
+        require("../assets/Alphabet/Images/Yarn.png"),
+        require("../assets/Alphabet/Images/Zip.png")
+
+
     ];
 
     // Array of sounds corresponding to the numbers
@@ -97,6 +116,7 @@ export const LevelOne = () => {
             const nextIndex = (prevIndex + 1) % totalQuestions;
             setProgress(((nextIndex + 1) / totalQuestions) * 100); // Update progress dynamically
             return nextIndex;
+            
         });
     };
 
@@ -130,12 +150,12 @@ export const LevelOne = () => {
             <View style={styles.container}>
                 <CharacterCard bgColor="#C0E3B9" image="hotdog" name="Shiloh" customWidth={0.25}/>
 
-                <Text style={styles.title}>Numbers - Level 1</Text>
+                <Text style={styles.title}>Letters - Level 1</Text>
 
-               {/* Progress Bar - Updated to Move on "Next" */}
-               <View style={styles.progressBarContainer}>
-                    <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-                </View>
+              {/* Progress Bar - Updated to Move on "Next" */}
+                             <View style={styles.progressBarContainer}>
+                                  <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
+                              </View>
 
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
@@ -143,7 +163,6 @@ export const LevelOne = () => {
                         <Image source={require("../assets/ear.png")} style={styles.ear} />
                     </TouchableOpacity>
                 </View>
-                
 
                 {doorOpened ? (
                     <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
@@ -271,7 +290,7 @@ const styles = StyleSheet.create({
         left: 350, 
         top: 50,
         borderRadius: 50, 
-        zIndex: -1,  
+        zIndex: -2,  
     },
     backButton: {
         position: "absolute",
