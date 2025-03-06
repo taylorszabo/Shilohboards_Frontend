@@ -32,10 +32,6 @@ export default function MainMenu() {
     ];
 
     //--------------------------------------------------------------------------
-    useEffect(() => {
-        console.log(tempCharacterArray);
-    }, []);
-
     return (
       <BackgroundLayout>
         {hamburgerMenuOpen ?

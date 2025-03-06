@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, TextInput, View, useWindowDimensions } from 'react-native';
 import { RFPercentage, RFValue } from 'react-native-responsive-fontsize';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -23,7 +23,7 @@ export default function CharacterCreation() {
     //--------------------------------------------------------------------------
     //Error check
     useEffect(() => {
-        console.log(isNewOrUpdateId);
+        //console.log(isNewOrUpdateId);
         // if (isNewOrUpdate !== "New" && isNewOrUpdate !== "Update") { //2nd part -- change to: check array of current user Id's stored to see if it's located/exists
         //     router.push('/SelectCharacter');
         //     console.log('Error: param passed to component CharacterCreation must be either "New" or an Id to "Update"');
@@ -41,9 +41,6 @@ export default function CharacterCreation() {
 
     //--------------------------------------------------------------------------
     function saveCharacter(characterCreated: CharacterBuild, isNew: boolean) {
-        console.log(characterCreated);
-        console.log(isNew);
-
         if (isNew) {
             //save new record with characterCreated info
             tempCharacterArray.push(characterCreated);

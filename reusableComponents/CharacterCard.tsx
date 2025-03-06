@@ -22,17 +22,7 @@ type Props = {
 export default function CharacterCard(props: Props) {
     const { id, bgColor, image, name = '', customWidth, disabled = true, onPressRoute = '', customCardStyling} = props;
     const router = useRouter();
-    const [containerWidth, setContainerWidth] = useState(1);
-
-    useEffect(() => {
-      if (id) {
-        console.log('----------------------');
-        console.log( tempCharacterArray[id].bgColor);
-        console.log( characterOptions.find(option => option.id === tempCharacterArray[id].picture)?.picture);
-        console.log( tempCharacterArray[id].name);
-      }
-    }, []);
-    
+    const [containerWidth, setContainerWidth] = useState(1);    
 
     //-----------------------------------------------------------------------------------------
     const onLayout = useCallback((event: { nativeEvent: { layout: { width: any; }; }; }) => {
