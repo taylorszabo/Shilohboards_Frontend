@@ -9,7 +9,7 @@ import CustomButton from '../reusableComponents/CustomButton';
 export default function LevelChoice() {
     const { game = '[game]', playerId = '0' } = useLocalSearchParams();
 
-   const levelOneRoute = game === 'Alphabet' ? '/LevelOneLetters' : '/LevelOne';
+    const levelOneRoute = game === 'Alphabet' ? `/LevelOneLetters?game=${game}&playerId=${playerId}` : `/LevelOne?game=${game}&playerId=${playerId}`;
 
 
     return (

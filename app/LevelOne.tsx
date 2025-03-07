@@ -9,9 +9,13 @@ import {
 } from "react-native";
 import { Audio } from "expo-av";
 import CharacterCard from "../reusableComponents/CharacterCard";
-import { router } from "expo-router";
+import BackgroundLayout from "../reusableComponents/BackgroundLayout";
+import { useLocalSearchParams } from 'expo-router';
+import CustomButton from "../reusableComponents/CustomButton";
+import ProgressBar from "../reusableComponents/ProgressBar";
 
 export const LevelOne = () => {
+    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
     const [doorOpened, setDoorOpened] = useState(false);
     const [imageIndex, setImageIndex] = useState(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
@@ -118,24 +122,15 @@ export const LevelOne = () => {
     }, [sound]);
 
     return (
-        <ImageBackground 
-            source={require("../assets/background.png")}
-            style={styles.background}
-            resizeMode="cover" 
-        >
-            <TouchableOpacity style={styles.backButton} onPress={() => router.push('/LevelChoice')}>
-                <Image source={require("../assets/back.png")} style={styles.backIcon} />
-            </TouchableOpacity>
-
+        <BackgroundLayout>
             <View style={styles.container}>
-                <CharacterCard bgColor="#C0E3B9" image="hotdog" name="Shiloh" customWidth={0.25}/>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
 
                 <Text style={styles.title}>Numbers - Level 1</Text>
 
                {/* Progress Bar - Updated to Move on "Next" */}
-               <View style={styles.progressBarContainer}>
-                    <View style={[styles.progressBarFill, { width: `${progress}%` }]} />
-                </View>
+                <ProgressBar fillPercent={progress}/>
 
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
@@ -176,7 +171,7 @@ export const LevelOne = () => {
                     <Text style={styles.buttonText}>Next →</Text>
                 </TouchableOpacity>
             </View>
-        </ImageBackground>
+        </BackgroundLayout>
     );
 };
 
@@ -194,28 +189,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "space-between",
         alignItems: "center",
-        paddingVertical: 50,
         width: "100%",
-    },
-    progressBarContainer: {
-        width: 351,
-        height: 18,
-        backgroundColor: "#E3D1B9", 
-        borderRadius: 50,
-        borderWidth: 1,
-        borderColor: "#3E1911",
-        overflow: "hidden", 
-    },
-    progressBar: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: "#E3D1B9",
-    },
-    progressBarFill: {
-        height: "100%",
-        backgroundColor: "#6B3E26", 
-        borderRadius: 50,
-        width: "0%", // Updated dynamically
     },
     voiceoverContainer: {
         flexDirection: "row",  
@@ -247,6 +221,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 5, 
         backgroundColor: "#FAEDDC",
+        zIndex: 1, // Ensures it stays above the flap
     },
     numberImage: {
         width: "90%", 
@@ -257,11 +232,13 @@ const styles = StyleSheet.create({
         position: "relative",
         alignItems: "center",
         justifyContent: "center",
+        zIndex: 2, // Ensures this container is above background elements
     },
     cubeBackContainer: {
         position: "absolute",
         top: 0,
         right: 200,
+        zIndex: 0, // Moves it behind the main image
     },
     ovalShape: {
         width: 70, 
@@ -271,7 +248,7 @@ const styles = StyleSheet.create({
         left: 350, 
         top: 50,
         borderRadius: 50, 
-        zIndex: -1,  
+        zIndex: -1,  // Ensures it is behind everything
     },
     backButton: {
         position: "absolute",
@@ -310,6 +287,12 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#3E1911",
     },
+    backBtnContainer: {
+      position: 'absolute', 
+      top: 0, 
+      left: 0,
+      paddingVertical: 20
+    }
 });
 
 export default LevelOne;

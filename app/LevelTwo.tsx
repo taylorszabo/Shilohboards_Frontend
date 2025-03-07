@@ -226,6 +226,7 @@ export default function LevelTwo() {
                             <SoundIcon size='9%'/>
                         </View>
 
+
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
@@ -295,6 +296,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 100,
     resizeMode: 'contain'
+
   },
   alphaNumLeftInstructionText: {
     textAlign: 'center',
@@ -306,6 +308,7 @@ const styles = StyleSheet.create({
   submitBtnContainer: {
     alignSelf: 'flex-end',
     marginTop: 'auto',
+
   },
   backBtnContainer: {
     position: 'absolute',

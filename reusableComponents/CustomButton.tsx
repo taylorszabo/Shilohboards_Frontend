@@ -11,10 +11,11 @@ type Props = {
     uniqueButtonStyling?: ViewStyle;
     uniqueTextStyling?: TextStyle; 
     uniqueImageStyling?: ImageStyle; 
+    disabled?: boolean;
 };
 
 export default function CustomButton(props: Props) {
-    const { functionToExecute, onPressRoute, text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling } = props;
+    const { functionToExecute, onPressRoute, text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling, disabled = false } = props;
     const router = useRouter();
 
     //------------------- FUNCTION ------------------
@@ -30,7 +31,7 @@ export default function CustomButton(props: Props) {
 
     //-----------------------------------------------
     return (
-        <Pressable style={[styles.btn, uniqueButtonStyling]} onPress={() => handlePressEvent()}>
+        <Pressable style={[styles.btn, uniqueButtonStyling, disabled && {backgroundColor: '#d3d3d3'}]} onPress={() => handlePressEvent()}>
             {text &&
                 <Text style={[styles.defaultTextStyle, uniqueTextStyling]}>{text}</Text>
             }
