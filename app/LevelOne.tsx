@@ -1,177 +1,119 @@
 import React, { useState, useEffect } from "react";
-import {  
-    View, 
-    Text, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Image, 
-    ImageBackground
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { Audio } from "expo-av";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useLocalSearchParams } from 'expo-router';
 import CustomButton from "../reusableComponents/CustomButton";
 import ProgressBar from "../reusableComponents/ProgressBar";
+import axios from "axios";
+import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../assets/imageMapping";
+import GameComplete from "../reusableComponents/GameComplete";
 
-export const LevelOne = () => {
-    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
-    const [doorOpened, setDoorOpened] = useState(false);
-    const [imageIndex, setImageIndex] = useState(0);
-    const [sound, setSound] = useState<Audio.Sound | null>(null);
-    const [progress, setProgress] = useState(0); // Tracks progress
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
-    // Array of images for the closed door
-    const doorImages = [
-        require("../assets/Numbers/Digits/1.png"),
-        require("../assets/Numbers/Digits/2.png"),
-        require("../assets/Numbers/Digits/3.png"),
-        require("../assets/Numbers/Digits/4.png"),
-        require("../assets/Numbers/Digits/5.png"),
-        require("../assets/Numbers/Digits/6.png"),
-        require("../assets/Numbers/Digits/7.png"),
-        require("../assets/Numbers/Digits/8.png"),
-        require("../assets/Numbers/Digits/9.png"),
-        require("../assets/Numbers/Digits/10.png"),
-        require("../assets/Numbers/Digits/11.png"),
-        require("../assets/Numbers/Digits/12.png"),
-        require("../assets/Numbers/Digits/13.png"),
-        require("../assets/Numbers/Digits/14.png"),
-        require("../assets/Numbers/Digits/15.png"),
-        require("../assets/Numbers/Digits/16.png"),
-        require("../assets/Numbers/Digits/17.png"),
-        require("../assets/Numbers/Digits/18.png"),
-        require("../assets/Numbers/Digits/19.png"),
-        require("../assets/Numbers/Digits/20.png"),
-    ];
+interface GameDataItem {
+    letter?: string;
+    number?: number;
+    object?: string;
+}
 
-    // Array of images for the opened door
-    const doorOpenedImages = [
-        require("../assets/Numbers/Images/1-Car.png"),
-        require("../assets/Numbers/Images/2-Shoes.png"),
-        require("../assets/Numbers/Images/3-Guitars.png"),
-        require("../assets/Numbers/Images/4-Icecreams.png"),
-        require("../assets/Numbers/Images/5-Stars.png"),
-        require("../assets/Numbers/Images/6-Eggs.png"),
-        require("../assets/Numbers/Images/7-Bananas.png"),
-        require("../assets/Numbers/Images/8-Crayons.png"),
-        require("../assets/Numbers/Images/9-Spoons.png"),
-        require("../assets/Numbers/Images/10-Apples.png"),
-        require("../assets/Numbers/Images/11-Jellyfish.png"),
-        require("../assets/Numbers/Images/12-Hats.png"),
-        require("../assets/Numbers/Images/13-Balloons.png"),
-        require("../assets/Numbers/Images/14-Socks.png"),
-        require("../assets/Numbers/Images/15-Trees.png"),
-        require("../assets/Numbers/Images/16-Penguins.png"),
-        require("../assets/Numbers/Images/17-Shells.png"),
-        require("../assets/Numbers/Images/18-Sweets.png"),
-        require("../assets/Numbers/Images/19-Books.png"),
-        require("../assets/Numbers/Images/20-Cupcakes.png"),
-    ];
-
-    // Array of sounds corresponding to the numbers
-    const numberSounds = [
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-        require("../assets/Sounds/correctSound.mp3"),
-    
-    ];
-    const totalQuestions = doorImages.length; // Total for progress calculation
-
-    const handleNext = () => {
-        setDoorOpened(false);
-        setImageIndex((prevIndex) => {
-            const nextIndex = (prevIndex + 1) % totalQuestions;
-            setProgress(((nextIndex + 1) / totalQuestions) * 100); // Update progress dynamically
-            return nextIndex;
-        });
-    };
-
-    async function playAudio() {
-        if (sound) {
-            await sound.unloadAsync();
-        }
-        const { sound: newSound } = await Audio.Sound.createAsync(numberSounds[imageIndex]);
-        setSound(newSound);
-        await newSound.playAsync();
-    }
+export default function LevelOne (){
+    const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [gameData, setGameData] = useState<GameDataItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [doorOpened, setDoorOpened] = useState<boolean>(false);
 
     useEffect(() => {
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/${String(game).toLowerCase()}/level1`);
+                setGameData(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError("Failed to load game data");
+                setLoading(false);
             }
         };
-    }, [sound]);
+        fetchData();
+    }, [game]);
+
+    const getLocalExampleImage = (key: string | number) => {
+        console.log(key)
+        if (game === "Alphabet" && alphabetLetters[key]) {
+            return alphabetLetters[key];
+        }
+        if (game === "Numbers" && numberDigits[key]) {
+            return numberDigits[key];
+        }
+        return require("../assets/defaultImage.png");
+    };
+
+    const getLocalObjectImage = (key: string) => {
+        if (game === "Alphabet" && alphabetImages[key]) {
+            return alphabetImages[key];
+        }
+        if (game === "Numbers" && numberImages[key]) {
+            return numberImages[key];
+        }
+        return require("../assets/defaultImage.png");
+    };
+
+    const handleNext = () => {
+        if (currentIndex < gameData.length - 1) {
+            setDoorOpened(false);
+            setCurrentIndex((prev) => prev + 1);
+        } else {
+            setGameComplete(true);
+        }
+    };
+
+
+    if (loading) return <Text>Loading...</Text>;
+    if (error) return <Text style={{ color: "red" }}>{error}</Text>;
+    if(gameComplete)
+    {
+        <GameComplete level="1" game={game} score="" />;
+    }
+
+
+    const currentItem: GameDataItem | number = gameData[currentIndex];
 
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
-
-                <Text style={styles.title}>Numbers - Level 1</Text>
-
-               {/* Progress Bar - Updated to Move on "Next" */}
-                <ProgressBar fillPercent={progress}/>
+                <CustomButton
+                    image={require("../assets/back.png")}
+                    uniqueButtonStyling={styles.backBtnContainer}
+                    onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}
+                />
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
+                <Text style={styles.title}>{game} - Level 1</Text>
+                <ProgressBar fillPercent={(currentIndex / gameData.length) * 100} />
 
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
-                    <TouchableOpacity onPress={playAudio}>
-                        <Image source={require("../assets/ear.png")} style={styles.ear} />
-                    </TouchableOpacity>
+                    <Image source={require("../assets/ear.png")} style={styles.ear} />
                 </View>
-                
 
                 {doorOpened ? (
-                    <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
-                        <View style={styles.cube}>
-                            <Image 
-                                source={doorOpenedImages[imageIndex]}
-                                style={styles.numberImage} 
-                            />
-                        </View>
-                        <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
-                            <View style={styles.cube}></View>
-                        </View>
+                    <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.cube}>
+                        <Image source={getLocalExampleImage(currentItem?.letter ?? currentItem?.number ?? "")} style={styles.numberImage} />
                     </TouchableOpacity>
                 ) : (
-                    <TouchableOpacity style={styles.cube} onPress={() => setDoorOpened(true)}>
-                        <Image 
-                            source={doorImages[imageIndex]}  
-                            style={styles.numberImage} 
-                        />
+                    <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
+                        <Image source={getLocalObjectImage(currentItem?.object ?? "")} style={styles.numberImage} />
                     </TouchableOpacity>
                 )}
-
-                <View style={styles.voiceoverContainer}>
-                    <Text style={styles.voiceoverText}>Swipe left to open door</Text>
-                    <Image source={require("../assets/swipe.png")} style={styles.ear} />
-                </View>
-
                 <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
                     <Text style={styles.buttonText}>Next →</Text>
                 </TouchableOpacity>
             </View>
         </BackgroundLayout>
+
     );
 };
 
@@ -192,25 +134,25 @@ const styles = StyleSheet.create({
         width: "100%",
     },
     voiceoverContainer: {
-        flexDirection: "row",  
-        alignItems: "center",  
-        justifyContent: "center", 
-        marginTop: 10, 
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
     },
     voiceoverText: {
-        fontSize: 20,  
-        fontWeight: "600", 
+        fontSize: 20,
+        fontWeight: "600",
         color: "#3E1911",
         textAlign: "center",
     },
     ear: {
-        width: 30,  
+        width: 30,
         height: 30,
         resizeMode: "contain",
-        marginLeft: 5,  
+        marginLeft: 5,
     },
     cube: {
-        width: 200, 
+        width: 200,
         height: 250,
         borderRadius: 20,
         justifyContent: "center",
@@ -219,12 +161,12 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 6,
-        elevation: 5, 
+        elevation: 5,
         backgroundColor: "#FAEDDC",
         zIndex: 1, // Ensures it stays above the flap
     },
     numberImage: {
-        width: "90%", 
+        width: "90%",
         height: "90%",
         resizeMode: "contain",
     },
@@ -241,20 +183,20 @@ const styles = StyleSheet.create({
         zIndex: 0, // Moves it behind the main image
     },
     ovalShape: {
-        width: 70, 
-        height: 150, 
-        backgroundColor: "rgba(0, 0, 0, 0.2)", 
+        width: 70,
+        height: 150,
+        backgroundColor: "rgba(0, 0, 0, 0.2)",
         position: "absolute",
-        left: 350, 
+        left: 350,
         top: 50,
-        borderRadius: 50, 
+        borderRadius: 50,
         zIndex: -1,  // Ensures it is behind everything
     },
     backButton: {
         position: "absolute",
-        top: 10,  
-        left: 20, 
-        width: 45, 
+        top: 10,
+        left: 20,
+        width: 45,
         height: 45,
         backgroundColor: "#C3E2E5",
         borderRadius: 10,
@@ -288,11 +230,9 @@ const styles = StyleSheet.create({
         color: "#3E1911",
     },
     backBtnContainer: {
-      position: 'absolute', 
-      top: 0, 
-      left: 0,
-      paddingVertical: 20
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        paddingVertical: 20
     }
 });
-
-export default LevelOne;
