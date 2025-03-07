@@ -32,8 +32,7 @@ export interface GameQuestion {
 }
 
 export default function LevelTwo() {
-    const { game = '[game]', playerId = '0' } = useLocalSearchParams(); //for use later
-    const params = useLocalSearchParams();
+    const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
 
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
@@ -87,7 +86,7 @@ export default function LevelTwo() {
         const fetchQuestions = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get<GameQuestion[]>(`${API_BASE_URL}/${game.toLowerCase()}/level2`);
+                const response = await axios.get<GameQuestion[]>(`${API_BASE_URL}/${String(game).toLowerCase()}/level2`);
                 let questionsArray = response.data;
 
                 if (!questionsArray || questionsArray.length === 0) {
@@ -97,14 +96,14 @@ export default function LevelTwo() {
                 questionsArray = questionsArray.map((questionData) => {
 
                     if (game === "Numbers" && questionData.number) {
-                        questionData.exampleImage = getLocalExampleImage(game, questionData.number);
+                        questionData.exampleImage = getLocalExampleImage(String(game), questionData.number);
                     } else if (game === "Alphabet" && questionData.letter) {
-                        questionData.exampleImage = getLocalExampleImage(game, questionData.letter);
+                        questionData.exampleImage = getLocalExampleImage(String(game), questionData.letter);
                     }
 
                     questionData.options = questionData.options.map((option) => ({
                         ...option,
-                        image: getLocalImage(game, option.image),
+                        image: getLocalImage(String(game), option.image),
                     }));
 
                     return questionData;
@@ -159,7 +158,7 @@ export default function LevelTwo() {
         setGameComplete(true);
 
         try {
-            await axios.post(`${API_BASE_URL}/${game.toLowerCase()}/score`, {
+            await axios.post(`${API_BASE_URL}/${String(game).toLowerCase()}/score`, {
                 gameId,
                 childId: "mocked_child_id",
                 level: 2,

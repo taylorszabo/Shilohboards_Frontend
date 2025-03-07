@@ -1,25 +1,22 @@
 import * as React from 'react';
-import { StyleSheet, Text, View} from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
-import SoundIcon from '../reusableComponents/SoundIcon';
 import { Audio } from 'expo-av';
 import { useState, useEffect, useRef } from 'react';
-import axios from "axios";
-import { alphabetImages, alphabetLetters } from "../assets/imageMapping";
-import SoundPressable from '../reusableComponents/SoundPressable';
+import axios from 'axios';
+import { alphabetImages, alphabetLetters } from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
 import { shuffleArray } from '../GameFunctions';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
 export interface GameOption {
-    object?: string;
-    number?: number;
+    object: string;
     image: number;
     correct: boolean;
 }
@@ -34,10 +31,9 @@ export interface GameQuestion {
 }
 
 export default function LevelThree() {
-    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
+    const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
 
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
-
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [answerSelected, setAnswerSelected] = useState<string | null>(null);
@@ -48,13 +44,12 @@ export default function LevelThree() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
 
-
-    const getLocalImage = (key: number): number => {
-        return alphabetImages[key] || require("../assets/defaultImage.png");
+    const getLocalImage = (key: string): number => {
+        return alphabetImages[key] || require('../assets/defaultImage.png');
     };
 
     const getLocalExampleImage = (key: string): number => {
-        return alphabetLetters[key] || require("../assets/defaultImage.png");
+        return alphabetLetters[key] || require('../assets/defaultImage.png');
     };
 
     useEffect(() => {
@@ -67,12 +62,9 @@ export default function LevelThree() {
 
     const questionsFetched = useRef(false);
 
-    //-----------------------------------------------------------------------
     useEffect(() => {
         if (questionsFetched.current) return;
         questionsFetched.current = true;
-
-        let isMounted = true;
 
         const fetchQuestions = async () => {
             try {
@@ -81,19 +73,18 @@ export default function LevelThree() {
                 let questionsArray = response.data;
 
                 if (!questionsArray || questionsArray.length === 0) {
-                    throw new Error("No questions received from API.");
+                    throw new Error('No questions received from API.');
                 }
 
                 questionsArray = questionsArray.map((questionData) => {
                     return {
                         ...questionData,
-                        exampleImage: getLocalExampleImage(questionData.letter!),
-
+                        exampleImage: getLocalExampleImage(questionData.letter),
                         options: questionData.options.map((option) => ({
                             object: option.object,
-                            image: getLocalImage(option.image),
+                            image: getLocalImage(option.object),
                             correct: option.correct,
-                        })) as GameOption[],
+                        })),
                     };
                 });
 
@@ -101,16 +92,12 @@ export default function LevelThree() {
                 setCurrentQuestion(0);
                 setLoading(false);
             } catch (err) {
-                setError("Failed to load game questions.");
+                setError('Failed to load game questions.');
                 setLoading(false);
             }
         };
 
         fetchQuestions();
-
-        return () => {
-            isMounted = false;
-        };
     }, []);
 
     function markAnswer(answerSubmitted: string) {
@@ -129,9 +116,9 @@ export default function LevelThree() {
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-            playAudio(require("../assets/Sounds/correctSound.mp3"));
+            playAudio(require('../assets/Sounds/correctSound.mp3'));
         } else {
-            playAudio(require("../assets/Sounds/incorrectSound.mp3"));
+            playAudio(require('../assets/Sounds/incorrectSound.mp3'));
         }
     }
 
@@ -139,25 +126,28 @@ export default function LevelThree() {
         setGameComplete(true);
 
         try {
-            await axios.post(`${API_BASE_URL}/${game.toLowerCase()}/score`, {
+            await axios.post(`${API_BASE_URL}/${String(game).toLowerCase()}/score`, {
                 gameId,
-                childId: "mocked_child_id",
+                childId: 'mocked_child_id',
                 level: 3,
                 score: correctAnswers,
             });
+
         } catch (error) {
-            console.error("Failed to send final score:", error);
+            console.error('Failed to send final score:', error);
         }
     }
 
-    //-----------------------------------------------------------------------
     function moveToNextQuestion() {
-        setCurrentQuestion((prevQuestion) => prevQuestion + 1);
-        setAnswerDisplayed(false);
-        setAnswerSelected('');
+        if (currentQuestion < gameQuestions.length - 1) {
+            setCurrentQuestion(prev => prev + 1);
+            setAnswerDisplayed(false);
+            setAnswerSelected(null);
+        } else {
+            endGame();
+        }
     }
 
-    //-----------------------------------------------------------------------
     async function playAudio(soundFile: any) {
         const { sound } = await Audio.Sound.createAsync(soundFile);
         setSound(sound);
@@ -169,7 +159,7 @@ export default function LevelThree() {
     }
 
     if (error) {
-        return <Text style={{ color: "red" }}>{error}</Text>;
+        return <Text style={{ color: 'red' }}>{error}</Text>;
     }
 
     if (gameComplete) {
@@ -178,68 +168,32 @@ export default function LevelThree() {
 
     return (
         <BackgroundLayout>
-            <View style={styles.container}> 
-                {/* =============== Back Button =============== */}
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
+            <View style={styles.container}>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} />
 
-                {/* =============== Player Card =============== */}
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
 
                 <Text style={styles.headerText}>{game} - Level 3</Text>
-
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
-                        <View style={styles.topPortion}>
-                            <SoundIcon size='25%' />
-                            <View style={{ gap: 10 }}>
-                                <SoundPressable soundFile={gameQuestions[currentQuestion].sound}>
-                                    <Text style={styles.soundBtn}>Sound</Text>
-                                </SoundPressable>
-                                <SoundPressable soundFile={`assets/Alphabet/Audio/${gameQuestions[currentQuestion].wordExample}Word.mp3`}>
-                                    <Text style={styles.soundBtn}>Word</Text>
-                                </SoundPressable>
-                            </View>
-                        </View>
-
-                        <Text style={styles.headerText}>
-                            {answerDisplayed
-                                ? answerSelected === gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object
-                                    ? "Great job! Your answer is correct."
-                                    : "Good try! Unfortunately, that is incorrect."
-                                : "Choose the correct letter for the sound or beginning of the word:"}
-                        </Text>
+                    <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
+                        <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                         <View style={styles.answerContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
-                                <OptionCard
-                                    key={index}
-                                    customWidth={0.38}
-                                    height={140}
-                                    image={option.image}
-                                    lowerText={option.object}
-                                    functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : '')}
-                                    disabled={answerDisplayed}
-                                    selected={answerSelected === option.object}
-                                    bgColor={
-                                        answerDisplayed
-                                            ? answerSelected === option.object
-                                                ? option.correct ? "#CFFFC0" : "#F69292"
-                                                : "#FFF8F0"
-                                            : "#FFF8F0"
-                                    }
-                                />
+                                <OptionCard key={index} customWidth={0.38} height={140} image={option.image} lowerText={option.object} functionToExecute={() => markAnswer(option.object)} disabled={answerDisplayed} selected={answerSelected === option.object} />
                             ))}
                         </View>
 
-                        {answerDisplayed ? <CustomButton text="Next" functionToExecute={moveToNextQuestion} /> : answerSelected && <CustomButton text="Submit" functionToExecute={submitAnswer} />}
+                        <CustomButton text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
                     </View>
-                ) : <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />}
+                ) : null}
             </View>
         </BackgroundLayout>
     );
 }
+
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
