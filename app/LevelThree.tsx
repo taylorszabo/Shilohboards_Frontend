@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -34,8 +34,9 @@ export interface GameQuestion {
 }
 
 export default function LevelThree() {
-    const params = useLocalSearchParams();
     const game = "Alphabet";
+
+    const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
@@ -45,6 +46,8 @@ export default function LevelThree() {
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const [gameComplete, setGameComplete] = useState<boolean>(false);
+
 
     const getLocalImage = (key: number): number => {
         return alphabetImages[key] || require("../assets/defaultImage.png");
@@ -109,9 +112,8 @@ export default function LevelThree() {
         };
     }, []);
 
-    function markAnswer(answerSubmitted: string | undefined) {
+    function markAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
-            // @ts-ignore
             setAnswerSelected(answerSubmitted);
         }
     }
@@ -130,12 +132,21 @@ export default function LevelThree() {
         } else {
             playAudio(require("../assets/Sounds/incorrectSound.mp3"));
         }
+    }
 
-        axios.post(`${API_BASE_URL}/alphabet/score`, {
-            childId: "mocked_child_id",
-            level: 3,
-            scoreChange: isCorrect ? 1 : 0,
-        }).catch(error => console.error("Failed to update score:", error));
+    async function endGame() {
+        setGameComplete(true);
+
+        try {
+            await axios.post(`${API_BASE_URL}/${game.toLowerCase()}/score`, {
+                gameId,
+                childId: "mocked_child_id",
+                level: 3,
+                score: correctAnswers,
+            });
+        } catch (error) {
+            console.error("Failed to send final score:", error);
+        }
     }
 
     function moveToNextQuestion() {
@@ -144,7 +155,7 @@ export default function LevelThree() {
             setAnswerDisplayed(false);
             setAnswerSelected(null);
         } else {
-            console.log("Game completed!");
+            endGame();
         }
     }
 
@@ -160,6 +171,10 @@ export default function LevelThree() {
 
     if (error) {
         return <Text style={{ color: "red" }}>{error}</Text>;
+    }
+
+    if (gameComplete) {
+        return <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />;
     }
 
     return (
@@ -203,7 +218,7 @@ export default function LevelThree() {
                                     height={140}
                                     image={option.image}
                                     lowerText={option.object}
-                                    functionToExecute={() => markAnswer(option.object)}
+                                    functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : '')}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === option.object}
                                 />
