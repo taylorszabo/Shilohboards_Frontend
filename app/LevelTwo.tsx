@@ -206,10 +206,13 @@ export default function LevelTwo() {
                 {/* =============== Player Card =============== */}
                 <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
 
+                {/* =============== Game/Level Title =============== */}
                 <Text style={styles.headerText}>{game} - Level 2</Text>
 
+                {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
+                {/* =============== Top Instruction =============== */}
                 <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
                     <Text style={styles.headerText}>
                         {answerDisplayed
@@ -219,14 +222,15 @@ export default function LevelTwo() {
                             : "Choose the correct answer:"}
                     </Text>
 
-                    <View style={{ flexDirection: "row" }}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '8%'}}>
+                        {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
                             <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
                             <SoundIcon size='9%'/>
                         </View>
 
-
+                        {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
@@ -274,7 +278,7 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    width: '40%',
+    flex: 1,
     maxHeight: '100%',
     alignItems: 'center',
     justifyContent: 'center',
@@ -294,9 +298,7 @@ const styles = StyleSheet.create({
   },
   alphaNumLeftImage: {
     width: '100%',
-    height: 100,
     resizeMode: 'contain'
-
   },
   alphaNumLeftInstructionText: {
     textAlign: 'center',
@@ -306,7 +308,6 @@ const styles = StyleSheet.create({
     color: '#3E1911'
   },
   submitBtnContainer: {
-    alignSelf: 'flex-end',
     marginTop: 'auto',
 
   },
