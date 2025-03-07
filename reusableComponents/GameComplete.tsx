@@ -2,10 +2,11 @@ import * as React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import CustomButton from './CustomButton';
 import BackgroundLayout from "./BackgroundLayout";
+import {useLocalSearchParams} from "expo-router";
 
 export default function GameComplete(props: {score: string}) {
     const { score } = props;
-
+    const { playerId = '0' } = useLocalSearchParams();
     return (
         <BackgroundLayout>
             <View style={styles.textContainer}>
@@ -15,7 +16,7 @@ export default function GameComplete(props: {score: string}) {
                 <Image source={require('../assets/GameOverStar.png')}  style={styles.starImg} />
 
                 <View style={styles.submitBtnContainer}>
-                    <CustomButton text='Main Menu' onPressRoute='/MainMenu?playerName=Shiloh'/>
+                    <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`}/>
                 </View>
             </View>
         </BackgroundLayout>

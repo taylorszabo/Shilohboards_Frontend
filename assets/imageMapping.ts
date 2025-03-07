@@ -1,6 +1,6 @@
 export const alphabetImages: Record<string, number> = {
     A: require("../assets/Alphabet/Images/Apple.png"),
-    B: require("../assets/Alphabet/Images/Balloon.png"),
+    B: require("./Alphabet/Images/Balloons.png"),
     C: require("../assets/Alphabet/Images/Car.png"),
     D: require("../assets/Alphabet/Images/Drum.png"),
     E: require("../assets/Alphabet/Images/Egg.png"),
