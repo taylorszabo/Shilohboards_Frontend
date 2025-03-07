@@ -11,6 +11,7 @@ import { Audio } from 'expo-av';
 import GameComplete from '../reusableComponents/GameComplete';
 import axios from "axios";
 import {alphabetImages, alphabetLetters, numberDigits, numberImages} from "../assets/imageMapping";
+import SoundIcon from "../reusableComponents/SoundIcon";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -220,6 +221,8 @@ export default function LevelTwo() {
                     <View style={{ flexDirection: "row" }}>
                         <View style={styles.leftSideContainer}>
                             <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
+                            <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
+                            <SoundIcon size='9%'/>
                         </View>
 
                         <View style={styles.rightSideContainer}>
