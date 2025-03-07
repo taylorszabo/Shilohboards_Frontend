@@ -194,7 +194,7 @@ export default function LevelTwo() {
     }
 
     if (gameComplete) {
-        return <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />;
+        return <GameComplete level="2" game={game} score={`${correctAnswers}/${gameQuestions.length}`} />;
     }
 
     return (

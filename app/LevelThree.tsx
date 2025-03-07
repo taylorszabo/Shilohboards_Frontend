@@ -163,7 +163,7 @@ export default function LevelThree() {
     }
 
     if (gameComplete) {
-        return <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />;
+        return <GameComplete level="3" game={game} score={`${correctAnswers}/${gameQuestions.length}`} />;
     }
 
     return (
