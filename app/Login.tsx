@@ -10,6 +10,7 @@ import {
     Alert  
 } from "react-native";
 import { useRouter } from 'expo-router';
+import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
 const Login = () => { 
     const [email, setEmail] = useState("");
@@ -26,11 +27,7 @@ const Login = () => {
     };
 
     return (
-        <ImageBackground 
-            source={require("../assets/background.png")}
-            style={styles.background}
-            resizeMode="cover"
-        >
+        <BackgroundLayout>
             <View style={styles.container}>
                 <Image 
                     source={require("../assets/logo.png")}
@@ -61,7 +58,7 @@ const Login = () => {
                     <Text style={styles.registerText}>Register New Account</Text>
                 </TouchableOpacity>
             </View>
-        </ImageBackground>
+        </BackgroundLayout>
     );
 };
 

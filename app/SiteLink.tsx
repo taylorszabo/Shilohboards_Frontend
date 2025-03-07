@@ -1,13 +1,10 @@
 import React from "react";
-import { View, Text, Image, ImageBackground, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
+import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
 const SiteLink = () => {
     return (
-        <ImageBackground 
-            source={require("../assets/background.png")}
-            style={styles.background}
-            resizeMode="cover"
-        >
+        <BackgroundLayout>
             <View style={styles.container}>
                 <Image 
                     source={require("../assets/logo.png")}
@@ -18,7 +15,7 @@ const SiteLink = () => {
                     or to purchase a physical board!
                 </Text>
             </View>
-        </ImageBackground>
+        </BackgroundLayout>
     );
 };
 const styles = StyleSheet.create({

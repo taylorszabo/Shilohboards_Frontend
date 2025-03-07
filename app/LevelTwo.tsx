@@ -248,6 +248,7 @@ export default function LevelTwo() {
                                     functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
+                                    boldFirstLetter={game === "Alphabet"}
                                     bgColor={
                                         answerDisplayed
                                             ? game === "Alphabet"

@@ -10,6 +10,7 @@ import {
     Alert  
 } from "react-native";
 import { useRouter } from 'expo-router';
+import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
 const Register = () => { 
     const [email, setEmail] = useState("");
@@ -56,11 +57,7 @@ const Register = () => {
     };
 
     return (
-        <ImageBackground 
-            source={require("../assets/background.png")}
-            style={styles.background}
-            resizeMode="cover"
-        >
+        <BackgroundLayout>
             <View style={styles.container}>
                 <Image 
                     source={require("../assets/logo.png")}
@@ -101,7 +98,7 @@ const Register = () => {
                     <Text style={styles.registerText}>Cancel</Text>
                 </TouchableOpacity>
             </View>
-        </ImageBackground>
+        </BackgroundLayout>
     );
 };
 
