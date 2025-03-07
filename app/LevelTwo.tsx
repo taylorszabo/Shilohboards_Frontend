@@ -32,8 +32,8 @@ export interface GameQuestion {
 }
 
 export default function LevelTwo() {
+    const { game = '[game]', playerId = '0' } = useLocalSearchParams(); //for use later
     const params = useLocalSearchParams();
-    const game = Array.isArray(params.game) ? params.game[0] : params.game || "Alphabet";
 
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
@@ -200,10 +200,12 @@ export default function LevelTwo() {
 
     return (
         <BackgroundLayout>
-            <View style={styles.container}>
-                <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}`} />
+            <View style={styles.container}> 
+                {/* =============== Back Button =============== */}
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
 
-                <CharacterCard bgColor="#C0E3B9" image="hotdog" name="Shiloh" customWidth={0.25} />
+                {/* =============== Player Card =============== */}
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
 
                 <Text style={styles.headerText}>{game} - Level 2</Text>
 

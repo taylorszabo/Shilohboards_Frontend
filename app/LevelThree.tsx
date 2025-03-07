@@ -4,6 +4,7 @@ import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
+import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { Audio } from 'expo-av';
@@ -33,7 +34,7 @@ export interface GameQuestion {
 }
 
 export default function LevelThree() {
-    const game = "Alphabet";
+    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
 
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
@@ -66,6 +67,7 @@ export default function LevelThree() {
 
     const questionsFetched = useRef(false);
 
+    //-----------------------------------------------------------------------
     useEffect(() => {
         if (questionsFetched.current) return;
         questionsFetched.current = true;
@@ -148,16 +150,14 @@ export default function LevelThree() {
         }
     }
 
+    //-----------------------------------------------------------------------
     function moveToNextQuestion() {
-        if (currentQuestion < gameQuestions.length - 1) {
-            setCurrentQuestion(prev => prev + 1);
-            setAnswerDisplayed(false);
-            setAnswerSelected(null);
-        } else {
-            endGame();
-        }
+        setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+        setAnswerDisplayed(false);
+        setAnswerSelected('');
     }
 
+    //-----------------------------------------------------------------------
     async function playAudio(soundFile: any) {
         const { sound } = await Audio.Sound.createAsync(soundFile);
         setSound(sound);
@@ -178,10 +178,12 @@ export default function LevelThree() {
 
     return (
         <BackgroundLayout>
-            <View style={styles.container}>
-                <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}`} />
+            <View style={styles.container}> 
+                {/* =============== Back Button =============== */}
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
 
-                <CharacterCard bgColor="#C0E3B9" image="hotdog" name="Shiloh" customWidth={0.25} />
+                {/* =============== Player Card =============== */}
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
 
                 <Text style={styles.headerText}>{game} - Level 3</Text>
 

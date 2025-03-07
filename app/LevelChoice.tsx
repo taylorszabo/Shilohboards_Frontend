@@ -7,19 +7,22 @@ import { useLocalSearchParams } from 'expo-router';
 import CustomButton from '../reusableComponents/CustomButton';
 
 export default function LevelChoice() {
-    const { game = '[game]' } = useLocalSearchParams();
+    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
+
+   const levelOneRoute = game === 'Alphabet' ? '/LevelOneLetters' : '/LevelOne';
+
 
     return (
       <BackgroundLayout>
         <View style={styles.container}> 
-            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute='/MainMenu?playerName=Shiloh'/>
-            <CharacterCard bgColor='#C0E3B9' image='hotdog' name='Shiloh' customWidth={0.3}/>
+            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?&playerId=${playerId}`}/>
+            <CharacterCard id={parseInt(playerId.toString())} customWidth={0.3}/>
             <Text style={styles.headerText}>Choose a level for the {game} Activity: </Text>
             <View style={styles.cardDiv}>
-                <OptionCard upperText='Level 1' lowerText='(Recommended for ages 1-2)' customWidth={0.8} onPressRoute='/LevelOne'/>
-                <OptionCard upperText='Level 2' lowerText='(Recommended for ages 3-4)' customWidth={0.8} onPressRoute={`/LevelTwo?game=${game}`} />
+                <OptionCard upperText='Level 1' lowerText='(Recommended for ages 1-2)' customWidth={0.8} onPressRoute={levelOneRoute}/>
+                <OptionCard upperText='Level 2' lowerText='(Recommended for ages 3-4)' customWidth={0.8} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} /> 
                 {game === 'Alphabet' &&
-                    <OptionCard upperText='Level 3' lowerText='(Recommended for ages 5-6)' customWidth={0.8} onPressRoute={`/LevelThree?game=${game}`}/>
+                    <OptionCard upperText='Level 3' lowerText='(Recommended for ages 5-6)' customWidth={0.8} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`}/>
                 }
             </View>
         </View>

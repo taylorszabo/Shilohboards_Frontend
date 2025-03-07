@@ -60,7 +60,7 @@ export default function OptionCard(props: Props) {
     //-----------------------------------------------
     return (
         <Pressable disabled={disabled} 
-        style={[styles.card, selected && {borderWidth: 5, borderColor: '#0098A6'}, 
+        style={[styles.card, selected && {borderWidth: 5, borderRightWidth: 5, borderBottomWidth: 5, borderColor: '#0098A6'}, 
             { 
                 backgroundColor: bgColor, 
                 width: screenWidth * customWidth, 
@@ -95,16 +95,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
-
-        shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
-        shadowOffset: {
-            width: 1,
-            height: 4
-        },
-        shadowRadius: 4,
-        shadowOpacity: 0.2,
-
-        elevation: 5, //android shadow
+        borderRightWidth: 2,
+        borderBottomWidth: 3,
+        borderColor: '#A9A9A9',
     },
     image: {
         width: '80%',
