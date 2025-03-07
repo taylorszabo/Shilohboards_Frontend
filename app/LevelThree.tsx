@@ -6,32 +6,52 @@ import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
-import SoundIcon from '../reusableComponents/SoundIcon';
 import { Audio } from 'expo-av';
-import { useState, useEffect } from 'react';
-import { alphabetArray, numbersArray, Number, Letter } from "../GameContent";
-import { shuffleArray, getRandomItemsIncludingId } from "../GameFunctions";
-import SoundPressable from '../reusableComponents/SoundPressable';
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { alphabetImages, alphabetLetters } from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
+import { shuffleArray } from '../GameFunctions';
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+
+export interface GameOption {
+    object: string;
+    image: number;
+    correct: boolean;
+}
+
+export interface GameQuestion {
+    level: number;
+    letter: string;
+    sound: string;
+    wordExample: string;
+    options: GameOption[];
+    exampleImage?: number;
+}
 
 export default function LevelThree() {
-    const { game = '[game]', playerId = '0' } = useLocalSearchParams();
+    const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
 
+    const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
-    const [randomizedGameQuestions] = useState<Letter[] | Number[]>(shuffleArray(alphabetArray));                                      
-    const [options, setOptions] = useState<Letter[] | Number[]>([]);
-    const [answerSelected, setAnswerSelected] = useState<string>('');
+    const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
+    const [answerSelected, setAnswerSelected] = useState<string | null>(null);
     const [answerDisplayed, setAnswerDisplayed] = useState<boolean>(false);
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [gameComplete, setGameComplete] = useState<boolean>(false);
 
-    const resultText: string = currentQuestion < randomizedGameQuestions.length ? 
-                               answerSelected === randomizedGameQuestions[currentQuestion].id ? 'Great job! Your answer is correct.' : 
-                                                                                                'Good try! Unfortunately, that is incorrect.' 
-                               : '';
-    const instructionText = 'Choose the correct letter for the sound or beginning of the word:';
+    const getLocalImage = (key: string): number => {
+        return alphabetImages[key] || require('../assets/defaultImage.png');
+    };
 
-    //-----------------------------------------------------------------------
+    const getLocalExampleImage = (key: string): number => {
+        return alphabetLetters[key] || require('../assets/defaultImage.png');
+    };
+
     useEffect(() => {
         return () => {
             if (sound) {
@@ -40,122 +60,140 @@ export default function LevelThree() {
         };
     }, [sound]);
 
-    //-----------------------------------------------------------------------
-    useEffect(() => {
-        setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id));
-        playAudio(randomizedGameQuestions[currentQuestion].idAudio);
-    }, [randomizedGameQuestions]);
+    const questionsFetched = useRef(false);
 
-    //-----------------------------------------------------------------------
     useEffect(() => {
-        if (currentQuestion === randomizedGameQuestions.length) { //game completed
-            //update records??
-        } else if (currentQuestion !== 0) {
-            setOptions(getRandomItemsIncludingId(randomizedGameQuestions, 4, randomizedGameQuestions[currentQuestion].id));
-            playAudio(randomizedGameQuestions[currentQuestion].idAudio);
-        }
-    }, [currentQuestion]);
+        if (questionsFetched.current) return;
+        questionsFetched.current = true;
 
-    //-----------------------------------------------------------------------
+        const fetchQuestions = async () => {
+            try {
+                setLoading(true);
+                const response = await axios.get<GameQuestion[]>(`${API_BASE_URL}/alphabet/level3`);
+                let questionsArray = response.data;
+
+                if (!questionsArray || questionsArray.length === 0) {
+                    throw new Error('No questions received from API.');
+                }
+
+                questionsArray = questionsArray.map((questionData) => {
+                    return {
+                        ...questionData,
+                        exampleImage: getLocalExampleImage(questionData.letter),
+                        options: questionData.options.map((option) => ({
+                            object: option.object,
+                            image: getLocalImage(option.object),
+                            correct: option.correct,
+                        })),
+                    };
+                });
+
+                setGameQuestions(shuffleArray(questionsArray));
+                setCurrentQuestion(0);
+                setLoading(false);
+            } catch (err) {
+                setError('Failed to load game questions.');
+                setLoading(false);
+            }
+        };
+
+        fetchQuestions();
+    }, []);
+
     function markAnswer(answerSubmitted: string) {
+        if (!answerDisplayed) {
+            setAnswerSelected(answerSubmitted);
+        }
+    }
+
+    function submitAnswer() {
+        if (!answerSelected) return;
+
         setAnswerDisplayed(true);
 
-        if (answerSubmitted === randomizedGameQuestions[currentQuestion].id) {
-            setCorrectAnswers((prev) => prev + 1);
+        const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object;
+        const isCorrect = answerSelected === correctAnswer;
+
+        if (isCorrect) {
+            setCorrectAnswers(prev => prev + 1);
             playAudio(require('../assets/Sounds/correctSound.mp3'));
         } else {
             playAudio(require('../assets/Sounds/incorrectSound.mp3'));
         }
-
-        //update records??
     }
 
-    //-----------------------------------------------------------------------
+    async function endGame() {
+        setGameComplete(true);
+
+        try {
+            await axios.post(`${API_BASE_URL}/${String(game).toLowerCase()}/score`, {
+                gameId,
+                childId: 'mocked_child_id',
+                level: 3,
+                score: correctAnswers,
+            });
+
+        } catch (error) {
+            console.error('Failed to send final score:', error);
+        }
+    }
+
     function moveToNextQuestion() {
-        setCurrentQuestion((prevQuestion) => prevQuestion + 1);
-        setAnswerDisplayed(false);
-        setAnswerSelected('');
+        if (currentQuestion < gameQuestions.length - 1) {
+            setCurrentQuestion(prev => prev + 1);
+            setAnswerDisplayed(false);
+            setAnswerSelected(null);
+        } else {
+            endGame();
+        }
     }
 
-    //-----------------------------------------------------------------------
     async function playAudio(soundFile: any) {
         const { sound } = await Audio.Sound.createAsync(soundFile);
         setSound(sound);
         await sound.playAsync();
     }
 
+    if (loading) {
+        return <Text>Loading questions...</Text>;
+    }
+
+    if (error) {
+        return <Text style={{ color: 'red' }}>{error}</Text>;
+    }
+
+    if (gameComplete) {
+        return <GameComplete score={`${correctAnswers}/${gameQuestions.length}`} />;
+    }
+
     return (
         <BackgroundLayout>
-            <View style={styles.container}> 
-                {/* =============== Back Button =============== */}
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
+            <View style={styles.container}>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} />
 
-                {/* =============== Player Card =============== */}
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
 
-                {/* =============== Game/Level Title =============== */}
-                {/* TODO: DELETE ANSWER PART LATER (once sounds correct)!!! */}
-                <Text style={styles.headerText}>{game} - Level 3 --- {randomizedGameQuestions[currentQuestion].id}</Text>  
+                <Text style={styles.headerText}>{game} - Level 3</Text>
+                <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                {/* =============== Progress Bar =============== */}
-                <ProgressBar fillPercent={(currentQuestion / randomizedGameQuestions.length) * 100}/>
+                {currentQuestion !== gameQuestions.length ? (
+                    <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
+                        <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
-                {currentQuestion !== randomizedGameQuestions.length ?
-
-                <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
-                    {/* =============== Sound & Word =============== */}
-                    <View style={styles.topPortion}>
-                        <SoundIcon size='25%'/>
-                        <View style={{gap: 10}}>
-                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}>
-                                <Text style={styles.soundBtn}>Sound</Text>
-                            </SoundPressable>
-                            <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].exampleAudio}>
-                                <Text style={styles.soundBtn}>Word</Text>
-                            </SoundPressable>
+                        <View style={styles.answerContainer}>
+                            {gameQuestions[currentQuestion].options.map((option, index) => (
+                                <OptionCard key={index} customWidth={0.38} height={140} image={option.image} lowerText={option.object} functionToExecute={() => markAnswer(option.object)} disabled={answerDisplayed} selected={answerSelected === option.object} />
+                            ))}
                         </View>
-                    </View>
 
-                    {/* =============== Instructions =============== */}
-                    <Text style={styles.headerText}>{answerDisplayed ? resultText : instructionText}</Text>
-
-                    {/* =============== Answers to Select =============== */}
-                    <View style={styles.answerContainer}>
-                        {options.map((item: Letter | Number) => (
-                            <View key={item.id}> 
-                                <OptionCard 
-                                    customWidth={0.38} 
-                                    height={140} 
-                                    image={item.idImage} 
-                                    functionToExecute={() => setAnswerSelected(item.id)}
-                                    disabled={answerDisplayed}
-                                    selected={item.id === answerSelected}
-                                    bgColor={answerDisplayed && item.id === answerSelected ? 
-                                        item.id === randomizedGameQuestions[currentQuestion].id ? '#CFFFC0' : '#F69292' 
-                                        : 
-                                        '#FFF8F0' 
-                                    }
-                                />
-                            </View>
-                        ))}
+                        <CustomButton text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
                     </View>
-                    
-                    {/* =============== Submit Button =============== */}
-                    <View style={styles.submitBtnContainer}>
-                        {answerDisplayed ?
-                            <CustomButton text='Next' functionToExecute={() => moveToNextQuestion()}/>
-                            :
-                            answerSelected !== '' && <CustomButton text='Submit' functionToExecute={() => markAnswer(answerSelected)}/>
-                        }
-                    </View>
-                </View>
-                :
-                <GameComplete score={correctAnswers + '/' + randomizedGameQuestions.length} />
-                }
+                ) : null}
             </View>
         </BackgroundLayout>
     );
 }
+
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({

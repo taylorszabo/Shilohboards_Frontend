@@ -10,6 +10,8 @@ import {
 import { Audio } from "expo-av";
 import CharacterCard from "../reusableComponents/CharacterCard";
 
+
+import { router } from "expo-router";
 import LevelOneLetters from "./LevelOneLetters";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import CustomButton from "../reusableComponents/CustomButton";
@@ -59,7 +61,7 @@ export const LevelOne = () => {
     // Array of images for the opened door
     const doorOpenedImages = [
         require("../assets/Alphabet/Images/Apple.png"),
-        require("../assets/Alphabet/Images/Balloons.png"),
+        require("../assets/Alphabet/Images/Balloon.png"),
         require("../assets/Alphabet/Images/Car.png"),
         require("../assets/Alphabet/Images/Drum.png"),
         require("../assets/Alphabet/Images/Egg.png"),

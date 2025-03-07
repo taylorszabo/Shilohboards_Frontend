@@ -32,7 +32,7 @@ export const alphabetArray: Letter[] = [
         id: "B", 
         writtenWord: "Balloons", 
         idImage: require('./assets/Alphabet/Letters/B.png'), 
-        exampleImage: require('./assets/Alphabet/Images/Balloons.png'),
+        exampleImage: require('./assets/Alphabet/Images/Balloon.png'),
         idAudio: require('./assets/Alphabet/Letters/Audio/Asound.mp3'), 
         exampleAudio: require('./assets/Alphabet/Images/Audio/AppleSound.mp3')
     },
