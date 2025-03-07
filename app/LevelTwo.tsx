@@ -229,10 +229,21 @@ export default function LevelTwo() {
                                     customWidth={0.38}
                                     height={140}
                                     image={option.image}
-                                    lowerText={game === "Alphabet" ? option.object : option.number?.toString()}
+                                    lowerText={game === "Alphabet" ? option.object : ""}
                                     functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
+                                    bgColor={
+                                        answerDisplayed
+                                            ? game === "Alphabet"
+                                                ? option.object === answerSelected
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                                : option.number?.toString() === answerSelected
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                            : "#FFF8F0"
+                                    }
                                 />
                             ))}
                         </View>

@@ -4,7 +4,6 @@ import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { useLocalSearchParams } from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { Audio } from 'expo-av';
@@ -221,6 +220,13 @@ export default function LevelThree() {
                                     functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : '')}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === option.object}
+                                    bgColor={
+                                        answerDisplayed
+                                            ? answerSelected === option.object
+                                                ? option.correct ? "#CFFFC0" : "#F69292"
+                                                : "#FFF8F0"
+                                            : "#FFF8F0"
+                                    }
                                 />
                             ))}
                         </View>
