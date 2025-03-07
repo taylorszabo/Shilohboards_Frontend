@@ -51,6 +51,5 @@ const styles = StyleSheet.create({
   },
   createNewBtnContainer: {
     marginTop: 'auto',
-    alignSelf: 'flex-end'
   }
 });

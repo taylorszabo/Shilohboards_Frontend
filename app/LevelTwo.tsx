@@ -106,7 +106,7 @@ export default function LevelTwo() {
                     {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>{answerDisplayed ? resultText : instructionText}</Text>
 
-                    <View style={{flexDirection: 'row'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '8%'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         {game === 'Alphabet' ?
                           <View style={styles.leftSideContainer}>
@@ -179,11 +179,10 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    width: '40%', 
+    flex: 1,
     maxHeight: '100%', 
     alignItems: 'center', 
     justifyContent: 'center', 
-    paddingRight: 25
   },
   rightSideContainer: {
     gap: 15
@@ -199,8 +198,7 @@ const styles = StyleSheet.create({
   },
   alphaNumLeftImage: {
     width: '100%',
-    height: 100,
-    resizeMode: 'contain' 
+    resizeMode: 'contain',
   },
   alphaNumLeftInstructionText: {
     textAlign: 'center', 
@@ -210,7 +208,6 @@ const styles = StyleSheet.create({
     color: '#3E1911'
   },
   submitBtnContainer: {
-    alignSelf: 'flex-end', 
     marginTop: 'auto', 
   },
   backBtnContainer: {

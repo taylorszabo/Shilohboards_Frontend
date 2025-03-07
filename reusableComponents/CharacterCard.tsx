@@ -58,8 +58,7 @@ const styles = StyleSheet.create({
       },
       image: {
         width: '60%',
-        height: undefined,
-        aspectRatio: 1,
+        height: '60%',
         resizeMode: 'contain', //keep aspect ratio
       },
       text: {

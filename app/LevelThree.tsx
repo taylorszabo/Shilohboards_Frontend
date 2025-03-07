@@ -186,7 +186,6 @@ const styles = StyleSheet.create({
     color: '#3E1911',
   },
   submitBtnContainer: {
-    alignSelf: 'flex-end', 
     marginTop: 'auto', 
   },
   backBtnContainer: {

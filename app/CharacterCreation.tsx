@@ -165,7 +165,10 @@ export default function CharacterCreation() {
                             <CustomButton text='Finish' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} 
                                           functionToExecute={() => saveCharacter(characterCreated, isNewOrUpdateId === "New")}/>
                             :
-                            <CustomButton text='Next' image={require('../assets/forward.png')} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => verifyInformationEntered()}/>
+                            <CustomButton text='Next' image={require('../assets/forward.png')} 
+                                uniqueButtonStyling={styles.forwardBtnContainer} 
+                                functionToExecute={() => verifyInformationEntered()}
+                            />
                         }
                     </View>
                 
@@ -218,9 +221,7 @@ const styles = StyleSheet.create({
   },
   bottomBtns: {
     width: '100%',
-    //marginTop: 'auto',
-    position: 'absolute',
-    bottom: 0,
+    marginTop: 'auto',
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -228,6 +229,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse'
   },
   forwardBtnContainer: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   }
 });
