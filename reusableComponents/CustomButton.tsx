@@ -52,18 +52,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 15,
         borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#d3d3d3',
-        //iOS shadow
-        shadowColor: 'rgba(0, 0, 0, 0.25)', 
-        shadowOffset: {
-            width: 1,
-            height: 4
-        },
-        shadowRadius: 4,
-        shadowOpacity: 0.2,
-        //android shadow
-        elevation: 3, 
+        borderRightWidth: 2,
+        borderBottomWidth: 3,
+        borderColor: '#A9A9A9',
     },
     defaultTextStyle: {
         fontSize: 20,

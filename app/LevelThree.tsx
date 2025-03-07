@@ -12,6 +12,8 @@ import axios from 'axios';
 import { alphabetImages, alphabetLetters } from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
 import { shuffleArray } from '../GameFunctions';
+import SoundPressable from '../reusableComponents/SoundPressable';
+import SoundIcon from '../reusableComponents/SoundIcon';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
@@ -44,11 +46,11 @@ export default function LevelThree() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
 
-    const getLocalImage = (key: string): number => {
+    const getLocalImage = (key: string | number): number => {
         return alphabetImages[key] || require('../assets/defaultImage.png');
     };
 
-    const getLocalExampleImage = (key: string): number => {
+    const getLocalExampleImage = (key: string | number): number => {
         return alphabetLetters[key] || require('../assets/defaultImage.png');
     };
 
@@ -82,13 +84,13 @@ export default function LevelThree() {
                         exampleImage: getLocalExampleImage(questionData.letter),
                         options: questionData.options.map((option) => ({
                             object: option.object,
-                            image: getLocalImage(option.object),
+                            image: getLocalExampleImage(option.image),
                             correct: option.correct,
                         })),
                     };
                 });
 
-                setGameQuestions(shuffleArray(questionsArray));
+                setGameQuestions(questionsArray);
                 setCurrentQuestion(0);
                 setLoading(false);
             } catch (err) {
@@ -177,16 +179,45 @@ export default function LevelThree() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                        <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
-
-                        <View style={styles.answerContainer}>
-                            {gameQuestions[currentQuestion].options.map((option, index) => (
-                                <OptionCard key={index} customWidth={0.38} height={140} image={option.image} lowerText={option.object} functionToExecute={() => markAnswer(option.object)} disabled={answerDisplayed} selected={answerSelected === option.object} />
-                            ))}
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
+                        {/* =============== Sound & Word =============== */}
+                        <View style={styles.topPortion}>
+                            <SoundIcon size='25%'/>
+                            <View style={{gap: 10}}>
+                                {/* <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}> */}
+                                    <Text style={styles.soundBtn}>Sound</Text>
+                                {/* </SoundPressable>
+                                <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].exampleAudio}> */}
+                                    <Text style={styles.soundBtn}>Word</Text>
+                                {/* </SoundPressable> */}
+                            </View>
                         </View>
+                        
+                        <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
+                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
-                        <CustomButton text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
+                            <View style={styles.answerContainer}>
+                                {gameQuestions[currentQuestion].options.map((option, index) => (
+                                    <OptionCard key={index} 
+                                        customWidth={0.38} 
+                                        height={140} 
+                                        image={option.image} 
+                                        functionToExecute={() => markAnswer(option.object)} 
+                                        disabled={answerDisplayed} 
+                                        selected={answerSelected === option.object} 
+                                        bgColor={
+                                            answerDisplayed
+                                                ? answerSelected === option.object
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                                : "#FFF8F0"
+                                        }
+                                    />
+                                ))}
+                            </View>
+
+                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
+                        </View>
                     </View>
                 ) : null}
             </View>
@@ -243,14 +274,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
 
-    shadowColor: 'rgba(0, 0, 0, 0.25)', //iOS shadow
-    shadowOffset: {
-        width: 1,
-        height: 4
-    },
-    shadowRadius: 4,
-    shadowOpacity: 0.2,
-
-    elevation: 5, //android shadow
+    borderRightWidth: 2,
+    borderBottomWidth: 3,
+    borderColor: '#A9A9A9',
   }
 });

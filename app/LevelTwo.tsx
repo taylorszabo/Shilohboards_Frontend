@@ -219,15 +219,21 @@ export default function LevelTwo() {
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
                                 ? "Great job! Your answer is correct."
                                 : "Good try! Unfortunately, that is incorrect."
-                            : "Choose the correct answer:"}
+                            : game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
+                                                    'Choose the correct number that matches how many objects are shown:'}
                     </Text>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '8%'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
-                            <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                            <SoundIcon size='9%'/>
+                            { game === 'Alphabet' &&
+                                <View style={{alignItems: 'center'}}>
+                                    <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
+                                    <SoundIcon size='9%'/>
+                                </View>
+                            }
+                            
                         </View>
 
                         {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
@@ -258,7 +264,10 @@ export default function LevelTwo() {
                         </View>
                     </View>
 
-                    {answerDisplayed ? <CustomButton text="Next" functionToExecute={moveToNextQuestion} /> : answerSelected && <CustomButton text="Submit" functionToExecute={submitAnswer} />}
+                    {answerDisplayed ? 
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} /> 
+                    : answerSelected && 
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} />}
                 </View>
             </View>
         </BackgroundLayout>
@@ -309,7 +318,6 @@ const styles = StyleSheet.create({
   },
   submitBtnContainer: {
     marginTop: 'auto',
-
   },
   backBtnContainer: {
     position: 'absolute',
