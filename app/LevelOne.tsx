@@ -104,7 +104,6 @@ export default function LevelOne() {
 
     const currentItem = gameQuestions[currentQuestion];
 
-    console.log(currentItem);
 
     return (
         <BackgroundLayout>
