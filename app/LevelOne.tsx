@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
-import { Audio } from "expo-av";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import ProgressBar from "../reusableComponents/ProgressBar";
 import axios from "axios";
@@ -12,75 +11,100 @@ import GameComplete from "../reusableComponents/GameComplete";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
-interface GameDataItem {
+interface GameQuestion {
+    level: number;
     letter?: string;
     number?: number;
+    objectImage?: string;
     object?: string;
+    voice: string;
 }
 
-export default function LevelOne (){
-    const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [gameData, setGameData] = useState<GameDataItem[]>([]);
+export default function LevelOne() {
+    const { game = "Alphabet", playerId = "0" } = useLocalSearchParams();
+
+    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
 
+    const questionsFetched = useRef(false);
+
     useEffect(() => {
-        const fetchData = async () => {
+        if (questionsFetched.current) return;
+        questionsFetched.current = true;
+
+        let isMounted = true;
+
+        const fetchQuestions = async () => {
             try {
-                const response = await axios.get(`${API_BASE_URL}/${String(game).toLowerCase()}/level1`);
-                setGameData(response.data);
-                setLoading(false);
+                setLoading(true);
+                const response = await axios.get<GameQuestion[]>(`${API_BASE_URL}/${String(game).toLowerCase()}/level1`);
+                let questionsArray = response.data;
+
+                if (!questionsArray || questionsArray.length === 0) {
+                    throw new Error("No questions received from API.");
+                }
+
+                if (isMounted) {
+                    setGameQuestions(questionsArray);
+                    setCurrentQuestion(0);
+                    setLoading(false);
+                }
             } catch (err) {
-                setError("Failed to load game data");
-                setLoading(false);
+                if (isMounted) {
+                    setError("Failed to load game questions.");
+                    setLoading(false);
+                }
             }
         };
-        fetchData();
+        fetchQuestions();
+
+        return () => {
+            isMounted = false;
+        };
     }, [game]);
 
-    const getLocalExampleImage = (key: string | number) => {
-        console.log(key)
-        if (game === "Alphabet" && alphabetLetters[key]) {
-            return alphabetLetters[key];
+    const getLocalExampleImage = (gameType: string, key?: string | number | undefined): number => {
+        if (gameType === "Alphabet" && typeof key === "string") {
+            return alphabetLetters[key] ?? require("../assets/defaultImage.png");
         }
-        if (game === "Numbers" && numberDigits[key]) {
+        if (gameType === "Numbers" && typeof key === "number") {
+            return numberImages[key] ?? require("../assets/defaultImage.png");
+        }
+        return require("../assets/defaultImage.png");
+    };
+
+    const getLocalObjectImage = (gameType: string, key?: string | number | undefined): number => {
+        if (gameType === "Alphabet" && typeof key === "string" && alphabetImages[key]) {
+            return alphabetImages[key];
+        }
+        if (gameType === "Numbers" && typeof key === "string" && numberImages[key]) {
             return numberDigits[key];
         }
         return require("../assets/defaultImage.png");
     };
 
-    const getLocalObjectImage = (key: string) => {
-        if (game === "Alphabet" && alphabetImages[key]) {
-            return alphabetImages[key];
-        }
-        if (game === "Numbers" && numberImages[key]) {
-            return numberImages[key];
-        }
-        return require("../assets/defaultImage.png");
-    };
-
-    const handleNext = () => {
-        if (currentIndex < gameData.length - 1) {
+    const moveToNextQuestion = () => {
+        if (currentQuestion < gameQuestions.length - 1) {
             setDoorOpened(false);
-            setCurrentIndex((prev) => prev + 1);
+            setCurrentQuestion((prev) => prev + 1);
         } else {
             setGameComplete(true);
         }
     };
 
-
     if (loading) return <Text>Loading...</Text>;
     if (error) return <Text style={{ color: "red" }}>{error}</Text>;
-    if(gameComplete)
-    {
-        <GameComplete level="1" game={game} score="" />;
+    if (gameComplete) {
+        return <GameComplete level="1" game={game} score="" />;
     }
 
+    const currentItem = gameQuestions[currentQuestion];
 
-    const currentItem: GameDataItem | number = gameData[currentIndex];
+    console.log(currentItem);
 
     return (
         <BackgroundLayout>
@@ -92,7 +116,7 @@ export default function LevelOne (){
                 />
                 <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
                 <Text style={styles.title}>{game} - Level 1</Text>
-                <ProgressBar fillPercent={(currentIndex / gameData.length) * 100} />
+                <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 <View style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
@@ -100,24 +124,33 @@ export default function LevelOne (){
                 </View>
 
                 {doorOpened ? (
-                    <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.cube}>
-                        <Image source={getLocalExampleImage(currentItem?.letter ?? currentItem?.number ?? "")} style={styles.numberImage} />
+                    // === OPENED DOOR === (Shows the object for both Alphabet & Numbers)
+                    <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
+                        <View style={styles.cube}>
+                            <Image source={getLocalObjectImage(String(game), currentItem.objectImage)} style={styles.numberImage} />
+                        </View>
+                        <View style={styles.cubeBackContainer}>
+                            <View style={styles.ovalShape} />
+                            <View style={styles.cube}></View>
+                        </View>
                     </TouchableOpacity>
                 ) : (
+                    // === CLOSED DOOR === (Alphabet shows Letter, Numbers shows Digit)
                     <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
-                        <Image source={getLocalObjectImage(currentItem?.object ?? "")} style={styles.numberImage} />
+                        <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
+                        <View style={styles.cubeBackContainer}>
+                            <View style={styles.ovalShape} />
+                        </View>
                     </TouchableOpacity>
                 )}
-                <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+
+                <TouchableOpacity style={styles.nextButton} onPress={moveToNextQuestion}>
                     <Text style={styles.buttonText}>Next →</Text>
                 </TouchableOpacity>
             </View>
         </BackgroundLayout>
-
     );
-};
-
-
+}
 
 const styles = StyleSheet.create({
     background: {
@@ -236,3 +269,4 @@ const styles = StyleSheet.create({
         paddingVertical: 20
     }
 });
+
