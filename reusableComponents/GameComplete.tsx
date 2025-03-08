@@ -9,6 +9,8 @@ import ProgressBar from "./ProgressBar";
 export default function GameComplete(props: {game: string | string[], score: string, level: string}) {
     const { game, score, level} = props;
     const { playerId = '0' } = useLocalSearchParams();
+    const showScore = level !== "1"; // Hide score for Level 1
+
     return (
         <BackgroundLayout>
             <View style={styles.textContainer}>
@@ -19,7 +21,7 @@ export default function GameComplete(props: {game: string | string[], score: str
                 <ProgressBar fillPercent={100} />
 
                 <Text style={[styles.textCSS, {fontSize: 35}]}>Game Complete!</Text>
-                <Text style={styles.textCSS}>Score {score}</Text>
+                {showScore && <Text style={styles.textCSS}>Score {score}</Text>}
                 <Text style={styles.textCSS}>You've earned 1 star!</Text>
                 <Image source={require('../assets/GameOverStar.png')}  style={styles.starImg} />
 
