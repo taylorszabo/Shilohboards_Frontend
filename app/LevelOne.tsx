@@ -9,6 +9,7 @@ import axios from "axios";
 import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../assets/imageMapping";
 import GameComplete from "../reusableComponents/GameComplete";
 
+
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 interface GameQuestion {
@@ -106,6 +107,7 @@ export default function LevelOne() {
 
 
     return (
+       
         <BackgroundLayout>
             <View style={styles.container}>
                 <CustomButton
@@ -121,7 +123,9 @@ export default function LevelOne() {
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
                     <Image source={require("../assets/ear.png")} style={styles.ear} />
                 </View>
-
+                
+                {/* // === OVAL SHAPE ===  This will always be rendered */}
+                <View style={styles.ovalShape} /> 
                 {doorOpened ? (
                     // === OPENED DOOR === (Shows the object for both Alphabet & Numbers)
                     <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
@@ -129,7 +133,7 @@ export default function LevelOne() {
                             <Image source={getLocalObjectImage(String(game), currentItem.objectImage)} style={styles.numberImage} />
                         </View>
                         <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
+                        
                             <View style={styles.cube}></View>
                         </View>
                     </TouchableOpacity>
@@ -138,7 +142,7 @@ export default function LevelOne() {
                     <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
                         <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
                         <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
+                         
                         </View>
                     </TouchableOpacity>
                 )}
@@ -147,6 +151,7 @@ export default function LevelOne() {
                     <Text style={styles.buttonText}>Next →</Text>
                 </TouchableOpacity>
             </View>
+            
         </BackgroundLayout>
     );
 }
@@ -214,15 +219,16 @@ const styles = StyleSheet.create({
         right: 200,
         zIndex: 0, // Moves it behind the main image
     },
-    ovalShape: {
+    ovalShape: {  
         width: 70,
         height: 150,
         backgroundColor: "rgba(0, 0, 0, 0.2)",
         position: "absolute",
-        left: 350,
-        top: 50,
+        left: 260,
+        top: 570,
         borderRadius: 50,
         zIndex: -1,  // Ensures it is behind everything
+
     },
     backButton: {
         position: "absolute",
