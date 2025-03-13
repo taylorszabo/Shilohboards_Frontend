@@ -39,7 +39,7 @@ export default function MainMenu() {
             
             {/* ---------------------- header --------------------- */}
             <View style={styles.hamburgerTopHeaderPortion}>
-              <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
+              <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn} testID='closeHamburgerMenuBtn'>
                 <Image source={require('../assets/back.png')} />
               </Pressable>
 
@@ -62,6 +62,7 @@ export default function MainMenu() {
           // ----------------------------- game menu options ----------------------------
           <View style={styles.container}> 
               <CustomButton 
+                testID='hamburgerMenuBtn'
                 image={require('../assets/hamburgerMenuIcon.png')} 
                 uniqueButtonStyling={styles.hamburgerButton} 
                 uniqueImageStyling={{width: 28, height: 28}}

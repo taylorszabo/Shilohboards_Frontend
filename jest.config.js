@@ -1,5 +1,10 @@
 module.exports = {
   preset: 'jest-expo',
+  setupFiles: ['<rootDir>/jest.setup.js'],
+  verbose: true,
+  globals: {
+    'process.env.EXPO_OS': 'android',
+  },
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
   },

@@ -90,6 +90,7 @@ export default function CharacterCreation() {
                                 Please enter your name:
                             </Text>
                             <TextInput 
+                                testID='characterNameInput'
                                 style={[styles.input, { fontSize: RFPercentage(2.5) }]} 
                                 value={characterCreated.name} 
                                 onChangeText={(input) => setCharacterCreated({...characterCreated, name: input})} 
@@ -103,6 +104,7 @@ export default function CharacterCreation() {
                                 {characterOptions.map((item: Character, index) => (
                                     <View key={index}> 
                                         <OptionCard 
+                                            testID={item.id}
                                             customWidth={0.35} 
                                             height={135} 
                                             image={item.picture} 
@@ -126,6 +128,7 @@ export default function CharacterCreation() {
                                 {bgColorOptions.map((item: string, index) => (
                                     <View key={index}> 
                                         <OptionCard 
+                                            testID={item}
                                             customWidth={0.35} 
                                             height={135} 
                                             upperText = ''
