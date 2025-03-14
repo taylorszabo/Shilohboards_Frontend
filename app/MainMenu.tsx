@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import {useState, useCallback} from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -7,12 +7,14 @@ import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { tempCharacterArray } from "../CharacterOptions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HamburgerMenuItem = {
   text: string;
   icon: any;
-  route: string;
-}
+  route?: string;
+  action?: () => void;
+};
 
 //======================================================================================
 export default function MainMenu() {
@@ -20,6 +22,16 @@ export default function MainMenu() {
     const router = useRouter();
 
     const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("userId");
+      router.replace("/Login"); // Ensure full logout by replacing history
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }, [router]);
     
     const hamburgerMenuOptions: HamburgerMenuItem[] = [
       {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
@@ -28,7 +40,7 @@ export default function MainMenu() {
       {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
       {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory'},
       {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
-      {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
+      { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
     ];
 
     //--------------------------------------------------------------------------
@@ -51,7 +63,12 @@ export default function MainMenu() {
                 {hamburgerMenuOptions.map((item, index) => (
                   <View style={styles.linkRow} key={index}>
                     <Image source={item.icon} style={styles.icons}/>
-                    <Text onPress={() => router.push(item.route)} style={styles.linkText}>{item.text}</Text>
+                    <Text
+                        onPress={() => item.action ? item.action() : item.route && router.push(item.route)}
+                        style={styles.linkText}
+                    >
+                      {item.text}
+                    </Text>
                   </View>
                 ))}
             </View>

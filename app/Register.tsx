@@ -1,106 +1,126 @@
 import React, { useState } from "react";
-import {  
-    View, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Image, 
-    ImageBackground,
-    Alert  
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    ActivityIndicator
 } from "react-native";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
-const Register = () => { 
+
+const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
     const handleRegister = async () => {
-        console.log("Register button pressed");
 
-        // Check if fields are empty or missing
+        setErrorMessage("");
+
         if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
-            console.log("Empty fields detected");
-            Alert.alert("Error", "Please fill in all fields.");
+            setErrorMessage("Please fill in all fields.");
             return;
         }
 
-    
+        if (password.length < 6) {
+            setErrorMessage("Password must be at least 6 characters long.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setErrorMessage("Passwords do not match.");
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            const response = await fetch("/register", { //add in API
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
-            });
 
-            const data = await response.json();
+            router.push("/Login");
 
-            if (response.ok) {
-                console.log("Registration Successful!");
-                Alert.alert("Success", "Account created successfully!", [
-                    { text: "OK", onPress: () => router.push('/Login') }
-                ]);
-            } else {
-                console.log("Registration Failed:", data.message);
-                Alert.alert("Error", data.message || "Registration failed. Try again.");
+        } catch (error: any) {
+            console.error("Registration error:", error.response?.data || error.message);
+
+            const firebaseError = error.response?.data?.error?.message;
+
+            switch (firebaseError) {
+                case "EMAIL_EXISTS":
+                    setErrorMessage("This email is already in use.");
+                    break;
+                case "INVALID_EMAIL":
+                    setErrorMessage("Please enter a valid email address.");
+                    break;
+                case "WEAK_PASSWORD":
+                    setErrorMessage("Password must be at least 6 characters.");
+                    break;
+                default:
+                    setErrorMessage("Registration failed. Please try again.");
             }
-        } catch (error) {
-            console.error("Network error:", error);
-            Alert.alert("Error", "Something went wrong. Please check your connection.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <Image 
+                <Image
                     source={require("../assets/logo.png")}
-                    style={styles.logo} 
+                    style={styles.logo}
                 />
                 <Text style={styles.title}>Register New Account</Text>
-                
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Email" 
-                    value={email} 
-                    onChangeText={setEmail} 
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Password" 
-                    secureTextEntry 
-                    value={password} 
-                    onChangeText={setPassword} 
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
                 />
 
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Confirm Password" 
-                    secureTextEntry 
-                    value={confirmPassword} 
-                    onChangeText={setConfirmPassword} 
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                 />
-                
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push('/Login')}>
+                {/* Display error message if it exists */}
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
+                {loading ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
+                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                        <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
+                )}
+
+                <TouchableOpacity onPress={() => router.push("/Login")}>
                     <Text style={styles.registerText}>Cancel</Text>
                 </TouchableOpacity>
             </View>
         </BackgroundLayout>
     );
 };
+
 
 const styles = StyleSheet.create({
     background: {
@@ -140,6 +160,10 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 1,
         shadowRadius: 4,
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10,
     },
     button: {
         width: 214,
