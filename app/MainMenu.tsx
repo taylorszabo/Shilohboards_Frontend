@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import {useState, useCallback} from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -7,66 +7,83 @@ import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { tempCharacterArray } from "../CharacterOptions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HamburgerMenuItem = {
   text: string;
   icon: any;
-  route: string;
-}
+  route?: string;
+  action?: () => void;
+};
 
 //======================================================================================
 export default function MainMenu() {
-    const { playerId = '[name]' } = useLocalSearchParams();
-    const router = useRouter();
+  const { playerId = '[name]' } = useLocalSearchParams();
+  const router = useRouter();
 
-    const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
-    
-    const hamburgerMenuOptions: HamburgerMenuItem[] = [
-      {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
-      {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}`},
-      {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting'},
-      {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
-      {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory'},
-      {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
-      {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
-    ];
+  const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
 
-    //--------------------------------------------------------------------------
-    return (
+  const handleLogout = useCallback(async () => {
+    try {
+      await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("userId");
+      router.replace("/Login"); // Ensure full logout by replacing history
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  }, [router]);
+
+  const hamburgerMenuOptions: HamburgerMenuItem[] = [
+    {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
+    {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}`},
+    {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting'},
+    {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
+    {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory'},
+    {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
+    { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
+  ];
+
+  //--------------------------------------------------------------------------
+  return (
       <BackgroundLayout>
         {hamburgerMenuOpen ?
-          <View style={styles.hamburgerMenuContainer}>
-            
-            {/* ---------------------- header --------------------- */}
-            <View style={styles.hamburgerTopHeaderPortion}>
-              <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn} testID='closeHamburgerMenuBtn'>
-                <Image source={require('../assets/back.png')} />
-              </Pressable>
+            <View style={styles.hamburgerMenuContainer}>
 
-              <Image source={require('../assets/logo.png')} style={styles.hamburgerLogo}/>
-            </View>
+              {/* ---------------------- header --------------------- */}
+              <View style={styles.hamburgerTopHeaderPortion}>
+                <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn} testID='closeHamburgerMenuBtn'>
+                  <Image source={require('../assets/back.png')} />
+                </Pressable>
 
-            {/* ---------------------- link list --------------------- */}
-            <View style={styles.linkList}>
+                <Image source={require('../assets/logo.png')} style={styles.hamburgerLogo}/>
+              </View>
+
+              {/* ---------------------- link list --------------------- */}
+              <View style={styles.linkList}>
                 {hamburgerMenuOptions.map((item, index) => (
-                  <View style={styles.linkRow} key={index}>
-                    <Image source={item.icon} style={styles.icons}/>
-                    <Text onPress={() => router.push(item.route)} style={styles.linkText}>{item.text}</Text>
-                  </View>
+                    <View style={styles.linkRow} key={index}>
+                      <Image source={item.icon} style={styles.icons}/>
+                      <Text
+                          onPress={() => item.action ? item.action() : item.route && router.push(item.route)}
+                          style={styles.linkText}
+                      >
+                        {item.text}
+                      </Text>
+                    </View>
                 ))}
+              </View>
             </View>
-          </View>
 
-          :
+            :
 
-          // ----------------------------- game menu options ----------------------------
-          <View style={styles.container}> 
-              <CustomButton 
-                testID='hamburgerMenuBtn'
-                image={require('../assets/hamburgerMenuIcon.png')} 
-                uniqueButtonStyling={styles.hamburgerButton} 
-                uniqueImageStyling={{width: 28, height: 28}}
-                functionToExecute={() => setHamburgerMenuOpen(true)}
+            // ----------------------------- game menu options ----------------------------
+            <View style={styles.container}>
+              <CustomButton
+                  testID='hamburgerMenuBtn'
+                  image={require('../assets/hamburgerMenuIcon.png')}
+                  uniqueButtonStyling={styles.hamburgerButton}
+                  uniqueImageStyling={{width: 28, height: 28}}
+                  functionToExecute={() => setHamburgerMenuOpen(true)}
               />
               <CharacterCard id={parseInt(playerId.toString())} customWidth={0.3}/>
               <Text style={styles.headerText}>Welcome {playerId ? tempCharacterArray[parseInt(playerId.toString())].name : playerId}! Which game would you like to play? </Text>
@@ -74,10 +91,10 @@ export default function MainMenu() {
                 <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')}/>
                 <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')}/>
               </View>
-          </View>
+            </View>
         }
       </BackgroundLayout>
-    );
+  );
 }
 
 // ================================== STYLING ==================================
@@ -94,15 +111,15 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#A9A9A9',
     //iOS shadow
-    shadowColor: 'rgba(0, 0, 0, 0.25)', 
+    shadowColor: 'rgba(0, 0, 0, 0.25)',
     shadowOffset: {
-        width: 1,
-        height: 4
+      width: 1,
+      height: 4
     },
     shadowRadius: 4,
     shadowOpacity: 0.2,
     //android shadow
-    elevation: 3, 
+    elevation: 3,
   },
   hamburgerTopHeaderPortion: {
     width: '100%',
@@ -119,7 +136,7 @@ const styles = StyleSheet.create({
     bottom: -100
   },
   closeHamburgerMenuBtn: {
-    position: 'absolute', 
+    position: 'absolute',
     top: 0,
     right: 0,
     padding: 25,
@@ -137,9 +154,9 @@ const styles = StyleSheet.create({
     gap: 15
   },
   hamburgerButton: {
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
+    position: 'absolute',
+    top: 0,
+    left: 0,
   },
   icons: {
     width: 30,
