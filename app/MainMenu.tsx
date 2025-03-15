@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {useState, useCallback} from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -16,7 +16,6 @@ type HamburgerMenuItem = {
   action?: () => void;
 };
 
-//======================================================================================
 export default function MainMenu() {
   const { playerId = '[name]' } = useLocalSearchParams();
   const router = useRouter();
@@ -34,35 +33,39 @@ export default function MainMenu() {
   }, [router]);
 
   const hamburgerMenuOptions: HamburgerMenuItem[] = [
-    {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
-    {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}`},
-    {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting'},
-    {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
-    {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory'},
-    {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
+    { text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter' },
+    { text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
+    { text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting' },
+    { text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/' },
+    { text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory' },
+    { text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink' },
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
   ];
 
-  //--------------------------------------------------------------------------
+  // Find the character by playerId
+  const character = tempCharacterArray.find(char => char.id === parseInt(playerId.toString()));
+
+  // Redirect if character is not found
+  useEffect(() => {
+    if (!character) {
+      router.replace("/SelectCharacter");
+    }
+  }, [character]);
+
   return (
       <BackgroundLayout>
         {hamburgerMenuOpen ?
             <View style={styles.hamburgerMenuContainer}>
-
-              {/* ---------------------- header --------------------- */}
               <View style={styles.hamburgerTopHeaderPortion}>
-                <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn} testID='closeHamburgerMenuBtn'>
+                <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
                   <Image source={require('../assets/back.png')} />
                 </Pressable>
-
-                <Image source={require('../assets/logo.png')} style={styles.hamburgerLogo}/>
+                <Image source={require('../assets/logo.png')} style={styles.hamburgerLogo} />
               </View>
-
-              {/* ---------------------- link list --------------------- */}
               <View style={styles.linkList}>
                 {hamburgerMenuOptions.map((item, index) => (
                     <View style={styles.linkRow} key={index}>
-                      <Image source={item.icon} style={styles.icons}/>
+                      <Image source={item.icon} style={styles.icons} />
                       <Text
                           onPress={() => item.action ? item.action() : item.route && router.push(item.route)}
                           style={styles.linkText}
@@ -73,29 +76,31 @@ export default function MainMenu() {
                 ))}
               </View>
             </View>
-
             :
-
-            // ----------------------------- game menu options ----------------------------
             <View style={styles.container}>
               <CustomButton
-                  testID='hamburgerMenuBtn'
                   image={require('../assets/hamburgerMenuIcon.png')}
                   uniqueButtonStyling={styles.hamburgerButton}
-                  uniqueImageStyling={{width: 28, height: 28}}
+                  uniqueImageStyling={{ width: 28, height: 28 }}
                   functionToExecute={() => setHamburgerMenuOpen(true)}
               />
-              <CharacterCard id={parseInt(playerId.toString())} customWidth={0.3}/>
-              <Text style={styles.headerText}>Welcome {playerId ? tempCharacterArray[parseInt(playerId.toString())].name : playerId}! Which game would you like to play? </Text>
+
+              {character && <CharacterCard id={character.id} customWidth={0.3} />}
+
+              <Text style={styles.headerText}>
+                Welcome {character ? character.name : "Player"}! Which game would you like to play?
+              </Text>
+
               <View style={styles.cardDiv}>
-                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')}/>
-                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')}/>
+                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')} />
+                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')} />
               </View>
             </View>
         }
       </BackgroundLayout>
   );
 }
+
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
