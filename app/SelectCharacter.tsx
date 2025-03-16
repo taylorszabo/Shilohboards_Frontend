@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import CustomButton from "../reusableComponents/CustomButton";
-import { useRouter } from "expo-router";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";

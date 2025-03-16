@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, View, Image, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import CustomButton from "../reusableComponents/CustomButton";
 import OptionCard from "../reusableComponents/OptionCard";
@@ -46,10 +46,6 @@ export default function LevelThree() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
-
-    const getLocalImage = (key: string | number): number => {
-        return alphabetImages[key] || require('../assets/defaultImage.png');
-    };
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
