@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 export default function SelectCharacter() {
-  const router = useRouter();
   const [parentId, setParentId] = useState<string | null>(null);
   const [children, setChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -44,7 +43,6 @@ export default function SelectCharacter() {
         return;
       }
 
-      // Fetch profile details for each child
       const profiles = await Promise.all(
           childrenData.map(async (child: any) => {
             try {
@@ -86,7 +84,6 @@ export default function SelectCharacter() {
           ) : (
               <View style={styles.grid}>
                 {children.map((user) => {
-                  console.log(user.profile_color);
                   if (!user || !user.profile_image || !user.profile_color) return null;
                   const characterOption = characterOptions.find((option) => option.id === user.profile_image);
                   const bgColor = bgColorOptions.includes(user.profile_color) ? user.profile_color : "#FFFFFF";

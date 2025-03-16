@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, Image, Pressable } from 'react-native';
+import {StyleSheet, Text, View, Image, Pressable, ActivityIndicator} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { tempCharacterArray } from "../CharacterOptions";
+import {bgColorOptions, characterOptions} from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 type HamburgerMenuItem = {
   text: string;
@@ -16,11 +17,17 @@ type HamburgerMenuItem = {
   action?: () => void;
 };
 
+const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+
 export default function MainMenu() {
-  const { playerId = '[name]' } = useLocalSearchParams();
+  const { playerId } = useLocalSearchParams();
   const router = useRouter();
 
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
+  const [character, setCharacter] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleLogout = useCallback(async () => {
     try {
@@ -33,41 +40,61 @@ export default function MainMenu() {
   }, [router]);
 
   const hamburgerMenuOptions: HamburgerMenuItem[] = [
-    { text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter' },
-    { text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
-    { text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting' },
-    { text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/' },
-    { text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory' },
-    { text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink' },
+    { text: "Switch User", icon: require("../assets/Icons/userProfile.png"), route: "/SelectCharacter" },
+    { text: "Update Current Character", icon: require("../assets/Icons/editIcon.png"), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
+    { text: "Settings", icon: require("../assets/Icons/settings.png"), route: "/Setting" },
+    { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: "/" },
+    { text: "Reward Inventory", icon: require("../assets/Icons/rewardIcon.png"), route: "/Inventory" },
+    { text: "Visit Official Website", icon: require("../assets/Icons/siteLink.png"), route: "/SiteLink" },
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
   ];
 
-  // Find the character by playerId
-  const character = tempCharacterArray.find(char => char.id === parseInt(playerId.toString()));
-
-  // Redirect if character is not found
+  // Fetch character profile from backend
   useEffect(() => {
-    if (!character) {
-      router.replace("/SelectCharacter");
-    }
-  }, [character]);
+    const fetchCharacterProfile = async () => {
+      if (!playerId) {
+        router.replace("/SelectCharacter");
+        return;
+      }
+
+      try {
+        const response = await axios.get(`${API_URL}/users/profile/${playerId}`);
+        if (response.data) {
+          setCharacter(response.data);
+        } else {
+          router.replace("/SelectCharacter");
+        }
+      } catch (error) {
+        console.error("Error fetching character profile:", error);
+        setErrorMessage("Failed to load character. Redirecting...");
+        setTimeout(() => router.replace("/SelectCharacter"), 2000);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCharacterProfile();
+  }, [playerId, router]);
 
   return (
       <BackgroundLayout>
-        {hamburgerMenuOpen ?
+        {hamburgerMenuOpen ? (
             <View style={styles.hamburgerMenuContainer}>
+              {/* ---------------------- Header --------------------- */}
               <View style={styles.hamburgerTopHeaderPortion}>
                 <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
-                  <Image source={require('../assets/back.png')} />
+                  <Image source={require("../assets/back.png")} />
                 </Pressable>
-                <Image source={require('../assets/logo.png')} style={styles.hamburgerLogo} />
+                <Image source={require("../assets/logo.png")} style={styles.hamburgerLogo} />
               </View>
+
+              {/* ---------------------- Menu Links --------------------- */}
               <View style={styles.linkList}>
                 {hamburgerMenuOptions.map((item, index) => (
                     <View style={styles.linkRow} key={index}>
                       <Image source={item.icon} style={styles.icons} />
                       <Text
-                          onPress={() => item.action ? item.action() : item.route && router.push(item.route)}
+                          onPress={() => (item.action ? item.action() : item.route && router.push(item.route))}
                           style={styles.linkText}
                       >
                         {item.text}
@@ -76,27 +103,41 @@ export default function MainMenu() {
                 ))}
               </View>
             </View>
-            :
+        ) : (
             <View style={styles.container}>
               <CustomButton
-                  image={require('../assets/hamburgerMenuIcon.png')}
+                  image={require("../assets/hamburgerMenuIcon.png")}
                   uniqueButtonStyling={styles.hamburgerButton}
                   uniqueImageStyling={{ width: 28, height: 28 }}
                   functionToExecute={() => setHamburgerMenuOpen(true)}
               />
 
-              {character && <CharacterCard id={character.id} customWidth={0.3} />}
+              {loading ? (
+                  <ActivityIndicator size="large" color="#0000ff" />
+              ) : character ? (
+                  <>
+                    <CharacterCard
+                        id={character.id}
+                        name={character.profile_name}
+                        image={characterOptions.find(option => option.id === character.profile_image)?.picture}
+                        bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
+                        customWidth={0.3}
+                    />
 
-              <Text style={styles.headerText}>
-                Welcome {character ? character.name : "Player"}! Which game would you like to play?
-              </Text>
+                    <Text style={styles.headerText}>
+                      Welcome {character.profile_name}! Which game would you like to play?
+                    </Text>
 
-              <View style={styles.cardDiv}>
-                <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')} />
-                <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')} />
-              </View>
+                    <View style={styles.cardDiv}>
+                      <OptionCard lowerText="Alphabet" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
+                      <OptionCard lowerText="Numbers" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
+                    </View>
+                  </>
+              ) : (
+                  <Text style={styles.errorText}>{errorMessage}</Text>
+              )}
             </View>
-        }
+        )}
       </BackgroundLayout>
   );
 }
@@ -185,5 +226,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 20,
     color: '#3E1911',
-  }
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    fontSize: 18,
+    marginTop: 20,
+  },
 });

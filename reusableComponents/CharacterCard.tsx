@@ -1,8 +1,7 @@
 import * as React from "react";
 import { Text, Image, Pressable, StyleSheet, Dimensions, ViewStyle } from "react-native";
 import { useRouter } from "expo-router";
-import { RFPercentage } from "react-native-responsive-fontsize";
-import { useEffect, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "../CharacterOptions";
 
 const screenWidth = Dimensions.get("window").width; // Get device width

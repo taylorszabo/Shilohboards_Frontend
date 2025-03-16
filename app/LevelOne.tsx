@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import ProgressBar from "../reusableComponents/ProgressBar";
 import axios from "axios";
 import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../assets/imageMapping";
+import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import GameComplete from "../reusableComponents/GameComplete";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -22,15 +23,41 @@ interface GameQuestion {
 
 export default function LevelOne() {
     const { game = "Alphabet", playerId = "0" } = useLocalSearchParams();
+    const router = useRouter();
 
+    const [character, setCharacter] = useState<any | null>(null);
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
-
     const questionsFetched = useRef(false);
+
+    // Fetch character profile from backend
+    useEffect(() => {
+        const fetchCharacterProfile = async () => {
+            if (!playerId || playerId === "0") {
+                router.replace("/SelectCharacter");
+                return;
+            }
+
+            try {
+                const response = await axios.get(`${API_BASE_URL}/users/profile/${playerId}`);
+                if (response.data) {
+                    setCharacter(response.data);
+                } else {
+                    router.replace("/SelectCharacter");
+                }
+            } catch (error) {
+                console.error("Error fetching character profile:", error);
+                setError("Failed to load character. Redirecting...");
+                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+            }
+        };
+
+        fetchCharacterProfile();
+    }, [playerId, router]);
 
     useEffect(() => {
         if (questionsFetched.current) return;
@@ -96,14 +123,13 @@ export default function LevelOne() {
         }
     };
 
-    if (loading) return <Text>Loading...</Text>;
+    if (loading || !character) return <ActivityIndicator size="large" color="#0000ff" />;
     if (error) return <Text style={{ color: "red" }}>{error}</Text>;
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;
     }
 
     const currentItem = gameQuestions[currentQuestion];
-
 
     return (
         <BackgroundLayout>
@@ -113,7 +139,13 @@ export default function LevelOne() {
                     uniqueButtonStyling={styles.backBtnContainer}
                     onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}
                 />
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
+                <CharacterCard
+                    id={character.id}
+                    name={character.profile_name}
+                    image={characterOptions.find(option => option.id === character.profile_image)?.picture}
+                    bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
+                    customWidth={0.25}
+                />
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
@@ -123,23 +155,14 @@ export default function LevelOne() {
                 </View>
 
                 {doorOpened ? (
-                    // === OPENED DOOR === (Shows the object for both Alphabet & Numbers)
                     <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
                         <View style={styles.cube}>
                             <Image source={getLocalObjectImage(String(game), currentItem.objectImage)} style={styles.numberImage} />
                         </View>
-                        <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
-                            <View style={styles.cube}></View>
-                        </View>
                     </TouchableOpacity>
                 ) : (
-                    // === CLOSED DOOR === (Alphabet shows Letter, Numbers shows Digit)
                     <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
                         <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
-                        <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
-                        </View>
                     </TouchableOpacity>
                 )}
 
@@ -150,6 +173,7 @@ export default function LevelOne() {
         </BackgroundLayout>
     );
 }
+
 
 const styles = StyleSheet.create({
     background: {
