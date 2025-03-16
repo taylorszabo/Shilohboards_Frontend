@@ -9,6 +9,7 @@ import OptionCard from "../reusableComponents/OptionCard";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Backend API URL
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -20,12 +21,13 @@ export default function CharacterCreation() {
     const numberOfSteps = 3;
 
     const [characterCreated, setCharacterCreated] = useState({
-        id: isNewOrUpdateId === "New" ? Math.floor(Math.random() * 1000000) : parseInt(isNewOrUpdateId.toString()),
+        id: isNewOrUpdateId === "New" ? Math.floor(Math.random() * 1000000000000) : parseInt(isNewOrUpdateId.toString()),
         name: "",
         picture: "",
         bgColor: "",
     });
 
+    const [parentId, setParentId] = useState<string | null>(null); // Stores logged-in user's ID
     const [processStep, setProcessStep] = useState<number>(1);
     const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
@@ -34,6 +36,13 @@ export default function CharacterCreation() {
     //--------------------------------------------------------------------------
     // Load existing character data from Firebase if updating
     useEffect(() => {
+        const fetchParentId = async () => {
+            const userId = await AsyncStorage.getItem("userId");
+            if (userId) setParentId(userId);
+        };
+
+        fetchParentId();
+
         if (isNewOrUpdateId !== "New") {
             fetchCharacterFromDatabase(parseInt(isNewOrUpdateId.toString()));
         }
@@ -52,7 +61,12 @@ export default function CharacterCreation() {
     }
 
     //--------------------------------------------------------------------------
-    async function saveCharacter(isNew: boolean) {
+    async function saveCharacter() {
+        if (!parentId) {
+            setErrorMessage("Error: Parent ID not found.");
+            return;
+        }
+
         setLoading(true);
         setErrorMessage("");
 
@@ -64,15 +78,17 @@ export default function CharacterCreation() {
                 profile_color: characterCreated.bgColor
             };
 
-            if (isNew) {
-                await axios.post(`${API_URL}/users/profile`, characterData); // Create new profile
-            } else {
-                await axios.put(`${API_URL}/users/profile/${characterCreated.id}`, characterData); // Update existing profile
-            }
+            await axios.post(`${API_URL}/users/profile`, characterData);
+
+
+            await axios.post(`${API_URL}/users/create-child`, {
+                parentId: parentId,
+                profileId: characterCreated.id,
+            });
 
             router.push(`/MainMenu?playerId=${characterCreated.id}`);
         } catch (error) {
-            console.error("Error saving character:", error);
+            console.error("Error saving character or creating child:", error);
             setErrorMessage("Failed to save character. Please try again.");
         } finally {
             setLoading(false);
@@ -184,7 +200,7 @@ export default function CharacterCreation() {
                             <CustomButton
                                 text="Finish"
                                 image={require("../assets/forward.png")}
-                                functionToExecute={() => saveCharacter(isNewOrUpdateId === "New")}
+                                functionToExecute={() => saveCharacter()}
                             />
                         )
                     ) : (
