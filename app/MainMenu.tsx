@@ -26,7 +26,7 @@ export default function MainMenu() {
     try {
       await AsyncStorage.removeItem("authToken");
       await AsyncStorage.removeItem("userId");
-      router.replace("/Login"); // Ensure full logout by replacing history
+      router.replace("/Login");
     } catch (error) {
       console.error("Logout failed:", error);
     }
