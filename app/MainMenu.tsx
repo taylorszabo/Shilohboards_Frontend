@@ -25,7 +25,7 @@ export default function MainMenu() {
       {text: 'Switch User', icon: require('../assets/Icons/userProfile.png'), route: '/SelectCharacter'},
       {text: 'Update Current Character', icon: require('../assets/Icons/editIcon.png'), route: `/CharacterCreation?isNewOrUpdateId=${playerId}`},
       {text: 'Settings', icon: require('../assets/Icons/settings.png'), route: '/Setting'},
-      {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: '/'},
+      {text: 'Performance Reports', icon: require('../assets/Icons/performanceReportIcon.png'), route: `/PerformanceReports?playerId=${playerId}`},
       {text: 'Reward Inventory', icon: require('../assets/Icons/rewardIcon.png'), route: '/Inventory'},
       {text: 'Visit Official Website', icon: require('../assets/Icons/siteLink.png'), route: '/SiteLink'},
       {text: 'Logout', icon: require('../assets/Icons/exitIcon.png'), route: '/Login'}, //will need it's own function to actually log out too
