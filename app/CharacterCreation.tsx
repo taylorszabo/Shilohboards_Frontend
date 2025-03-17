@@ -11,7 +11,6 @@ import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Backend API URL
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 export default function CharacterCreation() {
@@ -21,20 +20,20 @@ export default function CharacterCreation() {
     const numberOfSteps = 3;
 
     const [characterCreated, setCharacterCreated] = useState({
-        id: isNewOrUpdateId === "New" ? Math.floor(Math.random() * 1000000000000) : parseInt(isNewOrUpdateId.toString()),
+        id: isNewOrUpdateId === "New"
+            ? Math.floor(Math.random() * 1000000000000)
+            : (isNewOrUpdateId ? parseInt(isNewOrUpdateId.toString()) : null),
         name: "",
         picture: "",
         bgColor: "",
     });
 
-    const [parentId, setParentId] = useState<string | null>(null); // Stores logged-in user's ID
+    const [parentId, setParentId] = useState<string | null>(null);
     const [processStep, setProcessStep] = useState<number>(1);
-    const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
 
     //--------------------------------------------------------------------------
-    // Load existing character data from Firebase if updating
     useEffect(() => {
         const fetchParentId = async () => {
             const userId = await AsyncStorage.getItem("userId");
@@ -52,7 +51,12 @@ export default function CharacterCreation() {
         try {
             const response = await axios.get(`${API_URL}/users/profile/${characterId}`);
             if (response.data) {
-                setCharacterCreated(response.data);
+                setCharacterCreated({
+                    id: response.data.child_id || characterId,
+                    name: response.data.profile_name,
+                    picture: response.data.profile_image,
+                    bgColor: response.data.profile_color,
+                });
             }
         } catch (error) {
             console.error("Error fetching character:", error);
@@ -62,8 +66,14 @@ export default function CharacterCreation() {
 
     //--------------------------------------------------------------------------
     async function saveCharacter() {
+
         if (!parentId) {
             setErrorMessage("Error: Parent ID not found.");
+            return;
+        }
+
+        if (!characterCreated.id) {
+            setErrorMessage("Error: Character ID is missing.");
             return;
         }
 
@@ -72,24 +82,28 @@ export default function CharacterCreation() {
 
         try {
             const characterData = {
-                child_id: characterCreated.id.toString(),
+                child_id: String(characterCreated.id),
                 profile_name: characterCreated.name,
                 profile_image: characterCreated.picture,
-                profile_color: characterCreated.bgColor
+                profile_color: characterCreated.bgColor,
             };
 
-            await axios.post(`${API_URL}/users/profile`, characterData);
-
-
-            await axios.post(`${API_URL}/users/create-child`, {
-                parentId: parentId,
-                profileId: characterCreated.id,
-            });
+            if (isNewOrUpdateId === "New") {
+                await axios.post(`${API_URL}/users/profile`, characterData);
+                await axios.post(`${API_URL}/users/create-child`, {
+                    parentId: parentId,
+                    profileId: characterCreated.id,
+                });
+            } else {
+                await axios.put(`${API_URL}/users/profile/${characterCreated.id}`, characterData);
+            }
 
             router.push(`/MainMenu?playerId=${characterCreated.id}`);
         } catch (error) {
-            console.error("Error saving character or creating child:", error);
-            setErrorMessage("Failed to save character. Please try again.");
+            if (axios.isAxiosError(error)) {
+                console.error("Error saving character:", error.response?.data || error.message);
+                setErrorMessage("Failed to save character: " + (error.response?.data?.error || "Unknown error"));
+            }
         } finally {
             setLoading(false);
         }
@@ -98,7 +112,6 @@ export default function CharacterCreation() {
     //--------------------------------------------------------------------------
     function verifyInformationEntered() {
         let missingInfo: boolean = false;
-        setInfoBeingVerified(true);
 
         if (processStep === 1) {
             if (characterCreated.name.trim().length < 2 || !characterOptions.find(option => option.id === characterCreated.picture)) {
@@ -114,7 +127,6 @@ export default function CharacterCreation() {
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
-            setInfoBeingVerified(false);
         }
     }
 
@@ -167,6 +179,7 @@ export default function CharacterCreation() {
                                     bgColor={item}
                                     functionToExecute={() => setCharacterCreated({ ...characterCreated, bgColor: item })}
                                     selected={item === characterCreated.bgColor}
+                                    upperText=""
                                 />
                             ))}
                         </View>
@@ -211,6 +224,7 @@ export default function CharacterCreation() {
         </BackgroundLayout>
     );
 }
+
 
 
 // ================================== STYLING ==================================

@@ -49,7 +49,6 @@ export default function MainMenu() {
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
   ];
 
-  // Fetch character profile from backend
   useEffect(() => {
     const fetchCharacterProfile = async () => {
       if (!playerId) {

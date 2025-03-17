@@ -10,7 +10,7 @@ import { useEffect, useRef, useState } from "react";
 import { Audio } from "expo-av";
 import GameComplete from "../reusableComponents/GameComplete";
 import axios from "axios";
-import { alphabetImages, alphabetLetters} from "../assets/imageMapping";
+import {  alphabetLetters} from "../assets/imageMapping";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import SoundIcon from "../reusableComponents/SoundIcon";
 
