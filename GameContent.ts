@@ -1,3 +1,8 @@
+export type Game = {
+    title: string;
+    numberOfLevels: number;
+}
+
 export type Letter = {
     id: string; //A
     writtenWord: string; //Apple
@@ -18,6 +23,11 @@ export type Number = {
 }
 
 //=========================================================================================
+
+export const gamesArray: Game[] = [
+    { title: 'Alphabet', numberOfLevels: 3 },
+    { title: 'Numbers', numberOfLevels: 2 }
+]
 
 export const alphabetArray: Letter[] = [
     {
