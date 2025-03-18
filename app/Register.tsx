@@ -9,18 +9,22 @@ import {
     ActivityIndicator
 } from "react-native";
 import { useRouter } from "expo-router";
+import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
+const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
 
 const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState(""); // State to display errors
     const router = useRouter();
 
     const handleRegister = async () => {
+        console.log("Register button pressed");
 
         setErrorMessage("");
 
@@ -42,6 +46,13 @@ const Register = () => {
         setLoading(true);
 
         try {
+            const response = await axios.post(FIREBASE_SIGNUP_URL, {
+                email,
+                password,
+                returnSecureToken: true
+            });
+
+            console.log("Registration Successful!", response.data);
 
             router.push("/Login");
 
@@ -161,10 +172,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 1,
         shadowRadius: 4,
     },
-    errorText: {
-        color: "red",
-        marginBottom: 10,
-    },
     button: {
         width: 214,
         height: 61,
@@ -183,6 +190,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "700",
         textAlign: "center",
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10,
     },
     registerText: {
         marginTop: 20,
