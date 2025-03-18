@@ -1,18 +1,19 @@
-import * as React from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
-import CharacterCard from "../reusableComponents/CharacterCard";
-import CustomButton from "../reusableComponents/CustomButton";
-import OptionCard from "../reusableComponents/OptionCard";
-import BackgroundLayout from "../reusableComponents/BackgroundLayout";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import ProgressBar from "../reusableComponents/ProgressBar";
-import { useEffect, useRef, useState } from "react";
-import { Audio } from "expo-av";
-import GameComplete from "../reusableComponents/GameComplete";
-import axios from "axios";
-import {  alphabetLetters} from "../assets/imageMapping";
+import * as React from 'react';
+import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
+import CharacterCard from '../reusableComponents/CharacterCard';
+import CustomButton from '../reusableComponents/CustomButton';
+import OptionCard from '../reusableComponents/OptionCard';
+import BackgroundLayout from '../reusableComponents/BackgroundLayout';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import ProgressBar from '../reusableComponents/ProgressBar';
+import { Audio } from 'expo-av';
+import { useState, useEffect, useRef } from 'react';
+import axios from 'axios';
+import { alphabetLetters } from '../assets/imageMapping';
+import GameComplete from '../reusableComponents/GameComplete';
+import SoundPressable from '../reusableComponents/SoundPressable';
+import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
-import SoundIcon from "../reusableComponents/SoundIcon";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
@@ -212,21 +213,21 @@ export default function LevelThree() {
 
                 {currentQuestion !== gameQuestions.length ? (
                     <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
-                        {/* =============== Sound & Word =============== */}
+                        {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <SoundIcon size='25%'/>
-                            <View style={{gap: 10}}>
+                            <View style={styles.replayBtn}>
                                 {/* <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}> */}
-                                    <Text style={styles.soundBtn}>Sound</Text>
-                                {/* </SoundPressable>
-                                <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].exampleAudio}> */}
-                                    <Text style={styles.soundBtn}>Word</Text>
-                                {/* </SoundPressable> */}
+                                    <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic}/>
+                                {/* </SoundPressable>*/}
                             </View>
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
+                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                            {/* TODO: remove the answer once development done!!!!!!!!!! */}
+                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                            <Text style={styles.headerText}>Choose the correct letter ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
                                 {gameQuestions[currentQuestion].options.map((option, index) => (
@@ -238,10 +239,13 @@ export default function LevelThree() {
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={
+                                            // answerDisplayed
+                                            //     ? answerSelected === option.object
+                                            //         ? option.correct ? "#CFFFC0" : "#F69292"
+                                            //         : "#FFF8F0"
+                                            //     : "#FFF8F0"
                                             answerDisplayed
-                                                ? answerSelected === option.object
-                                                    ? option.correct ? "#CFFFC0" : "#F69292"
-                                                    : "#FFF8F0"
+                                                ? option.correct ? "#CFFFC0" : "#F69292"
                                                 : "#FFF8F0"
                                         }
                                     />
@@ -309,5 +313,20 @@ const styles = StyleSheet.create({
     borderRightWidth: 2,
     borderBottomWidth: 3,
     borderColor: '#A9A9A9',
+  },
+  replayBtn: {
+    width: '25%', 
+    aspectRatio: 1, 
+    padding: '3%', 
+    borderRadius: 10,
+    borderRightWidth: 2,
+    borderBottomWidth: 3,
+    borderColor: '#A9A9A9',
+    backgroundColor: '#FFF8F0',
+  },
+  replayIconPic: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain'
   }
 });

@@ -6,6 +6,7 @@ import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { formatNameWithCapitals } from "../CharacterOptions";
 import {bgColorOptions, characterOptions} from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
@@ -43,7 +44,7 @@ export default function MainMenu() {
     { text: "Switch User", icon: require("../assets/Icons/userProfile.png"), route: "/SelectCharacter" },
     { text: "Update Current Character", icon: require("../assets/Icons/editIcon.png"), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
     { text: "Settings", icon: require("../assets/Icons/settings.png"), route: "/Setting" },
-    { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: "/" },
+    { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: `/PerformanceReports?playerId=${playerId}`},
     { text: "Reward Inventory", icon: require("../assets/Icons/rewardIcon.png"), route: "/Inventory" },
     { text: "Visit Official Website", icon: require("../assets/Icons/siteLink.png"), route: "/SiteLink" },
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
@@ -75,6 +76,7 @@ export default function MainMenu() {
     fetchCharacterProfile();
   }, [playerId, router]);
 
+  //---------------------------------------------------------------------------
   return (
       <BackgroundLayout>
         {hamburgerMenuOpen ? (
@@ -124,7 +126,7 @@ export default function MainMenu() {
                     />
 
                     <Text style={styles.headerText}>
-                      Welcome {character.profile_name}! Which game would you like to play?
+                      Welcome {formatNameWithCapitals(character.profile_name)}! Which game would you like to play?
                     </Text>
 
                     <View style={styles.cardDiv}>

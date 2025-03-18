@@ -201,9 +201,9 @@ export default function CharacterCreation() {
                 {/* Bottom Buttons */}
                 <View style={styles.bottomBtns}>
                     {processStep === 1 ? (
-                        <CustomButton text="Cancel" image={require("../assets/back.png")} uniqueButtonStyling={styles.forwardBtnContainer}  onPressRoute={`/SelectCharacter`} />
+                        <CustomButton text="Cancel" image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer}  onPressRoute={`/SelectCharacter`} />
                     ) : (
-                        <CustomButton text="Back" image={require("../assets/back.png")} uniqueButtonStyling={styles.forwardBtnContainer} functionToExecute={() => setProcessStep((prev) => prev - 1)} />
+                        <CustomButton text="Back" image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setProcessStep((prev) => prev - 1)} />
                     )}
 
                     {processStep === numberOfSteps ? (
