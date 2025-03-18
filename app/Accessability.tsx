@@ -1,17 +1,23 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
+import CustomButton from '../reusableComponents/CustomButton';
+
+const { width, height } = Dimensions.get('window');
 
 export default function AccessibilityScreen() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </Pressable>
+    <ScrollView contentContainerStyle={styles.container}>
+    <CustomButton
+    image={require("../assets/back.png")}
+    uniqueButtonStyling={styles.backBtnContainer}
+    onPressRoute="/LevelChoice" 
+/>
+
       <Text style={styles.headerText}>Accessibility</Text>
-      
+
       <View style={styles.section}>
         <Text style={styles.label}>Colour Blind Mode</Text>
         <View style={styles.optionRow}>
@@ -25,7 +31,7 @@ export default function AccessibilityScreen() {
           </View>
         </View>
       </View>
-      
+
       <View style={styles.section}>
         <Text style={styles.label}>Text Narration</Text>
         <View style={styles.optionRow}>
@@ -39,25 +45,33 @@ export default function AccessibilityScreen() {
           </View>
         </View>
       </View>
-      
+
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.button}><Text style={styles.buttonText}>Save</Text></Pressable>
-        <Pressable style={styles.button}><Text style={styles.buttonText}>Edit</Text></Pressable>
+        <CustomButton
+          text="Save"
+          uniqueButtonStyling={styles.button}
+        />
+        <CustomButton
+          text="Edit"
+          uniqueButtonStyling={styles.button}
+        />
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
+
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#F5E1C8',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: width * 0.05,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: width * 0.07,
     fontWeight: 'bold',
     color: '#3E1911',
     marginBottom: 20,
@@ -69,7 +83,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   label: {
-    fontSize: 18,
+    fontSize: width * 0.05,
     fontWeight: 'bold',
     color: '#3E1911',
     marginBottom: 10,
@@ -85,7 +99,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
   },
   optionText: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: 'bold',
     color: '#3E1911',
     marginRight: 10,
@@ -107,37 +121,24 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginTop: 20,
-    width: '80%',
+    width: '100%',
   },
   button: {
-    padding: 12,
+    width: width * 0.35,
+    height: height * 0.07,
     backgroundColor: '#C3E2E5',
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#3E1911',
-    width: '40%',
+    borderRadius: 10,
+    justifyContent: 'center',
     alignItems: 'center',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#3E1911',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 20,
-    left: 20,
-    padding: 10,
-    backgroundColor: '#C3E2E5',
-    borderRadius: 5,
     borderWidth: 2,
     borderColor: '#3E1911',
   },
-  backButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#3E1911',
-  },
+  backBtnContainer: {
+    position: 'absolute',
+    top: height * 0.02,
+    left: width * 0.02,
+    paddingVertical: height * 0.02,
+  }
 });

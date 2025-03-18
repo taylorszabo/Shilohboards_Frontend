@@ -1,39 +1,71 @@
+
 import * as React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from './CustomButton';
 import BackgroundLayout from "./BackgroundLayout";
-import {useLocalSearchParams} from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import CharacterCard from "./CharacterCard";
 import ProgressBar from "./ProgressBar";
 
-export default function GameComplete(props: {game: string | string[], score: string, level: string}) {
-    const { game, score, level} = props;
+export default function GameComplete(props: { game: string | string[], score: string, level: string }) {
+    const { game, score, level } = props;
     const { playerId = '0' } = useLocalSearchParams();
     const showScore = level !== "1"; // Hide score for Level 1
+
+    // Function to Save Star Count Correctly
+    const saveStarCount = async () => {
+        try {
+            let category = Array.isArray(game) ? game[0] : game;
+
+            // ✅ Normalize "Alphabet" to "Letters"
+            if (category === "Alphabet") {
+                category = "Letters";
+            }
+
+            if (!["Letters", "Numbers"].includes(category)) {
+                console.warn("⚠️ Invalid category detected:", category);
+                return;
+            }
+
+            const key = `${category}_level${level}_count`; // Store correctly under Letters or Numbers
+            const currentCount = await AsyncStorage.getItem(key);
+            const newCount = currentCount ? parseInt(currentCount) + 1 : 1; // Always increment by 1
+
+            await AsyncStorage.setItem(key, newCount.toString());
+
+            console.log(`✅ Saved ${newCount} stars for ${category} Level ${level}`);
+        } catch (error) {
+            console.error("❌ Error saving star count:", error);
+        }
+    };
+
+    // Call function when game completes
+    React.useEffect(() => {
+        saveStarCount();
+    }, []);
 
     return (
         <BackgroundLayout>
             <View style={styles.textContainer}>
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
+                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
 
                 <Text style={styles.headerText}>{game} - Level {level}</Text>
 
                 <ProgressBar fillPercent={100} />
 
-                <Text style={[styles.textCSS, {fontSize: 35}]}>Game Complete!</Text>
+                <Text style={[styles.textCSS, { fontSize: 35 }]}>Game Complete!</Text>
                 {showScore && <Text style={styles.textCSS}>Score {score}</Text>}
                 <Text style={styles.textCSS}>You've earned 1 star!</Text>
-                <Image source={require('../assets/GameOverStar.png')}  style={styles.starImg} />
+                <Image source={require('../assets/GameOverStar.png')} style={styles.starImg} />
 
                 <View style={styles.submitBtnContainer}>
-                    <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`}/>
+                    <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} />
                 </View>
             </View>
         </BackgroundLayout>
-
     );
 }
-
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
     textContainer: {

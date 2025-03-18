@@ -1,102 +1,150 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Dimensions, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
+import CustomButton from '../reusableComponents/CustomButton';
+
+const { width, height } = Dimensions.get('window');
 
 export default function ProfileScreen() {
   const router = useRouter();
+  
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [name, setName] = React.useState('First_Last');
+  const [email, setEmail] = React.useState('Example@abc.com');
+  const [password, setPassword] = React.useState('********');
+
+  // Handle Save button
+  const handleSave = () => {
+    // Logic to save the changes
+    console.log("Saved:", { name, email, password });
+    setIsEditing(false); // Disable editing after save
+  };
+
+  // Handle Edit button
+  const handleEdit = () => {
+    setIsEditing(true); // Enable editing
+  };
+
+  // Handle Back button
+  const handleBack = () => {
+    router.back();
+  };
 
   return (
-    <View style={styles.container}>
-      <Pressable style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>←</Text>
-      </Pressable>
+    <ScrollView contentContainerStyle={styles.container}>
+      <CustomButton
+        image={require("../assets/back.png")}
+        uniqueButtonStyling={styles.backBtnContainer}
+        onPressRoute="/LevelChoice" 
+      />
+
       <Text style={styles.headerText}>Account</Text>
-      
-      <Text style={styles.label}>Name</Text>
-      <View style={styles.input}><Text style={styles.inputText}>First_Last</Text></View>
-      
-      <Text style={styles.label}>Email</Text>
-      <View style={styles.input}><Text style={styles.inputText}>Example@abc.com</Text></View>
-      
-      <Text style={styles.label}>Password</Text>
-      <View style={styles.input}><Text style={styles.inputText}>********</Text></View>
-      
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}><Text style={styles.buttonText}>Save</Text></View>
-        <View style={styles.button}><Text style={styles.buttonText}>Edit</Text></View>
+
+      <View style={styles.fieldContainer}>
+        <Text style={styles.label}>Name</Text>
+        <View style={styles.input}>
+          <TextInput
+            style={styles.inputText}
+            value={name}
+            onChangeText={setName}
+            editable={isEditing} // Enable/Disable editing
+          />
+        </View>
+
+        <Text style={styles.label}>Email</Text>
+        <View style={styles.input}>
+          <TextInput
+            style={styles.inputText}
+            value={email}
+            onChangeText={setEmail}
+            editable={isEditing} // Enable/Disable editing
+          />
+        </View>
+
+        <Text style={styles.label}>Password</Text>
+        <View style={styles.input}>
+          <TextInput
+            style={styles.inputText}
+            value={password}
+            onChangeText={setPassword}
+            editable={isEditing} // Enable/Disable editing
+            secureTextEntry // Mask the password
+          />
+        </View>
       </View>
-    </View>
+
+      <View style={styles.buttonContainer}>
+        {isEditing ? (
+          <CustomButton
+            text="Save"
+            uniqueButtonStyling={styles.button}
+
+          />
+        ) : (
+          <CustomButton
+            text="Edit"
+            uniqueButtonStyling={styles.button}
+
+          />
+        )}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: '#F5E1C8',
     alignItems: 'center',
-    padding: 20,
-    borderRadius: 10,
+    paddingHorizontal: width * 0.05,
+    paddingVertical: 40,
   },
   headerText: {
-    fontSize: 24,
+    fontSize: width * 0.07,
     fontWeight: 'bold',
     color: '#3E1911',
-    marginBottom: 20,
+    marginVertical: 20,
+  },
+  fieldContainer: {
+    width: '100%',
   },
   label: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     fontWeight: 'bold',
     color: '#3E1911',
-    marginTop: 10,
+    marginTop: 15,
   },
   input: {
-    width: '90%',
-    padding: 10,
+    padding: 12,
     borderWidth: 2,
     borderColor: '#3E1911',
     borderRadius: 5,
     backgroundColor: '#FFF',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginVertical: 5,
   },
   inputText: {
-    fontSize: 18,
+    fontSize: width * 0.045,
     color: '#3E1911',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-    width: '80%',
+    justifyContent: 'space-around',
+    marginTop: 25,
+    width: '100%',
   },
   button: {
-    padding: 10,
+    width: width * 0.35,
+    height: height * 0.07,
     backgroundColor: '#C3E2E5',
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#3E1911',
-    width: '40%',
+    borderRadius: 10,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#3E1911',
-  },
-  backButton: {
+  backBtnContainer: {
     position: 'absolute',
-    top: 20,
-    left: 20,
-    padding: 10,
-    backgroundColor: '#C3E2E5',
-    borderRadius: 5,
-    borderWidth: 2,
-    borderColor: '#3E1911',
-  },
-  backButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#3E1911',
-  },
+    top: height * 0.02,
+    left: width * 0.02,
+    paddingVertical: height * 0.02,
+  }
 });
