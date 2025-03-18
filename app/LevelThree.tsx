@@ -191,7 +191,10 @@ export default function LevelThree() {
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
+                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                            {/* TODO: remove the answer once development done!!!!!!!!!! */}
+                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
+                            <Text style={styles.headerText}>Choose the correct letter ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
                                 {gameQuestions[currentQuestion].options.map((option, index) => (
@@ -203,10 +206,13 @@ export default function LevelThree() {
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={
+                                            // answerDisplayed
+                                            //     ? answerSelected === option.object
+                                            //         ? option.correct ? "#CFFFC0" : "#F69292"
+                                            //         : "#FFF8F0"
+                                            //     : "#FFF8F0"
                                             answerDisplayed
-                                                ? answerSelected === option.object
-                                                    ? option.correct ? "#CFFFC0" : "#F69292"
-                                                    : "#FFF8F0"
+                                                ? option.correct ? "#CFFFC0" : "#F69292"
                                                 : "#FFF8F0"
                                         }
                                     />
