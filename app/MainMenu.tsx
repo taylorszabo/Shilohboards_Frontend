@@ -6,7 +6,7 @@ import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { tempCharacterArray } from "../CharacterOptions";
+import { tempCharacterArray, formatNameWithCapitals } from "../CharacterOptions";
 
 type HamburgerMenuItem = {
   text: string;
@@ -69,7 +69,7 @@ export default function MainMenu() {
                 functionToExecute={() => setHamburgerMenuOpen(true)}
               />
               <CharacterCard id={parseInt(playerId.toString())} customWidth={0.3}/>
-              <Text style={styles.headerText}>Welcome {playerId ? tempCharacterArray[parseInt(playerId.toString())].name : playerId}! Which game would you like to play? </Text>
+              <Text style={styles.headerText}>Welcome {playerId ? formatNameWithCapitals(tempCharacterArray[parseInt(playerId.toString())].name) : playerId}! Which game would you like to play? </Text>
               <View style={styles.cardDiv}>
                 <OptionCard lowerText='Alphabet' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require('../assets/ABC_2.png')}/>
                 <OptionCard lowerText='Numbers' customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require('../assets/123_2.png')}/>

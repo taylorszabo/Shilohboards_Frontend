@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -180,16 +180,13 @@ export default function LevelThree() {
 
                 {currentQuestion !== gameQuestions.length ? (
                     <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
-                        {/* =============== Sound & Word =============== */}
+                        {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <SoundIcon size='25%'/>
-                            <View style={{gap: 10}}>
+                            <View style={styles.replayBtn}>
                                 {/* <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}> */}
-                                    <Text style={styles.soundBtn}>Sound</Text>
-                                {/* </SoundPressable>
-                                <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].exampleAudio}> */}
-                                    <Text style={styles.soundBtn}>Word</Text>
-                                {/* </SoundPressable> */}
+                                    <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic}/>
+                                {/* </SoundPressable>*/}
                             </View>
                         </View>
                         
@@ -277,5 +274,20 @@ const styles = StyleSheet.create({
     borderRightWidth: 2,
     borderBottomWidth: 3,
     borderColor: '#A9A9A9',
+  },
+  replayBtn: {
+    width: '25%', 
+    aspectRatio: 1, 
+    padding: '3%', 
+    borderRadius: 10,
+    borderRightWidth: 2,
+    borderBottomWidth: 3,
+    borderColor: '#A9A9A9',
+    backgroundColor: '#FFF8F0',
+  },
+  replayIconPic: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain'
   }
 });

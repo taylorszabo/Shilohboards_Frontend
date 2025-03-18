@@ -251,13 +251,7 @@ export default function LevelTwo() {
                                     boldFirstLetter={game === "Alphabet"}
                                     bgColor={
                                         answerDisplayed
-                                            ? game === "Alphabet"
-                                                ? option.object === answerSelected
-                                                    ? option.correct ? "#CFFFC0" : "#F69292"
-                                                    : "#FFF8F0"
-                                                : option.number?.toString() === answerSelected
-                                                    ? option.correct ? "#CFFFC0" : "#F69292"
-                                                    : "#FFF8F0"
+                                            ? option.correct ? "#CFFFC0" : "#F69292"
                                             : "#FFF8F0"
                                     }
                                 />

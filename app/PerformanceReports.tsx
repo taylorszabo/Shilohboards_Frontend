@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { tempCharacterArray } from "../CharacterOptions";
 import PerformanceBar from '../reusableComponents/PerformanceBar';
@@ -15,13 +15,15 @@ type ReportQuery = {
   level: number;
 }
 
-export default function SelectCharacter() {
-  const { playerId = '[name]' } = useLocalSearchParams();
+export default function PerformanceReports() {
+  const { playerId = '[name]', game = gamesArray[0].title, level = '1', playerLastSelected = '0' } = useLocalSearchParams();
+  const router = useRouter();
   const windowHeight = useWindowDimensions().height;
-  const [query, setQuery] = useState<ReportQuery>({playerId: 0, game: gamesArray[0].title, level: 1});
-  const middleIndex = Math.ceil(query.game === gamesArray[0].title ? alphabetArray.length / 2 : numbersArray.length / 2);
+  const [query, setQuery] = useState<ReportQuery>({playerId: parseInt(playerLastSelected.toString()), game: game.toString(), level: parseInt(level.toString())});
+  const middleIndex = Math.ceil(query.game === gamesArray[0].title ? alphabetArray.length / 2 : numbersArray.length / 2); 
 
   //----------------------------------------------------------
+  //API is called when component loaded & everytime the query is updated
   useEffect(() => {
     //fetch with new params
   }, [query]);
@@ -34,7 +36,7 @@ export default function SelectCharacter() {
       setQuery({...query, level: 2, game: game});
       return;
     }
-    console.log('anyway');
+    
     setQuery({...query, game: game});
   }
 
@@ -44,7 +46,7 @@ export default function SelectCharacter() {
         <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
             <View  style={styles.header}>
               {/* Back Button */}
-              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?&playerId=${playerId}`}/>
+              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
 
               <Text style={styles.headerText}>Performance Reports</Text>
             </View>
@@ -116,7 +118,10 @@ export default function SelectCharacter() {
 
             </View>
 
-            <Text style={[styles.bodyText, styles.gameInstructionLink]}>Click here for game & level descriptions if needed</Text>
+            <Text style={[styles.bodyText, styles.gameInstructionLink]} 
+                  onPress={() => router.push(`/GameDescriptions?playerId=${playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
+              Click here for game & level descriptions if needed
+            </Text>
         </View>
     </BackgroundLayout>
   );
