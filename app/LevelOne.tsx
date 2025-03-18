@@ -8,9 +8,11 @@ import ProgressBar from "../reusableComponents/ProgressBar";
 import axios from "axios";
 import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../assets/imageMapping";
 import GameComplete from "../reusableComponents/GameComplete";
-
+import { Dimensions } from "react-native";//adding responsiveness 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+const { width, height } = Dimensions.get("window"); // adding to make the page responsive 
 
 interface GameQuestion {
     level: number;
@@ -155,7 +157,6 @@ export default function LevelOne() {
         </BackgroundLayout>
     );
 }
-
 const styles = StyleSheet.create({
     background: {
         flex: 1,
@@ -169,29 +170,30 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         width: "100%",
+        paddingHorizontal: width * 0.05, // Add responsive padding
     },
     voiceoverContainer: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
-        marginTop: 10,
+        marginTop: height * 0.02,
     },
     voiceoverText: {
-        fontSize: 20,
+        fontSize: width * 0.05,  // Scales text size
         fontWeight: "600",
         color: "#3E1911",
         textAlign: "center",
     },
     ear: {
-        width: 30,
-        height: 30,
+        width: width * 0.08,
+        height: width * 0.08,  // Keeping it proportional
         resizeMode: "contain",
-        marginLeft: 5,
+        marginLeft: width * 0.02,
     },
     cube: {
-        width: 200,
-        height: 250,
-        borderRadius: 20,
+        width: width * 0.5,   // Makes cube adapt to screen size
+        height: height * 0.3, // Adjust height dynamically
+        borderRadius: width * 0.05,
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
@@ -216,26 +218,26 @@ const styles = StyleSheet.create({
     cubeBackContainer: {
         position: "absolute",
         top: 0,
-        right: 200,
+        right: width * 0.5,  // Adjust dynamically based on screen width
         zIndex: 0, // Moves it behind the main image
     },
     ovalShape: {  
-        width: 70,
-        height: 150,
+        width: width * 0.15,  
+        height: height * 0.1,  
         backgroundColor: "rgba(0, 0, 0, 0.2)",
         position: "absolute",
-        left: 260,
-        top: 570,
-        borderRadius: 50,
-        zIndex: -1,  // Ensures it is behind everything
-
+        left: width * 0.65,  // Moves it towards the right
+        top: height * 0.63,  
+        borderRadius: width * 0.05,  
+        zIndex: -1,
+        
     },
     backButton: {
         position: "absolute",
-        top: 10,
-        left: 20,
-        width: 45,
-        height: 45,
+        top: height * 0.02,
+        left: width * 0.05,
+        width: width * 0.12,  
+        height: width * 0.12,  // Makes it proportional
         backgroundColor: "#C3E2E5",
         borderRadius: 10,
         justifyContent: "center",
@@ -243,35 +245,35 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     backIcon: {
-        width: 24,
-        height: 24,
+        width: width * 0.06,
+        height: width * 0.06,
         resizeMode: "contain",
     },
     title: {
-        fontSize: 32,
+        fontSize: width * 0.08,  // Scales based on screen width
         fontWeight: "700",
         color: "#3E1911",
         textAlign: "center",
     },
     nextButton: {
-        width: 100,
-        height: 50,
+        width: width * 0.3,  
+        height: height * 0.07,
         backgroundColor: "#C3E2E5",
         borderRadius: 10,
         justifyContent: "center",
         alignItems: "center",
-        marginTop: 20,
+        marginTop: height * 0.02,
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: width * 0.05,
         fontWeight: "600",
         color: "#3E1911",
     },
     backBtnContainer: {
         position: 'absolute',
-        top: 0,
-        left: 0,
-        paddingVertical: 20
+        top: height * 0.02,
+        left: width * 0.02,
+        paddingVertical: height * 0.02,
     }
 });
 
