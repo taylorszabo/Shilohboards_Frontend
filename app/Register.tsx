@@ -1,106 +1,137 @@
 import React, { useState } from "react";
-import {  
-    View, 
-    Text, 
-    TextInput, 
-    TouchableOpacity, 
-    StyleSheet, 
-    Image, 
-    ImageBackground,
-    Alert  
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    ActivityIndicator
 } from "react-native";
-import { useRouter } from 'expo-router';
+import { useRouter } from "expo-router";
+import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
-const Register = () => { 
+const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
+
+const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(""); // State to display errors
     const router = useRouter();
 
     const handleRegister = async () => {
         console.log("Register button pressed");
 
-        // Check if fields are empty or missing
+        setErrorMessage("");
+
         if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
-            console.log("Empty fields detected");
-            Alert.alert("Error", "Please fill in all fields.");
+            setErrorMessage("Please fill in all fields.");
             return;
         }
 
-    
+        if (password.length < 6) {
+            setErrorMessage("Password must be at least 6 characters long.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            setErrorMessage("Passwords do not match.");
+            return;
+        }
+
+        setLoading(true);
 
         try {
-            const response = await fetch("/register", { //add in API
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, password }),
+            const response = await axios.post(FIREBASE_SIGNUP_URL, {
+                email,
+                password,
+                returnSecureToken: true
             });
 
-            const data = await response.json();
+            console.log("Registration Successful!", response.data);
 
-            if (response.ok) {
-                console.log("Registration Successful!");
-                Alert.alert("Success", "Account created successfully!", [
-                    { text: "OK", onPress: () => router.push('/Login') }
-                ]);
-            } else {
-                console.log("Registration Failed:", data.message);
-                Alert.alert("Error", data.message || "Registration failed. Try again.");
+            router.push("/Login");
+
+        } catch (error: any) {
+            console.error("Registration error:", error.response?.data || error.message);
+
+            const firebaseError = error.response?.data?.error?.message;
+
+            switch (firebaseError) {
+                case "EMAIL_EXISTS":
+                    setErrorMessage("This email is already in use.");
+                    break;
+                case "INVALID_EMAIL":
+                    setErrorMessage("Please enter a valid email address.");
+                    break;
+                case "WEAK_PASSWORD":
+                    setErrorMessage("Password must be at least 6 characters.");
+                    break;
+                default:
+                    setErrorMessage("Registration failed. Please try again.");
             }
-        } catch (error) {
-            console.error("Network error:", error);
-            Alert.alert("Error", "Something went wrong. Please check your connection.");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <Image 
+                <Image
                     source={require("../assets/logo.png")}
-                    style={styles.logo} 
+                    style={styles.logo}
                 />
                 <Text style={styles.title}>Register New Account</Text>
-                
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Email" 
-                    value={email} 
-                    onChangeText={setEmail} 
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
                     keyboardType="email-address"
                     autoCapitalize="none"
                 />
-                
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Password" 
-                    secureTextEntry 
-                    value={password} 
-                    onChangeText={setPassword} 
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Password"
+                    secureTextEntry
+                    value={password}
+                    onChangeText={setPassword}
                 />
 
-                <TextInput 
-                    style={styles.input} 
-                    placeholder="Confirm Password" 
-                    secureTextEntry 
-                    value={confirmPassword} 
-                    onChangeText={setConfirmPassword} 
+                <TextInput
+                    style={styles.input}
+                    placeholder="Confirm Password"
+                    secureTextEntry
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
                 />
-                
-                <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => router.push('/Login')}>
+                {/* Display error message if it exists */}
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
+                {loading ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
+                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                        <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
+                )}
+
+                <TouchableOpacity onPress={() => router.push("/Login")}>
                     <Text style={styles.registerText}>Cancel</Text>
                 </TouchableOpacity>
             </View>
         </BackgroundLayout>
     );
 };
+
 
 const styles = StyleSheet.create({
     background: {
@@ -136,7 +167,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         borderWidth: 1,
         borderColor: "#494649",
-        shadowColor: "rgba(0, 0, 0, 0.25)", 
+        shadowColor: "rgba(0, 0, 0, 0.25)",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 1,
         shadowRadius: 4,
@@ -149,7 +180,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderRadius: 10,
         marginTop: 10,
-        shadowColor: "rgba(0, 0, 0, 0.25)", 
+        shadowColor: "rgba(0, 0, 0, 0.25)",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 1,
         shadowRadius: 4,
@@ -159,6 +190,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "700",
         textAlign: "center",
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10,
     },
     registerText: {
         marginTop: 20,

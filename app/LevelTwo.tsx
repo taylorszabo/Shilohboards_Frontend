@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import {StyleSheet, Text, View, Image, ActivityIndicator} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { useLocalSearchParams } from 'expo-router';
+import {useLocalSearchParams, useRouter} from 'expo-router';
 import ProgressBar from '../reusableComponents/ProgressBar';
 import {useEffect, useRef, useState} from 'react';
 import { Audio } from 'expo-av';
@@ -12,6 +12,7 @@ import GameComplete from '../reusableComponents/GameComplete';
 import axios from "axios";
 import {alphabetImages, alphabetLetters, numberDigits, numberImages} from "../assets/imageMapping";
 import SoundIcon from "../reusableComponents/SoundIcon";
+import { characterOptions, bgColorOptions } from "../CharacterOptions";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -33,9 +34,11 @@ export interface GameQuestion {
 
 export default function LevelTwo() {
     const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
+    const router = useRouter();
 
     const [gameId] = useState(() => `game-${Date.now()}-${Math.floor(Math.random() * 10000)}`);
 
+    const [character, setCharacter] = useState<any | null>(null);
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [answerSelected, setAnswerSelected] = useState<string | null>(null);
@@ -66,6 +69,34 @@ export default function LevelTwo() {
         }
         return require("../assets/defaultImage.png");
     };
+
+    useEffect(() => {
+        const fetchCharacterProfile = async () => {
+            if (!playerId || playerId === "0") {
+                console.warn("Invalid playerId, redirecting to character selection...");
+                router.replace("/SelectCharacter");
+                return;
+            }
+
+            try {
+                console.log(`Fetching profile for playerId: ${playerId}`);
+                const response = await axios.get(`${API_BASE_URL}/users/profile/${playerId}`);
+
+                if (response.data) {
+                    setCharacter(response.data);
+                } else {
+                    console.warn("No profile found, redirecting...");
+                    router.replace("/SelectCharacter");
+                }
+            } catch (error) {
+                console.error("Error fetching character profile:", error);
+                setError("Failed to load character. Redirecting...");
+                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+            }
+        };
+
+        fetchCharacterProfile();
+    }, [playerId, router]);
 
     useEffect(() => {
         return () => {
@@ -189,6 +220,11 @@ export default function LevelTwo() {
         return <Text>Loading questions...</Text>;
     }
 
+    if (!character) {
+        console.warn("Character profile is null, redirecting...");
+        return <ActivityIndicator size="large" color="#0000ff" />;
+    }
+
     if (error) {
         return <Text style={{ color: "red" }}>{error}</Text>;
     }
@@ -204,7 +240,13 @@ export default function LevelTwo() {
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
 
                 {/* =============== Player Card =============== */}
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25}/>
+                <CharacterCard
+                    id={character.id}
+                    name={character.profile_name}
+                    image={characterOptions.find(option => option.id === character.profile_image)?.picture}
+                    bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
+                    customWidth={0.25}
+                />
 
                 {/* =============== Game/Level Title =============== */}
                 <Text style={styles.headerText}>{game} - Level 2</Text>
