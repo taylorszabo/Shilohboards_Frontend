@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
+
 const FIREBASE_API_KEY =  process.env.EXPO_PUBLIC_FIREBASE_API_KEY
 const FIREBASE_AUTH_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
 const { width, height } = Dimensions.get("window"); 
@@ -110,20 +111,12 @@ export default function Login(){
                
                 />
                 
-                <TouchableOpacity 
-                    style={[styles.button, { width: width * 0.6, height: height * 0.08 }]} 
-                    onPress={handleLogin} 
-                >
-                    <Text style={styles.buttonText}>Sign In</Text> 
-                </TouchableOpacity>
-
-
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : (
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                    <TouchableOpacity style={[styles.button, { width: width * 0.6, height: height * 0.08 }]} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Sign In</Text>
                     </TouchableOpacity>
                 )}

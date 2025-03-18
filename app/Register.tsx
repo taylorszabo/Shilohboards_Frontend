@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -99,8 +100,6 @@ const Register = () => {
                     onChangeText={setEmail} 
                     keyboardType="email-address"
                     autoCapitalize="none"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
                 />
                 
                 <TextInput 
@@ -120,20 +119,14 @@ const Register = () => {
                     onChangeText={setConfirmPassword} 
                 />
                 
-                <TouchableOpacity 
-                    style={[styles.button, { width: width * 0.6, height: height * 0.08 }]} 
-                    onPress={handleRegister}
-                >
-                    <Text style={styles.buttonText}>Sign Up</Text>
-                </TouchableOpacity>
-
+                
                 {/* Display error message if it exists */}
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : (
-                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <TouchableOpacity style={[styles.button, { width: width * 0.6, height: height * 0.08 }]}  onPress={handleRegister}>
                         <Text style={styles.buttonText}>Sign Up</Text>
                     </TouchableOpacity>
                 )}
