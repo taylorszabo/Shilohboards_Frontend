@@ -19,6 +19,7 @@ type Props = {
     functionToExecute?: Function;
     selected?: boolean;
     boldFirstLetter?: boolean;
+    testID?: string;
 };
 
 export default function OptionCard(props: Props) {
@@ -33,7 +34,8 @@ export default function OptionCard(props: Props) {
             textSize = 24,
             functionToExecute,
             selected,
-            boldFirstLetter = false
+            boldFirstLetter = false,
+            testID
     } = props;
 
     const router = useRouter();
@@ -59,7 +61,7 @@ export default function OptionCard(props: Props) {
 
     //-----------------------------------------------
     return (
-        <Pressable disabled={disabled} 
+        <Pressable disabled={disabled} testID={testID}
         style={[styles.card, selected && {borderWidth: 5, borderRightWidth: 5, borderBottomWidth: 5, borderColor: '#0098A6'}, 
             { 
                 backgroundColor: bgColor, 

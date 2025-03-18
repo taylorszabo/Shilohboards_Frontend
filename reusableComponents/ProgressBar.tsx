@@ -15,11 +15,6 @@ export default function ProgressBar(props: {fillPercent: number}) {
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-    progressBar: {
-        width: "100%",
-        height: "100%",
-        backgroundColor: "#E3D1B9",
-    },
     progressBarContainer: {
         width: "90%",
         height: 18,
@@ -29,9 +24,13 @@ const styles = StyleSheet.create({
         borderColor: "#3E1911",
         overflow: "hidden", 
     },
+    progressBar: {
+        width: "80%",
+        height: "100%",
+    },
     progressBarFill: {
         height: "100%",
-        backgroundColor: "#6B3E26", 
+        backgroundColor: "#3E1911", 
         borderRadius: 50,
     },
 });

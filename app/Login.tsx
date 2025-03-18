@@ -1,29 +1,89 @@
-import React, { useState } from "react";
-import {  View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert,Dimensions } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    ActivityIndicator,
+    Alert,
+    Dimensions, 
+} from "react-native";
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios, {AxiosError} from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
+const FIREBASE_API_KEY =  process.env.EXPO_PUBLIC_FIREBASE_API_KEY
+const FIREBASE_AUTH_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
 const { width, height } = Dimensions.get("window"); 
 
-const Login = () => { 
+export default function Login(){
+  
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState("");
     const router = useRouter();
 
-    //placeholder for testing funtionality of login
-    const handleLogin = () => {
-        if (email === "" && password === "") {
-            Alert.alert("Login Successful!");
-            router.push('/SelectCharacter'); 
-        } else {
-            Alert.alert("Invalid email or password.");
+    useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (token) {
+                router.push('/SelectCharacter');
+            }
+        };
+        checkUser();
+    }, []);
+
+    const handleLogin = async () => {
+        try {
+            const response = await axios.post(FIREBASE_AUTH_URL, {
+                email,
+                password,
+                returnSecureToken: true
+            });
+
+            const { idToken, localId } = response.data;
+
+            await AsyncStorage.setItem("authToken", idToken);
+            await AsyncStorage.setItem("userId", localId);
+
+            router.push('/SelectCharacter');
+
+        } catch (error: unknown) {
+            if (error instanceof AxiosError) {
+                const firebaseError = error.response?.data?.error?.message;
+                console.log(firebaseError);
+                switch (firebaseError) {
+                    case "INVALID_LOGIN_CREDENTIALS":
+                        setErrorMessage("Incorrect username or password. Please try again.");
+                        break;
+                    case "INVALID_EMAIL":
+                        setErrorMessage("Please enter a valid email address.");
+                        break;
+                    case "USER_DISABLED":
+                        setErrorMessage("This account has been disabled.");
+                        break;
+                    case "MISSING_PASSWORD":
+                        setErrorMessage("Please enter a password.");
+                        break;
+                    default:
+                        setErrorMessage("Login failed. Please try again.");
+                }
+            } else {
+                setErrorMessage("An unexpected error occurred.");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <Image 
+                <Image
                     source={require("../assets/logo.png")}
                     style={[
                         styles.logo,
@@ -36,7 +96,9 @@ const Login = () => {
                   style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]} 
                     placeholder="Email" 
                     value={email} 
-                    onChangeText={setEmail} 
+                    onChangeText={setEmail}
+                    autoCapitalize="none"
+                    keyboardType="email-address"
                 />
                 
                 <TextInput 
@@ -45,6 +107,7 @@ const Login = () => {
                     secureTextEntry 
                     value={password} 
                     onChangeText={setPassword} 
+               
                 />
                 
                 <TouchableOpacity 
@@ -54,6 +117,17 @@ const Login = () => {
                     <Text style={styles.buttonText}>Sign In</Text> 
                 </TouchableOpacity>
 
+
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+
+                {loading ? (
+                    <ActivityIndicator size="large" color="#0000ff" />
+                ) : (
+                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                        <Text style={styles.buttonText}>Sign In</Text>
+                    </TouchableOpacity>
+                )}
+
                 <TouchableOpacity onPress={() => router.push('/Register')}>
                     <Text style={styles.registerText}>Register New Account</Text>
                 </TouchableOpacity>
@@ -61,6 +135,7 @@ const Login = () => {
         </BackgroundLayout>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -79,6 +154,14 @@ const styles = StyleSheet.create({
         marginBottom: height * 0.04, 
         textAlign: "center",
     },
+    label: {
+        width: "90%",
+        fontSize: 20,
+        fontWeight: "400",
+        color: "#3E1911",
+        textAlign: "left",
+        marginTop: 10,
+    },
     input: {
         height: height * 0.07, 
         backgroundColor: "#fff",
@@ -87,21 +170,24 @@ const styles = StyleSheet.create({
         marginBottom: height * 0.015, 
         borderWidth: 1,
         borderColor: "#494649",
-        shadowColor: "rgba(0, 0, 0, 0.25)", 
+        shadowColor: "rgba(0, 0, 0, 0.25)",
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 1,
         shadowRadius: 4,
+    },
+    errorText: {
+        color: "red",
+        marginBottom: 10,
     },
     button: {
         backgroundColor: "#C3E2E5",
         justifyContent: "center",
         alignItems: "center",
-        borderRadius: 10,
+        borderRadius: 8,
         marginTop: height * 0.02, 
-        shadowColor: "rgba(0, 0, 0, 0.25)", 
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 1,
-        shadowRadius: 4,
+        borderRightWidth: 2,
+        borderBottomWidth: 3,
+        borderColor: '#A9A9A9',
     },
     buttonText: {
         color: "#3E1911",
@@ -117,5 +203,3 @@ const styles = StyleSheet.create({
         textDecorationLine: "underline",
     }
 });
-
-export default Login;
