@@ -33,6 +33,11 @@ export interface GameQuestion {
     exampleImage?: number;
 }
 
+type QuestionAnswers = {
+    id: string,
+    correct: boolean
+}
+
 export default function LevelTwo() {
     const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
     const router = useRouter();
@@ -50,6 +55,7 @@ export default function LevelTwo() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
+    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
 
 
     const getLocalImage = (gameType: string, key: string | number): number => {
@@ -163,7 +169,7 @@ export default function LevelTwo() {
         };
     }, [game]);
 
-    function markAnswer(answerSubmitted: string) {
+    function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
             setAnswerSelected(answerSubmitted);
         }
@@ -176,16 +182,21 @@ export default function LevelTwo() {
 
         const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct);
         const correctValue = game === "Alphabet" ? correctAnswer?.object : correctAnswer?.number?.toString();
+        const questionLetterOrNumber = game === "Alphabet" ? gameQuestions[currentQuestion].letter : gameQuestions[currentQuestion].number?.toString();
 
         const isCorrect = answerSelected === correctValue;
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-            playAudio(require("../assets/Sounds/correctSound.mp3"));
-        } else {
-            playAudio(require("../assets/Sounds/incorrectSound.mp3"));
-        }
+        } 
+
+        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetterOrNumber, correct: isCorrect} as QuestionAnswers]);
     }
+
+    useEffect(() => {
+        //console.log(recordedAnswers);
+    }, [recordedAnswers]);
 
     async function endGame() {
         setGameComplete(true);
@@ -291,7 +302,7 @@ export default function LevelTwo() {
                                     height={140}
                                     image={option.image}
                                     lowerText={game === "Alphabet" ? option.object : ""}
-                                    functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
+                                    functionToExecute={() => selectAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
                                     boldFirstLetter={game === "Alphabet"}
