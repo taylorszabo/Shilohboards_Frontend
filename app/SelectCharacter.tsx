@@ -63,6 +63,11 @@ export default function SelectCharacter() {
         setChildren(validProfiles);
       }
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 404) {
+        setErrorMessage("No characters found. Please create a new character.");
+        setChildren([]);
+        return;
+      }
       console.error("Error fetching children:", error);
       setErrorMessage("Failed to load characters.");
       setChildren([]);
