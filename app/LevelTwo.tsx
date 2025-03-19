@@ -13,6 +13,7 @@ import axios from "axios";
 import {alphabetImages, alphabetLetters, numberDigits, numberImages} from "../assets/imageMapping";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -48,6 +49,7 @@ export default function LevelTwo() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
 
 
     const getLocalImage = (gameType: string, key: string | number): number => {
@@ -237,7 +239,9 @@ export default function LevelTwo() {
         <BackgroundLayout>
             <View style={styles.container}> 
                 {/* =============== Back Button =============== */}
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+                
 
                 {/* =============== Player Card =============== */}
                 <CharacterCard
