@@ -32,7 +32,16 @@ export default function CustomButton(props: Props) {
 
     //-----------------------------------------------
     return (
-        <Pressable style={[styles.btn, uniqueButtonStyling, disabled && {backgroundColor: '#d3d3d3'}]} onPress={() => handlePressEvent()} testID={testID}>
+        <Pressable
+                style={({ pressed }) => [
+                    styles.btn,
+                    uniqueButtonStyling,
+                    disabled && { backgroundColor: '#d3d3d3' },
+                    pressed && !disabled && styles.pressedStyle
+                ]} 
+                onPress={() => handlePressEvent()} 
+                testID={testID}
+        >
             {text &&
                 <Text style={[styles.defaultTextStyle, uniqueTextStyling]}>{text}</Text>
             }
@@ -63,4 +72,12 @@ const styles = StyleSheet.create({
         color: '#3E1911',
         fontWeight: 'bold',
     },
+    pressedStyle: { 
+        backgroundColor: '#9BD1D6', 
+        borderWidth: 3, 
+        borderRightWidth: 3, 
+        borderBottomWidth: 3, 
+        borderColor: '#0098A6', 
+        textDecorationLine: 'underline'
+    }
 });
