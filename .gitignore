@@ -34,4 +34,8 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+<<<<<<< Updated upstream
 /.env
+=======
+.env
+>>>>>>> Stashed changes

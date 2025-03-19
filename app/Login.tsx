@@ -6,17 +6,22 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert,
+    Dimensions, 
 } from "react-native";
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 
+
 const FIREBASE_API_KEY =  process.env.EXPO_PUBLIC_FIREBASE_API_KEY
 const FIREBASE_AUTH_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
+const { width, height } = Dimensions.get("window"); 
 
 export default function Login(){
+  
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
@@ -81,33 +86,37 @@ export default function Login(){
             <View style={styles.container}>
                 <Image
                     source={require("../assets/logo.png")}
-                    style={styles.logo}
+                    style={[
+                        styles.logo,
+                        { width: width * 0.5, height: width * 0.5 } 
+                    ]} 
                 />
                 <Text style={styles.title}>Login</Text>
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    value={email}
+                
+                <TextInput 
+                  style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]} 
+                    placeholder="Email" 
+                    value={email} 
                     onChangeText={setEmail}
                     autoCapitalize="none"
                     keyboardType="email-address"
                 />
-
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={setPassword}
+                
+                <TextInput 
+                    style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]} 
+                    placeholder="Password" 
+                    secureTextEntry 
+                    value={password} 
+                    onChangeText={setPassword} 
+               
                 />
-
+                
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
                     <ActivityIndicator size="large" color="#0000ff" />
                 ) : (
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                    <TouchableOpacity style={[styles.button, { width: width * 0.6, height: height * 0.08 }]} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Sign In</Text>
                     </TouchableOpacity>
                 )}
@@ -122,30 +131,21 @@ export default function Login(){
 
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
-    },
     container: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        paddingBottom: 60,
+        paddingBottom: height * 0.08, 
     },
     logo: {
-        width: 400,
-        height: 400,
         resizeMode: "contain",
     },
     title: {
-        fontSize: 32,
+        fontSize: width * 0.08,
         fontWeight: "700",
         color: "#3E1911",
-        marginBottom: 40,
-
+        marginBottom: height * 0.04, 
+        textAlign: "center",
     },
     label: {
         width: "90%",
@@ -156,12 +156,11 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     input: {
-        width: 300,
-        height: 57,
+        height: height * 0.07, 
         backgroundColor: "#fff",
         borderRadius: 10,
         paddingHorizontal: 12,
-        marginBottom: 10,
+        marginBottom: height * 0.015, 
         borderWidth: 1,
         borderColor: "#494649",
         shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -174,27 +173,25 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     button: {
-        width: 214,
-        height: 61,
         backgroundColor: "#C3E2E5",
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 8,
-        marginTop: 10,
+        marginTop: height * 0.02, 
         borderRightWidth: 2,
         borderBottomWidth: 3,
         borderColor: '#A9A9A9',
     },
     buttonText: {
         color: "#3E1911",
-        fontSize: 24,
+        fontSize: width * 0.06, 
         fontWeight: "700",
         textAlign: "center",
     },
     registerText: {
-        marginTop: 20,
+        marginTop: height * 0.03, 
         color: "#3E1911",
-        fontSize: 20,
+        fontSize: width * 0.05, 
         fontWeight: "400",
         textDecorationLine: "underline",
     }
