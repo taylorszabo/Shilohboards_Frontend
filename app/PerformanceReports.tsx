@@ -16,7 +16,7 @@ type ReportQuery = {
 }
 
 export default function PerformanceReports() {
-  const { playerId = '[name]', game = gamesArray[0].title, level = '1', playerLastSelected = '0' } = useLocalSearchParams();
+  const { playerId = '[name]', game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
   const router = useRouter();
   const windowHeight = useWindowDimensions().height;
   const [query, setQuery] = useState<ReportQuery>({playerId: parseInt(playerLastSelected.toString()), game: game.toString(), level: parseInt(level.toString())});
@@ -26,6 +26,7 @@ export default function PerformanceReports() {
   //API is called when component loaded & everytime the query is updated
   useEffect(() => {
     //fetch with new params
+    //console.log(query);
   }, [query]);
 
   //----------------------------------------------------------
@@ -79,11 +80,11 @@ export default function PerformanceReports() {
 
             {/* =============== Level Row =============== */}
             <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
-                {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].map((level, index) => (
+                {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].slice(1).map((level, index) => (
                     <View key={index}>
-                        <Text style={[styles.bodyText, index + 1 === query.level && styles.selectedUnderline]} 
-                              onPress={() => setQuery({...query, level: index + 1})}>
-                          Level {index + 1}
+                        <Text style={[styles.bodyText, index + 2 === query.level && styles.selectedUnderline]} 
+                              onPress={() => setQuery({...query, level: index + 2})}>
+                          Level {index + 2}
                         </Text>
                     </View>
                 ))}
