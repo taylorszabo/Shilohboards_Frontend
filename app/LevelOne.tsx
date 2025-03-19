@@ -10,6 +10,7 @@ import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import GameComplete from "../reusableComponents/GameComplete";
 import { Dimensions } from "react-native";//adding responsiveness 
+import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -35,6 +36,7 @@ export default function LevelOne() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
+    const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
     const questionsFetched = useRef(false);
 
     // Fetch character profile from backend
@@ -138,11 +140,9 @@ export default function LevelOne() {
        
         <BackgroundLayout>
             <View style={styles.container}>
-                <CustomButton
-                    image={require("../assets/back.png")}
-                    uniqueButtonStyling={styles.backBtnContainer}
-                    onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}
-                />
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+
                 <CharacterCard
                     id={character.id}
                     name={character.profile_name}

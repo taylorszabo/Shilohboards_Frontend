@@ -17,7 +17,7 @@ export default function ExitConfirmation(props: Props) {
         <View style={styles.container}>
             <LinearGradient colors={['rgba(225, 206, 182, 0.2)', 'rgba(0, 0, 0, 0)', 'rgba(225, 206, 182, 0.2)']} style={styles.popupBox}>
                 <Image source={require('../assets/Icons/exitIcon.png')} style={styles.icon}/>
-                <Text style={[styles.text, {fontSize: 22}]}>Are you sure you want to exit the game? All progress/answers will be lost.</Text>
+                <Text style={[styles.text, {fontSize: 22}]}>Are you sure you want to exit the game? All progress will be lost.</Text>
                 <View style={styles.btnContainer}>
                     <CustomButton text='Cancel' functionToExecute={() => setExitPopupOpen(false)} />
                     <CustomButton text='Yes, exit' onPressRoute={exitRoute} />

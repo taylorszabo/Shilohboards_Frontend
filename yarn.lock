@@ -4076,6 +4076,11 @@ expo-router@^4.0.17:
     semver "~7.6.3"
     server-only "^0.0.1"
 
+expo-screen-orientation@^8.0.4:
+  version "8.0.4"
+  resolved "https://registry.npmjs.org/expo-screen-orientation/-/expo-screen-orientation-8.0.4.tgz"
+  integrity sha512-kJrIZ/44+Gs5D5nyP6SXqTUbJEOsRgzk+nUcKeVZ0Vmx0szGrvSvhzdus7853xT/sqyAARsqBMlx626jAMu/Jg==
+
 expo-status-bar@~2.0.1:
   version "2.0.1"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-2.0.1.tgz"
