@@ -14,6 +14,7 @@ import GameComplete from '../reusableComponents/GameComplete';
 import SoundPressable from '../reusableComponents/SoundPressable';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
@@ -47,6 +48,7 @@ export default function LevelThree() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
@@ -198,7 +200,8 @@ export default function LevelThree() {
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} />
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
 
                 <CharacterCard
                     id={character.id}

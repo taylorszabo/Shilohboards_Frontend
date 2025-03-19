@@ -1,32 +1,28 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, useWindowDimensions, Image } from 'react-native';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { StyleSheet, Text, View, Image } from 'react-native';
+import { Dispatch, SetStateAction } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 
 type Props = {
     exitRoute: string;
     setExitPopupOpen: Dispatch<SetStateAction<boolean>>;
-    //optional
-    //functionToExecute?: Function;
 };
 
 export default function ExitConfirmation(props: Props) {
     const { exitRoute, setExitPopupOpen } = props;
-    const windowHeight = useWindowDimensions().height;
 
     //----------------------------------------------------------
     return (
-        <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
+        <View style={styles.container}>
             <LinearGradient colors={['rgba(225, 206, 182, 0.2)', 'rgba(0, 0, 0, 0)', 'rgba(225, 206, 182, 0.2)']} style={styles.popupBox}>
-                <Image source={require('../assets/Icons/exitIcon.png')} style={[styles.icon]}/>
-                <Text style={[styles.text, {fontSize: 22}]}>Are you sure you want to exit the game? All progress will not be saved.</Text>
-                <View style={[styles.btnContainer]}>
+                <Image source={require('../assets/Icons/exitIcon.png')} style={styles.icon}/>
+                <Text style={[styles.text, {fontSize: 22}]}>Are you sure you want to exit the game? All progress/answers will be lost.</Text>
+                <View style={styles.btnContainer}>
                     <CustomButton text='Cancel' functionToExecute={() => setExitPopupOpen(false)} />
                     <CustomButton text='Yes, exit' onPressRoute={exitRoute} />
                 </View>
             </LinearGradient>
-
         </View>
     );
 }
