@@ -5,12 +5,14 @@ import Slider from "@react-native-community/slider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../reusableComponents/CustomButton";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 
 const { width, height } = Dimensions.get("window");
 
 // Firebase API Key and Endpoints
-const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY; 
+const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+const FIREBASE_GET_USER_URL = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`
+const FIREBASE_UPDATE_PASSWORD = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`
 
 export default function Settings() {
   const router = useRouter();
@@ -29,52 +31,104 @@ export default function Settings() {
   //Accessibility settings state
   const [colourBlindMode, setColourBlindMode] = useState(true); // Controls Colour Blind Mode
 
+  const refreshAuthToken = async (refreshToken: string | null) => {
+    try {
+      console.log("Refreshing authentication token...");
 
+      const response = await axios.post(
+          `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`,
+          {
+            grant_type: "refresh_token",
+            refresh_token: refreshToken,
+          }
+      );
+
+      const newAuthToken = response.data.id_token;
+      const newRefreshToken = response.data.refresh_token;
+
+      await AsyncStorage.setItem("authToken", newAuthToken);
+      await AsyncStorage.setItem("refreshToken", newRefreshToken);
+
+      console.log("Auth token refreshed successfully.");
+      return newAuthToken;
+    } catch (error) {
+      console.error("Error refreshing auth token:", error);
+      return null;
+    }
+  };
+  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setLoading(true); 
+        setLoading(true);
 
-        //Retrieve authentication token from AsyncStorage
-        const authToken = await AsyncStorage.getItem("authToken");
+        let authToken = await AsyncStorage.getItem("authToken");
+        let refreshToken = await AsyncStorage.getItem("refreshToken");
+
         if (!authToken) {
-          console.warn("No authentication token found.");
-          setLoading(false);
-          return;
+          console.warn("No authentication token found. Attempting to refresh...");
+
+          if (refreshToken) {
+            authToken = await refreshAuthToken(refreshToken);
+            if (!authToken) {
+              setLoading(false);
+              return;
+            }
+          } else {
+            setLoading(false);
+            return;
+          }
         }
 
         console.log("Fetching user email from Firebase...");
 
-        //Send request to Firebase to get user info
-        const response = await axios.post(FIREBASE_GET_USER_URL, {
-          idToken: authToken, 
-        });
+        try {
+          const response = await axios.post(FIREBASE_GET_USER_URL, {
+            idToken: authToken,
+          });
 
-        // Extract user email 
-        const userEmail = response.data.users[0].email;
-        setEmail(userEmail); 
+          const userEmail = response.data.users[0].email;
+          setEmail(userEmail);
+          console.log("User email retrieved:", userEmail);
+        } catch (error :unknown) {
+          const axiosError = error as AxiosError;
+          if (axiosError.response && axiosError.response.status === 400) {
+            console.warn("Auth token expired. Refreshing token...");
 
-        console.log("User email retrieved:", userEmail);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
+            authToken = await refreshAuthToken(refreshToken);
+
+            if (authToken) {
+              console.log("Retrying fetch with new token...");
+              const retryResponse = await axios.post(
+                  FIREBASE_GET_USER_URL,
+                  { idToken: authToken }
+              );
+
+              // Extract user email
+              const userEmail = retryResponse.data.users[0].email;
+              setEmail(userEmail);
+              console.log("User email retrieved after token refresh:", userEmail);
+            } else {
+              console.error("Failed to refresh auth token.");
+            }
+          } else {
+            console.error("Error fetching user data:", error);
+          }
+        }
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
-
     fetchUserData();
   }, []);
-
   const handleSaveAllSettings = async () => {
     try {
-      // Retrieve authentication token from AsyncStorage
       const authToken = await AsyncStorage.getItem("authToken");
       if (!authToken) {
         console.warn("No authentication token found.");
         return;
       }
 
-      //Send request to Firebase to update the user's password
       const response = await axios.post(FIREBASE_UPDATE_PASSWORD, {
         idToken: authToken, 
         password: newPassword, 
