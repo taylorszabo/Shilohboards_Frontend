@@ -313,9 +313,10 @@ export default function LevelTwo() {
                     </View>
 
                     {answerDisplayed ? 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} /> 
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
                     : answerSelected && 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} />}
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                    }
                 </View>
             </View>
         </BackgroundLayout>
@@ -366,11 +367,17 @@ const styles = StyleSheet.create({
   },
   submitBtnContainer: {
     marginTop: 'auto',
+    flexDirection: 'row',
   },
   backBtnContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     paddingVertical: 20
+  },
+  btnIcon: {
+    height: '150%',
+    width: '7%',
+    resizeMode: 'contain',
   }
 });

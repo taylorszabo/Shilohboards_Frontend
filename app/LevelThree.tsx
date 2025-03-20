@@ -262,7 +262,11 @@ export default function LevelThree() {
                                 ))}
                             </View>
 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
+                            {answerDisplayed ? 
+                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                            : answerSelected && 
+                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                            }
                         </View>
                     </View>
                 ) : null}
@@ -302,6 +306,12 @@ const styles = StyleSheet.create({
   },
   submitBtnContainer: {
     marginTop: 'auto', 
+    flexDirection: 'row',
+  },
+  btnIcon: {
+    height: '150%',
+    width: '7%',
+    resizeMode: 'contain',
   },
   backBtnContainer: {
     position: 'absolute', 
