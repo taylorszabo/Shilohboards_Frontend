@@ -129,6 +129,7 @@ export default function CharacterCreation() {
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
+            setCharacterCreated({ ...characterCreated, name: characterCreated.name.trim() })
             setInfoBeingVerified(false);
         }
     }
@@ -152,7 +153,7 @@ export default function CharacterCreation() {
                         <TextInput
                             style={[styles.input, { fontSize: RFPercentage(2.5) }]}
                             value={characterCreated.name}
-                            onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input })}
+                            onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
 
                         <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
