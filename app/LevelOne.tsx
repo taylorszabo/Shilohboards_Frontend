@@ -139,10 +139,10 @@ export default function LevelOne() {
     return (
        
         <BackgroundLayout>
-            <View style={styles.container}>
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
-                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+            {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
 
+            <View style={styles.container}>
                 <CharacterCard
                     id={character.id}
                     name={character.profile_name}
@@ -193,13 +193,6 @@ export default function LevelOne() {
 }
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        width: "100%",
-        height: "100%",
-        justifyContent: "center",
-        alignItems: "center",
-    },
     container: {
         flex: 1,
         justifyContent: "space-between",
