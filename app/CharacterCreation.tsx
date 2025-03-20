@@ -32,6 +32,7 @@ export default function CharacterCreation() {
     const [processStep, setProcessStep] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
 
     //--------------------------------------------------------------------------
     useEffect(() => {
@@ -112,6 +113,7 @@ export default function CharacterCreation() {
     //--------------------------------------------------------------------------
     function verifyInformationEntered() {
         let missingInfo: boolean = false;
+        setInfoBeingVerified(true);
 
         if (processStep === 1) {
             if (characterCreated.name.trim().length < 2 || !characterOptions.find(option => option.id === characterCreated.picture)) {
@@ -127,6 +129,7 @@ export default function CharacterCreation() {
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
+            setInfoBeingVerified(false);
         }
     }
 
@@ -143,14 +146,18 @@ export default function CharacterCreation() {
                 {/* Step 1 - Enter Name & Choose Character */}
                 {processStep === 1 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please enter your name:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && characterCreated.name.trim().length < 2 && {color: 'red'}]}>
+                            Please enter your name:
+                        </Text>
                         <TextInput
                             style={[styles.input, { fontSize: RFPercentage(2.5) }]}
                             value={characterCreated.name}
                             onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input })}
                         />
 
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your character:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && !characterOptions.find(option => option.id === characterCreated.picture) && {color: 'red'}]}>
+                            Please choose your character:
+                        </Text>
                         <View style={styles.optionCardContainer}>
                             {characterOptions.map((item) => (
                                 <OptionCard
@@ -169,7 +176,9 @@ export default function CharacterCreation() {
                 {/* Step 2 - Choose Background Color */}
                 {processStep === 2 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your background colour:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && !bgColorOptions.find(option => option === characterCreated.bgColor) && {color: 'red'}]}>
+                            Please choose your background colour:
+                        </Text>
                         <View style={styles.optionCardContainer}>
                             {bgColorOptions.map((item) => (
                                 <OptionCard
