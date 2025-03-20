@@ -23,7 +23,7 @@ export const bgColorOptions: string[] = ['#C3E2E5', '#C0E3B9', '#FDFFB8', '#FFDD
 
 //validations ---------------------------------------------------
 export const isNameInvalid = (name: string): boolean => {
-    return name.trim().length < 2;
+    return name.trim().length < 2 || name.trim().length > 37;
 };
 
 export const isCharacterInvalid = (character: string): boolean => {
