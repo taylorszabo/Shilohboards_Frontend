@@ -33,6 +33,11 @@ export interface GameQuestion {
     exampleImage?: number;
 }
 
+type QuestionAnswers = {
+    id: string,
+    correct: boolean
+}
+
 export default function LevelThree() {
     const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
     const router = useRouter();
@@ -49,6 +54,7 @@ export default function LevelThree() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
+    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
@@ -126,7 +132,7 @@ export default function LevelThree() {
         fetchQuestions();
     }, []);
 
-    function markAnswer(answerSubmitted: string) {
+    function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
             setAnswerSelected(answerSubmitted);
         }
@@ -139,13 +145,14 @@ export default function LevelThree() {
 
         const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object;
         const isCorrect = answerSelected === correctAnswer;
+        const questionLetter = gameQuestions[currentQuestion].letter;
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-            playAudio(require('../assets/Sounds/correctSound.mp3'));
-        } else {
-            playAudio(require('../assets/Sounds/incorrectSound.mp3'));
-        }
+        } 
+
+        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetter, correct: isCorrect} as QuestionAnswers]);
     }
 
     async function endGame() {
@@ -238,7 +245,7 @@ export default function LevelThree() {
                                         customWidth={0.38} 
                                         height={140} 
                                         image={option.image} 
-                                        functionToExecute={() => markAnswer(option.object)} 
+                                        functionToExecute={() => selectAnswer(option.object)} 
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={

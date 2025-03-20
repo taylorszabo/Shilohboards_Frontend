@@ -194,10 +194,6 @@ export default function LevelTwo() {
         setRecordedAnswers(prevItems => [...prevItems, {id: questionLetterOrNumber, correct: isCorrect} as QuestionAnswers]);
     }
 
-    useEffect(() => {
-        //console.log(recordedAnswers);
-    }, [recordedAnswers]);
-
     async function endGame() {
         setGameComplete(true);
 
