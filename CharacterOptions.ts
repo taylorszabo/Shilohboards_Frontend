@@ -34,10 +34,9 @@ export const isBgColorInvalid = (color: string): boolean => {
     return !bgColorOptions.includes(color);
 };
 
-//make all letters lowercase except for the first letter, or letters after dashes/apostrophes
-export const formatNameWithCapitals = (str: string) => {
+//make all letters lowercase except for the first letter, or letters after dashes/apostrophes ---------------
+export const formatNameWithCapitals = (str: string) => 
     str.toLowerCase().replace(/\b\w|(?<=[-'])\w/g, char => char.toUpperCase());
-}
 
 //for testing ----------------------------------------------------
 export var tempCharacterArray: CharacterBuild[] = [
