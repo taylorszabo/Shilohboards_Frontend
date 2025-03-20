@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, Image, Pressable, ViewStyle, TextStyle, ImageStyle  } from 'react-native';
+import { StyleSheet, Text, Image, Pressable, ViewStyle, TextStyle, ImageStyle,  } from 'react-native';
 import { useRouter } from 'expo-router';
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
 };
 
 export default function CustomButton(props: Props) {
-    const { functionToExecute, onPressRoute, text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling, disabled = false, testID } = props;
+    const { functionToExecute, onPressRoute,text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling, disabled = false, testID } = props;
     const router = useRouter();
 
     //------------------- FUNCTION ------------------
