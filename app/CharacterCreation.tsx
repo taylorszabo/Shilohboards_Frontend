@@ -153,6 +153,7 @@ export default function CharacterCreation() {
                         <TextInput
                             style={[styles.input, { fontSize: RFPercentage(2.5) }]}
                             value={characterCreated.name}
+                            maxLength={37}
                             onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
 
