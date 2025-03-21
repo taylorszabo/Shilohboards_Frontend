@@ -260,10 +260,8 @@ export default function LevelThree() {
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-                            {/* TODO: remove the answer once development done!!!!!!!!!! */}
-                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-                            <Text style={styles.headerText}>Choose the correct letter ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) for the sound or beginning of the word:</Text>
+                            {/* answer for troubleshooting: ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) */}
+                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
                                 {gameQuestions[currentQuestion].options.map((option, index) => (

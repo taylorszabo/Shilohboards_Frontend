@@ -172,10 +172,10 @@ export default function LevelOne() {
     return (
        
         <BackgroundLayout>
-            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
-            {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
-
             <View style={styles.container}>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+
                 <CharacterCard
                     id={character.id}
                     name={character.profile_name}
@@ -186,10 +186,14 @@ export default function LevelOne() {
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
+                
                 <TouchableOpacity style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
-                <SoundIcon size='20%' onPress={playSound}/>
+                <View style={{margin: '10%'}}>
+                    <SoundIcon size='20%' onPress={playSound}/>
+                </View>
+                
                 {/* // === OVAL SHAPE ===  This will always be rendered */}
                 <View style={styles.ovalShape} /> 
                 {doorOpened ? (
@@ -215,9 +219,8 @@ export default function LevelOne() {
                     </TouchableOpacity>
                 )}
 
-                <TouchableOpacity style={styles.nextButton} onPress={moveToNextQuestion}>
-                    <Text style={styles.buttonText}>Next →</Text>
-                </TouchableOpacity>
+                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} />
+
             </View>
             
         </BackgroundLayout>
@@ -230,7 +233,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         width: "100%",
-        paddingHorizontal: width * 0.05, // Add responsive padding
     },
     voiceoverContainer: {
         flexDirection: "row",
@@ -334,6 +336,10 @@ const styles = StyleSheet.create({
         top: height * 0.02,
         left: width * 0.02,
         paddingVertical: height * 0.02,
-    }
+    },
+    submitBtnContainer: {
+        marginTop: 'auto',
+        flexDirection: 'row',
+    },
 });
 
