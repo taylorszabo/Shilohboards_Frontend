@@ -6,10 +6,18 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import ProgressBar from "../reusableComponents/ProgressBar";
 import axios from "axios";
-import { alphabetImages, alphabetLetters, numberDigits, numberImages } from "../assets/imageMapping";
+import {
+    alphabetImages,
+    alphabetLetters,
+    alphabetSounds,
+    numberDigits,
+    numberImages,
+    numberSounds
+} from "../assets/imageMapping";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import GameComplete from "../reusableComponents/GameComplete";
-import { Dimensions } from "react-native";//adding responsiveness 
+import { Dimensions } from "react-native";//adding responsiveness
+import { Audio } from "expo-av";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -36,6 +44,7 @@ export default function LevelOne() {
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
     const questionsFetched = useRef(false);
+    const soundObject = useRef(new Audio.Sound());
 
     // Fetch character profile from backend
     useEffect(() => {
@@ -97,6 +106,7 @@ export default function LevelOne() {
         };
     }, [game]);
 
+
     const getLocalExampleImage = (gameType: string, key?: string | number | undefined): number => {
         if (gameType === "Alphabet" && typeof key === "string") {
             return alphabetLetters[key] ?? require("../assets/defaultImage.png");
@@ -126,6 +136,29 @@ export default function LevelOne() {
         }
     };
 
+    const playSound = async () => {
+        try {
+            if (soundObject.current) {
+                await soundObject.current.unloadAsync();
+            }
+
+            let soundPath: number | undefined;
+            if (game === "Alphabet" && currentItem.letter) {
+                soundPath = alphabetSounds[currentItem.letter];
+            } else if (game === "Numbers" && currentItem.letter) {
+                soundPath = numberSounds[currentItem.letter];
+            }
+
+            if (soundPath) {
+                await soundObject.current.loadAsync(soundPath);
+                await soundObject.current.playAsync();
+            }
+        } catch (error) {
+            console.error("Error playing sound:", error);
+        }
+    };
+
+
     if (loading || !character) return <ActivityIndicator size="large" color="#0000ff" />;
     if (error) return <Text style={{ color: "red" }}>{error}</Text>;
     if (gameComplete) {
@@ -153,11 +186,11 @@ export default function LevelOne() {
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                <View style={styles.voiceoverContainer}>
+                <TouchableOpacity onPress={playSound} style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
                     <Image source={require("../assets/ear.png")} style={styles.ear} />
-                </View>
-                
+                </TouchableOpacity>
+
                 {/* // === OVAL SHAPE ===  This will always be rendered */}
                 <View style={styles.ovalShape} /> 
                 {doorOpened ? (
