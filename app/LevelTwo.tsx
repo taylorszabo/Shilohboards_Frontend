@@ -10,9 +10,17 @@ import {useEffect, useRef, useState} from 'react';
 import { Audio } from 'expo-av';
 import GameComplete from '../reusableComponents/GameComplete';
 import axios from "axios";
-import {alphabetImages, alphabetLetters, numberDigits, numberImages} from "../assets/imageMapping";
+import {
+    alphabetImages,
+    alphabetLetters,
+    alphabetSounds,
+    numberDigits,
+    numberImages,
+    numberSounds
+} from "../assets/imageMapping";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -48,6 +56,7 @@ export default function LevelTwo() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const soundObject = useRef(new Audio.Sound());
 
 
     const getLocalImage = (gameType: string, key: string | number): number => {
@@ -68,6 +77,30 @@ export default function LevelTwo() {
             return numberDigits[key];
         }
         return require("../assets/defaultImage.png");
+    };
+
+    const playCurrentSound = async () => {
+        try {
+            if (soundObject.current) {
+                await soundObject.current.unloadAsync();
+            }
+
+            const currentItem = gameQuestions[currentQuestion];
+            let soundPath: number | undefined;
+
+            if (game === "Alphabet" && currentItem.letter) {
+                soundPath = alphabetSounds[currentItem.letter];
+            } else if (game === "Numbers" && currentItem.number) {
+                soundPath = numberSounds[currentItem.number];
+            }
+
+            if (soundPath) {
+                await soundObject.current.loadAsync(soundPath);
+                await soundObject.current.playAsync();
+            }
+        } catch (error) {
+            console.error("Error playing sound:", error);
+        }
     };
 
     useEffect(() => {
@@ -235,7 +268,7 @@ export default function LevelTwo() {
 
     return (
         <BackgroundLayout>
-            <View style={styles.container}> 
+            <View style={styles.container}>
                 {/* =============== Back Button =============== */}
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
 
@@ -269,13 +302,10 @@ export default function LevelTwo() {
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
-                            { game === 'Alphabet' &&
                                 <View style={{alignItems: 'center'}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                                    <SoundIcon size='9%'/>
+                                    <SoundIcon size='9%' onPress={playCurrentSound}/>
                                 </View>
-                            }
-                            
                         </View>
 
                         {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
@@ -301,9 +331,9 @@ export default function LevelTwo() {
                         </View>
                     </View>
 
-                    {answerDisplayed ? 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} /> 
-                    : answerSelected && 
+                    {answerDisplayed ?
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} />
+                    : answerSelected &&
                     <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} />}
                 </View>
             </View>
