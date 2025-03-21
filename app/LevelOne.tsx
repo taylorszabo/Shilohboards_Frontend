@@ -18,6 +18,7 @@ import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import GameComplete from "../reusableComponents/GameComplete";
 import { Dimensions } from "react-native";//adding responsiveness
 import { Audio } from "expo-av";
+import SoundIcon from "../reusableComponents/SoundIcon";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -81,8 +82,7 @@ export default function LevelOne() {
             try {
                 setLoading(true);
                 const response = await axios.get<GameQuestion[]>(`${API_BASE_URL}/${String(game).toLowerCase()}/level1`);
-                let questionsArray = response.data;
-
+                const questionsArray = response.data;
                 if (!questionsArray || questionsArray.length === 0) {
                     throw new Error("No questions received from API.");
                 }
@@ -186,11 +186,10 @@ export default function LevelOne() {
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                <TouchableOpacity onPress={playSound} style={styles.voiceoverContainer}>
-                    <Text style={styles.voiceoverText}>Tap below to hear voiceover</Text>
-                    <Image source={require("../assets/ear.png")} style={styles.ear} />
+                <TouchableOpacity style={styles.voiceoverContainer}>
+                    <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
-
+                <SoundIcon size='20%' onPress={playSound}/>
                 {/* // === OVAL SHAPE ===  This will always be rendered */}
                 <View style={styles.ovalShape} /> 
                 {doorOpened ? (
