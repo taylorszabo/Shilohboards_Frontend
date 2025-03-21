@@ -46,10 +46,11 @@ export default function Login(){
                 returnSecureToken: true
             });
 
-            const { idToken, localId } = response.data;
+            const { idToken, localId, refreshToken } = response.data;
 
             await AsyncStorage.setItem("authToken", idToken);
             await AsyncStorage.setItem("userId", localId);
+            await AsyncStorage.setItem("refreshToken", refreshToken);
 
             router.push('/SelectCharacter');
 

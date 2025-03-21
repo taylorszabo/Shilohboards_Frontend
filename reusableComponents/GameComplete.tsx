@@ -4,14 +4,22 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from './CustomButton';
 import BackgroundLayout from "./BackgroundLayout";
-import { useLocalSearchParams } from "expo-router";
+import {useLocalSearchParams, useRouter} from "expo-router";
 import CharacterCard from "./CharacterCard";
 import ProgressBar from "./ProgressBar";
+import {useEffect, useState} from "react";
+import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import axios from "axios";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 export default function GameComplete(props: { game: string | string[], score: string, level: string }) {
+    const router = useRouter();
     const { game, score, level } = props;
     const { playerId = '0' } = useLocalSearchParams();
     const showScore = level !== "1"; // Hide score for Level 1
+    const [character, setCharacter] = useState<any | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     // Function to Save Star Count Correctly
     const saveStarCount = async () => {
@@ -40,6 +48,30 @@ export default function GameComplete(props: { game: string | string[], score: st
         }
     };
 
+    useEffect(() => {
+        const fetchCharacterProfile = async () => {
+            if (!playerId || playerId === "0") {
+                router.replace("/SelectCharacter");
+                return;
+            }
+
+            try {
+                const response = await axios.get(`${API_BASE_URL}/users/profile/${playerId}`);
+                if (response.data) {
+                    setCharacter(response.data);
+                } else {
+                    router.replace("/SelectCharacter");
+                }
+            } catch (error) {
+                console.error("Error fetching character profile:", error);
+                setError("Failed to load character. Redirecting...");
+                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+            }
+        };
+
+        fetchCharacterProfile();
+    }, [playerId, router]);
+
     // Call function when game completes
     React.useEffect(() => {
         saveStarCount();
@@ -47,24 +79,35 @@ export default function GameComplete(props: { game: string | string[], score: st
 
     return (
         <BackgroundLayout>
-            <View style={styles.textContainer}>
-                <CharacterCard id={parseInt(playerId.toString())} customWidth={0.25} />
+            {character ? (
+                <View style={styles.textContainer}>
+                    <CharacterCard
+                        id={character.id}
+                        name={character.profile_name}
+                        image={characterOptions.find(option => option.id === character.profile_image)?.picture}
+                        bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
+                        customWidth={0.25}
+                    />
 
-                <Text style={styles.headerText}>{game} - Level {level}</Text>
+                    <Text style={styles.headerText}>{game} - Level {level}</Text>
 
-                <ProgressBar fillPercent={100} />
+                    <ProgressBar fillPercent={100} />
 
-                <Text style={[styles.textCSS, { fontSize: 35 }]}>Game Complete!</Text>
-                {showScore && <Text style={styles.textCSS}>Score {score}</Text>}
-                <Text style={styles.textCSS}>You've earned 1 star!</Text>
-                <Image source={require('../assets/GameOverStar.png')} style={styles.starImg} />
+                    <Text style={[styles.textCSS, { fontSize: 35 }]}>Game Complete!</Text>
+                    {showScore && <Text style={styles.textCSS}>Score {score}</Text>}
+                    <Text style={styles.textCSS}>You've earned 1 star!</Text>
+                    <Image source={require('../assets/GameOverStar.png')} style={styles.starImg} />
 
-                <View style={styles.submitBtnContainer}>
-                    <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} />
+                    <View style={styles.submitBtnContainer}>
+                        <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} />
+                    </View>
                 </View>
-            </View>
+            ) : (
+                <Text style={styles.textCSS}>Loading character...</Text>
+            )}
         </BackgroundLayout>
     );
+
 }
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({

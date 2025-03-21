@@ -9,7 +9,7 @@ import ProgressBar from '../reusableComponents/ProgressBar';
 import { Audio } from 'expo-av';
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { alphabetLetters } from '../assets/imageMapping';
+import {alphabetLetters, alphabetSounds} from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
 import SoundPressable from '../reusableComponents/SoundPressable';
 import SoundIcon from '../reusableComponents/SoundIcon';
@@ -55,6 +55,8 @@ export default function LevelThree() {
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
     const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
+
+    const soundObject = useRef(new Audio.Sound());
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
@@ -131,6 +133,30 @@ export default function LevelThree() {
 
         fetchQuestions();
     }, []);
+
+    useEffect(() => {
+        if (gameQuestions.length > 0 && gameQuestions[currentQuestion]) {
+            playCurrentSound();
+        }
+    }, [currentQuestion, gameQuestions]);
+
+
+    async function playCurrentSound() {
+        try {
+            if (soundObject.current) {
+                await soundObject.current.unloadAsync();
+            }
+            const currentItem = gameQuestions[currentQuestion];
+            const soundPath = alphabetSounds[currentItem.letter];
+            if (soundPath) {
+                await soundObject.current.loadAsync(soundPath);
+                await soundObject.current.playAsync();
+            }
+        } catch (error) {
+            console.error("Error playing sound:", error);
+        }
+    }
+
 
     function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
@@ -225,12 +251,12 @@ export default function LevelThree() {
                     <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
-                            <SoundIcon size='25%'/>
-                            <View style={styles.replayBtn}>
-                                {/* <SoundPressable soundFile={randomizedGameQuestions[currentQuestion].idAudio}> */}
-                                    <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic}/>
-                                {/* </SoundPressable>*/}
-                            </View>
+                            <SoundIcon size='25%' onPress={playCurrentSound}/>
+                            {/*<View style={styles.replayBtn}>*/}
+                            {/*    <SoundPressable soundFile={alphabetSounds[gameQuestions[currentQuestion].letter]}>*/}
+                            {/*        <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic} />*/}
+                            {/*    </SoundPressable>*/}
+                            {/*</View>*/}
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
