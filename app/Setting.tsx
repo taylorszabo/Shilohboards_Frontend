@@ -121,6 +121,7 @@ export default function Settings() {
           <TextInput
             style={styles.textBox}
             value={email}
+            onChangeText={setEmail} 
             editable={true}
             placeholderTextColor="#555"
             keyboardType="email-address"
