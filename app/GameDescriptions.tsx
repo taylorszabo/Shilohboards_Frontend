@@ -5,9 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 import { useLocalSearchParams } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { tempCharacterArray } from "../CharacterOptions";
-import PerformanceBar from '../reusableComponents/PerformanceBar';
-import { gamesArray, alphabetArray, numbersArray } from "../GameContent";
+import { gamesArray  } from "../GameContent";
 
 type GameDescriptionQuery = {
   game: string;
@@ -38,7 +36,7 @@ export default function GameDescriptions() {
             <View style={styles.header}>
               {/* Back Button */}
               <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} 
-                            onPressRoute={`/PerformanceReports?&playerId=${playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${playerLastSelected}`}/>
+                            onPressRoute={`/PerformanceReports?&playerId=${playerId}&game=${query.game}&level=${query.level === 1 ? 2 : query.level}&playerLastSelected=${playerLastSelected}`}/>
 
               <Text style={styles.headerText}>Game Descriptions</Text>
             </View>
@@ -76,7 +74,7 @@ export default function GameDescriptions() {
                         <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
                             In this activity, children are able to view each letter on top of the door and then they are 
                             able to open the door to see an object that begins with that letter. They can also tap to
-                            hear the short sound or the word.
+                            hear the short sound or the word. There is no score or report for level 1.
                         </Text>
                         <Image source={require('../assets/GameDescriptionPics/Alphabet_Level1.png')} style={styles.pics}/>
                     </View>
@@ -112,7 +110,7 @@ export default function GameDescriptions() {
                         <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
                             In this activity, children are able to view each number on top of the door and then they are 
                             able to open the door to see or count that many objects. They can also tap to
-                            hear the number.
+                            hear the number.  There is no score or report for level 1.
                         </Text>
                         <Image source={require('../assets/GameDescriptionPics/Numbers_Level1.png')} style={styles.pics}/>
                     </View>

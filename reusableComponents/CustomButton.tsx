@@ -11,12 +11,12 @@ type Props = {
     uniqueButtonStyling?: ViewStyle;
     uniqueTextStyling?: TextStyle; 
     uniqueImageStyling?: ImageStyle; 
-    disabled?: boolean;
+    greyedOut?: boolean;
     testID?: string;
 };
 
 export default function CustomButton(props: Props) {
-    const { functionToExecute, onPressRoute,text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling, disabled = false, testID } = props;
+    const { functionToExecute, onPressRoute, text, image, uniqueButtonStyling, uniqueTextStyling, uniqueImageStyling, greyedOut = false, testID } = props;
     const router = useRouter();
 
     //------------------- FUNCTION ------------------
@@ -32,9 +32,18 @@ export default function CustomButton(props: Props) {
 
     //-----------------------------------------------
     return (
-        <Pressable style={[styles.btn, uniqueButtonStyling, disabled && {backgroundColor: '#d3d3d3'}]} onPress={() => handlePressEvent()} testID={testID}>
+        <Pressable
+                style={({ pressed }) => [
+                    styles.btn,
+                    uniqueButtonStyling,
+                    greyedOut && { backgroundColor: '#CBCBCB' },
+                    pressed && !greyedOut && styles.pressedStyle
+                ]} 
+                onPress={() => handlePressEvent()} 
+                testID={testID}
+        >
             {text &&
-                <Text style={[styles.defaultTextStyle, uniqueTextStyling]}>{text}</Text>
+                <Text style={[styles.defaultTextStyle, uniqueTextStyling, greyedOut && { color: '#888888' }]}>{text}</Text>
             }
             {image &&
                 <Image source={image} style={uniqueImageStyling ? uniqueImageStyling : undefined} />
@@ -63,4 +72,12 @@ const styles = StyleSheet.create({
         color: '#3E1911',
         fontWeight: 'bold',
     },
+    pressedStyle: { 
+        backgroundColor: '#9BD1D6', 
+        borderWidth: 3, 
+        borderRightWidth: 3, 
+        borderBottomWidth: 3, 
+        borderColor: '#0098A6', 
+        textDecorationLine: 'underline'
+    }
 });

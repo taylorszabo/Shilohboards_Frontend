@@ -76,6 +76,16 @@ export default function SelectCharacter() {
     }
   };
 
+  function adjustCardSize(): number {
+    if (children.length <= 6) {
+      return 0.4;
+    } else if (children.length === 7 || children.length === 8) {
+      return 0.35;
+    } else {
+      return 0.28;
+    }
+  }
+
   return (
       <BackgroundLayout>
         <View style={styles.container}>
@@ -99,7 +109,7 @@ export default function SelectCharacter() {
                             name={user.profile_name}
                             image={characterOption?.picture}
                             bgColor={bgColor}
-                            customWidth={0.4}
+                            customWidth={adjustCardSize()}
                             disabled={false}
                             onPressRoute={`/MainMenu?playerId=${user.id}`}
                             customCardStyling={{ marginTop: 0 }}
@@ -110,11 +120,21 @@ export default function SelectCharacter() {
               </View>
           )}
 
-          <CustomButton
-              text="Create New Character"
-              uniqueButtonStyling={styles.createNewBtnContainer}
-              onPressRoute={`/CharacterCreation?isNewOrUpdateId=New`}
-          />
+          <View style={{ width: '100%', flexDirection: 'row-reverse', marginTop: 'auto', justifyContent: 'space-between'}}>
+            <CustomButton
+                text="Create New"
+                image={require('../assets/Icons/new.png')}
+                uniqueImageStyling={{height: 30, width: 30, resizeMode: 'contain'}}
+                uniqueButtonStyling={{flexDirection: 'row'}}
+                onPressRoute={`/CharacterCreation?isNewOrUpdateId=New`}
+            />
+            <CustomButton
+                text="Delete"
+                image={require('../assets/Icons/delete.png')}
+                uniqueImageStyling={{height: 30, width: 30, resizeMode: 'contain'}}
+                uniqueButtonStyling={{flexDirection: 'row-reverse'}}
+            />
+          </View>
         </View>
       </BackgroundLayout>
   );
@@ -138,6 +158,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap",
     paddingBottom: 50,
+    marginHorizontal: '5%',
     gap: 10,
   },
   createNewBtnContainer: {

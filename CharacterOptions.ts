@@ -21,6 +21,24 @@ export const characterOptions: Character[] = [
 
 export const bgColorOptions: string[] = ['#C3E2E5', '#C0E3B9', '#FDFFB8', '#FFDDF6', '#FFD195', '#FFA3A3'];
 
+//validations ---------------------------------------------------
+export const isNameInvalid = (name: string): boolean => {
+    return name.trim().length < 2 || name.trim().length > 37;
+};
+
+export const isCharacterInvalid = (character: string): boolean => {
+    return !characterOptions.find(option => option.id === character);
+};
+
+export const isBgColorInvalid = (color: string): boolean => {
+    return !bgColorOptions.includes(color);
+};
+
+//make all letters lowercase except for the first letter, or letters after dashes/apostrophes ---------------
+export const formatNameWithCapitals = (str: string) => 
+    str.toLowerCase().replace(/\b\w|(?<=[-'])\w/g, char => char.toUpperCase());
+
+//for testing ----------------------------------------------------
 export var tempCharacterArray: CharacterBuild[] = [
     {
         id: 0, 
@@ -41,7 +59,3 @@ export var tempCharacterArray: CharacterBuild[] = [
         bgColor: bgColorOptions[4],
     },
 ];
-
-export const formatNameWithCapitals = (str: string) => 
-    str.toLowerCase().replace(/\b\w|(?<=[-'])\w/g, char => char.toUpperCase());
-    
