@@ -5,22 +5,26 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 
 type Props = {
-    exitRoute: string;
+    onExit: () => void;
     setExitPopupOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function ExitConfirmation(props: Props) {
-    const { exitRoute, setExitPopupOpen } = props;
+    const { onExit, setExitPopupOpen } = props;
 
-    //----------------------------------------------------------
     return (
         <View style={styles.container}>
-            <LinearGradient colors={['rgba(225, 206, 182, 0.2)', 'rgba(0, 0, 0, 0)', 'rgba(225, 206, 182, 0.2)']} style={styles.popupBox}>
-                <Image source={require('../assets/Icons/exitIcon.png')} style={styles.icon}/>
-                <Text style={[styles.text, {fontSize: 22}]}>Are you sure you want to exit the game? All progress will be lost.</Text>
+            <LinearGradient
+                colors={['rgba(225, 206, 182, 0.2)', 'rgba(0, 0, 0, 0)', 'rgba(225, 206, 182, 0.2)']}
+                style={styles.popupBox}
+            >
+                <Image source={require('../assets/Icons/exitIcon.png')} style={styles.icon} />
+                <Text style={[styles.text, { fontSize: 22 }]}>
+                    Are you sure you want to exit the game? All progress will be lost.
+                </Text>
                 <View style={styles.btnContainer}>
-                    <CustomButton text='Cancel' functionToExecute={() => setExitPopupOpen(false)} />
-                    <CustomButton text='Yes, exit' onPressRoute={exitRoute} />
+                    <CustomButton text="Cancel" functionToExecute={() => setExitPopupOpen(false)} />
+                    <CustomButton text="Yes, exit" functionToExecute={onExit} />
                 </View>
             </LinearGradient>
         </View>

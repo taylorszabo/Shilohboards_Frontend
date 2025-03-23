@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {StyleSheet, Text, View, Image, ActivityIndicator} from 'react-native';
+import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -63,7 +63,7 @@ export default function LevelTwo() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
-    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
+    const recordedAnswers = useRef<QuestionAnswers[]>([]);
     const soundObject = useRef(new Audio.Sound());
 
 
@@ -224,11 +224,33 @@ export default function LevelTwo() {
         } 
 
         playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
-        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetterOrNumber, correct: isCorrect} as QuestionAnswers]);
+
+        if(questionLetterOrNumber)
+        {
+            recordedAnswers.current.push({
+                id: questionLetterOrNumber as string,
+                correct: isCorrect,
+            });
+        }
+        else{
+            console.warn("Missing letter or number for question at index", currentQuestion);
+            return;
+        }
+
     }
 
     async function endGame() {
         setGameComplete(true);
+
+        const resultsPayload = {
+            child_id: playerId,
+            game_type: game,
+            level: 2,
+            results: recordedAnswers.current.map(ans => ({
+                id: ans.id,
+                correct: ans.correct,
+            }))
+        };
 
         try {
             await axios.post(`${API_BASE_URL}/${String(game).toLowerCase()}/score`, {
@@ -237,10 +259,16 @@ export default function LevelTwo() {
                 level: 2,
                 score: correctAnswers,
             });
+            await axios.post(`${API_BASE_URL}/users/report`, resultsPayload);
         } catch (error) {
             console.error("Failed to send final score:", error);
         }
     }
+
+    const handleExit = () => {
+        recordedAnswers.current = [];
+        router.replace(`/LevelChoice?game=${game}&playerId=${playerId}`);
+    };
 
     function moveToNextQuestion() {
         if (currentQuestion < gameQuestions.length - 1) {
@@ -277,11 +305,11 @@ export default function LevelTwo() {
 
     return (
         <BackgroundLayout>
-            <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
                 {/* =============== Back Button =============== */}
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
-                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
-                
+                {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
+
 
                 {/* =============== Player Card =============== */}
                 <CharacterCard
@@ -312,7 +340,13 @@ export default function LevelTwo() {
                     <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <Image source={gameQuestions[currentQuestion].exampleImage} style={styles.alphaNumLeftImage} />
+                            <Image
+                                source={gameQuestions[currentQuestion].exampleImage}
+                                style={[
+                                    styles.alphaNumLeftImage,
+                                    game === "Numbers" && styles.alphaImageOverride
+                                ]}
+                            />
                                 <View style={{alignItems: 'center'}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
                                     <SoundIcon size='9%' onPress={playCurrentSound}/>
@@ -348,7 +382,7 @@ export default function LevelTwo() {
                     <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                     }
                 </View>
-            </View>
+            </ScrollView>
         </BackgroundLayout>
     );
 }
@@ -370,7 +404,7 @@ const styles = StyleSheet.create({
     maxHeight: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 25
+    paddingRight: 25,
   },
   rightSideContainer: {
     gap: 15
@@ -388,6 +422,11 @@ const styles = StyleSheet.create({
     width: '100%',
     resizeMode: 'contain'
   },
+  alphaImageOverride: {
+    maxHeight: 180,
+    maxWidth:180,
+    aspectRatio: 1,
+  },
   alphaNumLeftInstructionText: {
     textAlign: 'center',
     fontWeight: 'bold',
@@ -395,10 +434,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: '#3E1911'
   },
-  submitBtnContainer: {
-    marginTop: 'auto',
-    flexDirection: 'row',
-  },
+    submitBtnContainer: {
+        position: 'absolute',
+        bottom: 10,
+        alignSelf: 'center',
+        flexDirection: 'row',
+        zIndex: 10,
+    },
   backBtnContainer: {
     position: 'absolute',
     top: 0,

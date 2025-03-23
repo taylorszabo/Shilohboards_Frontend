@@ -138,6 +138,10 @@ export default function LevelOne() {
         }
     };
 
+    const handleExit = () => {
+        router.replace(`/LevelChoice?game=${game}&playerId=${playerId}`);
+    };
+
     const playSound = async () => {
         try {
             if (soundObject.current) {
@@ -174,7 +178,7 @@ export default function LevelOne() {
         <BackgroundLayout>
             <View style={styles.container}>
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
-                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+                {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
 
                 <CharacterCard
                     id={character.id}
