@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -11,7 +11,6 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {alphabetLetters, alphabetSounds} from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
-import SoundPressable from '../reusableComponents/SoundPressable';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';

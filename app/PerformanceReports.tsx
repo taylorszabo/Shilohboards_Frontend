@@ -5,7 +5,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { tempCharacterArray } from "../CharacterOptions";
 import PerformanceBar from '../reusableComponents/PerformanceBar';
 import { gamesArray, alphabetArray, numbersArray } from "../GameContent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -151,7 +150,7 @@ export default function PerformanceReports() {
 
             {/* =============== Names Row =============== */}
             <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
-                {[...children].map((user, index) => (
+                {[...children].map((user) => (
                     <View key={user.id}>
                         <Text
                             style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
