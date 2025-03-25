@@ -7,7 +7,8 @@ import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "..
 const screenWidth = Dimensions.get("window").width; // Get device width
 
 type Props = {
-    customWidth: number;
+    heightPercentNumber?: number;
+    customWidth?: number;
     id?: number;
     bgColor?: string;
     image?: any;
@@ -15,19 +16,24 @@ type Props = {
     disabled?: boolean;
     onPressRoute?: string;
     customCardStyling?: ViewStyle;
+    deleteModeFunction?: Function;
+    selected?: boolean;
 };
 
 // ============================================================================
 export default function CharacterCard(props: Props) {
     const {
+        customWidth,
         id,
         bgColor,
         image,
         name = "",
-        customWidth,
+        heightPercentNumber = 13,
         disabled = true,
         onPressRoute = "",
         customCardStyling,
+        deleteModeFunction,
+        selected = false,
     } = props;
 
     const router = useRouter();
@@ -44,20 +50,38 @@ export default function CharacterCard(props: Props) {
     // **Check if ID exists in `tempCharacterArray` before accessing it**
     const characterData = id !== undefined && tempCharacterArray[id] ? tempCharacterArray[id] : null;
 
+    function handlePressEvent() {
+        if (deleteModeFunction !== undefined) {
+            deleteModeFunction();
+        }
+        else if (onPressRoute) {
+            router.push(onPressRoute)
+        }
+    }
+
     return (
         <Pressable
             disabled={disabled}
             onLayout={onLayout}
-            style={[
+            style={({ pressed }) =>[
                 styles.card,
-                {
-                    backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
-                    width: screenWidth * customWidth,
-                    height: screenWidth * customWidth,
-                },
+                customWidth ?
+                    {
+                        backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
+                        width: customWidth,
+                        height: customWidth,
+                    } 
+                    :
+                    {
+                        backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
+                        height: `${heightPercentNumber}%`,
+                        aspectRatio: 1
+                    },
                 customCardStyling,
+                selected && deleteModeFunction !== undefined && styles.selectedStyling,
+                pressed && !disabled && styles.selectedStyling
             ]}
-            onPress={() => router.push(onPressRoute)}
+            onPress={() => handlePressEvent()}
         >
             {/* Image Handling Fix */}
             <Image
@@ -100,5 +124,12 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#3E1911",
         fontWeight: "bold",
+        maxWidth: '100%'
+    },
+    selectedStyling: {
+        borderWidth: 5, 
+        borderRightWidth: 5, 
+        borderBottomWidth: 5, 
+        borderColor: '#0098A6'
     },
 });

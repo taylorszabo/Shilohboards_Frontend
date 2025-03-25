@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import {StyleSheet, Text, View, Image, Pressable, ActivityIndicator} from 'react-native';
+import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { formatNameWithCapitals } from "../CharacterOptions";
-import {bgColorOptions, characterOptions} from "../CharacterOptions";
+import { bgColorOptions, characterOptions, formatNameWithCapitals } from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import LoadingMessage from '../reusableComponents/LoadingMessage';
 
 type HamburgerMenuItem = {
   text: string;
@@ -79,50 +79,55 @@ export default function MainMenu() {
   //---------------------------------------------------------------------------
   return (
       <BackgroundLayout>
-        {hamburgerMenuOpen ? (
-            <View style={styles.hamburgerMenuContainer}>
-              {/* ---------------------- Header --------------------- */}
-              <View style={styles.hamburgerTopHeaderPortion}>
-                <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
-                  <Image source={require("../assets/back.png")} />
-                </Pressable>
-                <Image source={require("../assets/logo.png")} style={styles.hamburgerLogo} />
-              </View>
-
-              {/* ---------------------- Menu Links --------------------- */}
-              <View style={styles.linkList}>
-                {hamburgerMenuOptions.map((item, index) => (
-                    <View style={styles.linkRow} key={index}>
-                      <Image source={item.icon} style={styles.icons} />
-                      <Text
-                          onPress={() => (item.action ? item.action() : item.route && router.push(item.route))}
-                          style={styles.linkText}
-                      >
-                        {item.text}
-                      </Text>
-                    </View>
-                ))}
-              </View>
-            </View>
-        ) : (
+            
             <View style={styles.container}>
-              <CustomButton
-                  image={require("../assets/hamburgerMenuIcon.png")}
-                  uniqueButtonStyling={styles.hamburgerButton}
-                  uniqueImageStyling={{ width: 28, height: 28 }}
-                  functionToExecute={() => setHamburgerMenuOpen(true)}
-              />
-
               {loading ? (
-                  <ActivityIndicator size="large" color="#0000ff" />
+                  <LoadingMessage />
               ) : character ? (
-                  <>
+                  <View style={{width: '100%', alignItems: 'center', flex: 1}}>
+                    {/* // ===================== hamburger menu ===================== */}
+                    {hamburgerMenuOpen &&
+                      <View style={styles.hamburgerMenuContainer}>
+                        {/* ---------------------- Header --------------------- */}
+                        <View style={styles.hamburgerTopHeaderPortion}>
+                          <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
+                            <Image source={require("../assets/back.png")} />
+                          </Pressable>
+                          <View style={{width: '100%', height: '100%', alignItems: 'center'}}>
+                            <Image source={require("../assets/logo.png")} style={styles.shilohLogoInHamburgerMenu} />
+                          </View>
+                        </View>
+          
+                        {/* ---------------------- Menu Links --------------------- */}
+                        <View style={styles.linkList}>
+                          {hamburgerMenuOptions.map((item, index) => (
+                              <View style={styles.linkRow} key={index}>
+                                <Image source={item.icon} style={styles.icons} />
+                                <Text
+                                    onPress={() => (item.action ? item.action() : item.route && router.push(item.route))}
+                                    style={styles.linkText}
+                                >
+                                  {item.text}
+                                </Text>
+                              </View>
+                          ))}
+                        </View>
+                      </View>
+                    }
+
+                    {/* // ===================== main menu game option screen ===================== */}
+                    <CustomButton
+                        image={require("../assets/hamburgerMenuIcon.png")}
+                        uniqueButtonStyling={styles.hamburgerButton}
+                        uniqueImageStyling={{ width: 28, height: 28 }}
+                        functionToExecute={() => setHamburgerMenuOpen(true)}
+                    />
                     <CharacterCard
                         id={character.id}
                         name={character.profile_name}
                         image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                         bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                        customWidth={0.3}
+                        heightPercentNumber={15}
                     />
 
                     <Text style={styles.headerText}>
@@ -130,15 +135,14 @@ export default function MainMenu() {
                     </Text>
 
                     <View style={styles.cardDiv}>
-                      <OptionCard lowerText="Alphabet" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
-                      <OptionCard lowerText="Numbers" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
+                      <OptionCard lowerText="Alphabet" square={false} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
+                      <OptionCard lowerText="Numbers" square={false} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
                     </View>
-                  </>
+                  </View>
               ) : (
                   <Text style={styles.errorText}>{errorMessage}</Text>
               )}
             </View>
-        )}
       </BackgroundLayout>
   );
 }
@@ -148,25 +152,23 @@ export default function MainMenu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
+    marginHorizontal: 'auto',
   },
   hamburgerMenuContainer: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 10,
     margin: 10,
     backgroundColor: '#C3E2E5',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#A9A9A9',
-    //iOS shadow
-    shadowColor: 'rgba(0, 0, 0, 0.25)',
-    shadowOffset: {
-      width: 1,
-      height: 4
-    },
-    shadowRadius: 4,
-    shadowOpacity: 0.2,
-    //android shadow
-    elevation: 3,
+    maxWidth: 500
   },
   hamburgerTopHeaderPortion: {
     width: '100%',
@@ -178,9 +180,11 @@ const styles = StyleSheet.create({
     borderBottomColor: '#FCCF9D',
     position: 'relative'
   },
-  hamburgerLogo: {
+  shilohLogoInHamburgerMenu: {
     position: 'absolute',
-    bottom: -100
+    bottom: -100,
+    resizeMode: 'contain',
+    height: '170%'
   },
   closeHamburgerMenuBtn: {
     position: 'absolute',
@@ -196,9 +200,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     color: '#3E1911',
+    maxWidth: 600
   },
   cardDiv: {
-    gap: 15
+    gap: 15,
+    width: '100%',
+    flex: 0.65,
+    alignItems: 'center',
+    maxWidth: 600
   },
   hamburgerButton: {
     position: 'absolute',
@@ -207,7 +216,7 @@ const styles = StyleSheet.create({
   },
   icons: {
     width: 30,
-    aspectRatio: 1, // Maintains the aspect ratio
+    aspectRatio: 1,
     resizeMode: 'contain',
   },
   linkList: {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import OptionCard from "../reusableComponents/OptionCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -52,7 +53,7 @@ export default function LevelChoice() {
                 <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`} />
 
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <LoadingMessage />
                 ) : character ? (
                     <>
                         <CharacterCard
@@ -60,16 +61,16 @@ export default function LevelChoice() {
                             name={character.profile_name}
                             image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                             bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                            customWidth={0.3}
+                            heightPercentNumber={15}
                         />
 
                         <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
 
-                        <View style={styles.cardDiv}>
-                            <OptionCard upperText="Level 1" customWidth={0.8} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
-                            <OptionCard upperText="Level 2" customWidth={0.8} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
+                        <View style={[styles.cardDiv, game === "Alphabet" ? {flex: 0.6} : {flex: 0.4}]}>
+                            <OptionCard upperText="Level 1" square={false} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
+                            <OptionCard upperText="Level 2" square={false} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
                             {game === "Alphabet" && (
-                                <OptionCard upperText="Level 3" customWidth={0.8} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
+                                <OptionCard upperText="Level 3" square={false} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
                             )}
                         </View>
                     </>
@@ -85,6 +86,7 @@ export default function LevelChoice() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: '100%',
         alignItems: "center",
     },
     headerText: {
@@ -97,6 +99,9 @@ const styles = StyleSheet.create({
     },
     cardDiv: {
         gap: 15,
+        width: '100%',
+        alignItems: "center",
+        maxWidth: 600
     },
     backBtnContainer: {
         position: "absolute",

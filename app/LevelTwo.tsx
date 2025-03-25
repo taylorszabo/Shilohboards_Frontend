@@ -21,6 +21,8 @@ import {
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { feedbackSound } from "../GameContent";
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -223,7 +225,7 @@ export default function LevelTwo() {
             setCorrectAnswers(prev => prev + 1);
         } 
 
-        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        playAudio(isCorrect ? feedbackSound.correct : feedbackSound.incorrect);
 
         if(questionLetterOrNumber)
         {
@@ -286,9 +288,7 @@ export default function LevelTwo() {
         await sound.playAsync();
     }
 
-    if (loading) {
-        return <Text>Loading questions...</Text>;
-    }
+    if (loading) return <LoadingMessage backgroundNeeded={true}/>;
 
     if (!character) {
         console.warn("Character profile is null, redirecting...");
@@ -317,7 +317,6 @@ export default function LevelTwo() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
 
                 {/* =============== Game/Level Title =============== */}
@@ -326,31 +325,34 @@ export default function LevelTwo() {
                 {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                {/* =============== Top Instruction =============== */}
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
+                
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
+                    {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
                         {answerDisplayed
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
-                                ? "Great job! Your answer is correct."
-                                : "Good try! Unfortunately, that is incorrect."
+                                ? "Great job! Your answer is correct ✅"
+                                : "Good try! Your answer is incorrect ❌"
                             : game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
                                                     'Choose the correct number that matches how many objects are shown:'}
                     </Text>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
+                    {/* =============== Main Section =============== */}
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 30, flex: 1, marginBottom: 15}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <Image
-                                source={gameQuestions[currentQuestion].exampleImage}
-                                style={[
-                                    styles.alphaNumLeftImage,
-                                    game === "Numbers" && styles.alphaImageOverride
-                                ]}
-                            />
-                                <View style={{alignItems: 'center'}}>
-                                    <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                                    <SoundIcon size='9%' onPress={playCurrentSound}/>
+                            <View style={{height: '30%', width: '100%', alignItems: 'center'}}>
+                                <Image
+                                    source={gameQuestions[currentQuestion].exampleImage}
+                                    style={styles.alphaNumLeftImage}
+                                />
+                            </View>
+                            {game === "Alphabet" &&
+                                <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
+                                    <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
+                                    <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>
+                            }
                         </View>
 
                         {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
@@ -358,8 +360,7 @@ export default function LevelTwo() {
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
                                     key={index}
-                                    customWidth={0.38}
-                                    height={140}
+                                    square={true}
                                     image={option.image}
                                     lowerText={game === "Alphabet" ? option.object : ""}
                                     functionToExecute={() => selectAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
@@ -376,10 +377,14 @@ export default function LevelTwo() {
                         </View>
                     </View>
 
+                    {/* Before an answer is selected, there should NOT be a submit button but since we need to keep the space for responsiveness, a 3rd invisible/disabled button is there.  Once 
+                        an answer is selected, the submit button appears.  After they submit their answer, the next button appears to move to the next question after reviewing feedback */}
                     {answerDisplayed ? 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
-                    : answerSelected && 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                    : answerSelected ? 
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                        :
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                     }
                 </View>
             </ScrollView>
@@ -400,14 +405,14 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    flex: 1,
-    maxHeight: '100%',
+    flex: 1.1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 25,
   },
   rightSideContainer: {
-    gap: 15
+    flex: 1,
+    gap: 15,
+    alignItems: 'center',
   },
   headerText: {
     verticalAlign: 'middle',
@@ -415,17 +420,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     color: '#3E1911',
   },
   alphaNumLeftImage: {
-    width: '100%',
-    resizeMode: 'contain'
-  },
-  alphaImageOverride: {
-    maxHeight: 180,
-    maxWidth:180,
-    aspectRatio: 1,
+    resizeMode: 'contain',
+    maxHeight: '100%',
+    maxWidth: '100%',
   },
   alphaNumLeftInstructionText: {
     textAlign: 'center',
@@ -434,13 +435,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: '#3E1911'
   },
-    submitBtnContainer: {
-        position: 'absolute',
-        bottom: 10,
-        alignSelf: 'center',
-        flexDirection: 'row',
-        zIndex: 10,
-    },
+  submitBtnContainer: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+  },
+  submitBtnContainerInvisible: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+    opacity: 0
+  },
   backBtnContainer: {
     position: 'absolute',
     top: 0,
@@ -448,8 +451,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   btnIcon: {
-    height: '150%',
-    width: '7%',
+    height: 30,
+    width: 30,
     resizeMode: 'contain',
   }
 });

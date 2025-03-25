@@ -44,6 +44,8 @@ const styles = StyleSheet.create({
   },
   popupBox: {
     width: '80%',
+    maxWidth: 700,
+    maxHeight: '90%',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFF8F0',

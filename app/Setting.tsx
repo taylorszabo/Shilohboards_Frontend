@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, Dimensions, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Dimensions, TextInput, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import Slider from "@react-native-community/slider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../reusableComponents/CustomButton";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import axios, {AxiosError} from "axios";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const { width, height } = Dimensions.get("window");
 
@@ -173,6 +174,8 @@ export default function Settings() {
   const goBack = () => {
     router.replace("/LevelChoice");
   };
+
+  if (loading) return <LoadingMessage backgroundNeeded={true}/>;
 
   return (
     <BackgroundLayout>

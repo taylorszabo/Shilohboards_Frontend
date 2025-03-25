@@ -6,7 +6,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
-    ActivityIndicator,
     Alert,
     Dimensions, 
 } from "react-native";
@@ -14,6 +13,7 @@ import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios, {AxiosError} from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 
 const FIREBASE_API_KEY =  process.env.EXPO_PUBLIC_FIREBASE_API_KEY
@@ -111,13 +111,12 @@ export default function Login(){
                     secureTextEntry 
                     value={password} 
                     onChangeText={setPassword} 
-               
                 />
                 
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <LoadingMessage smallVersion={true} />
                 ) : (
                     <TouchableOpacity style={[styles.button, { width: width * 0.6, height: height * 0.08 }]} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Sign In</Text>
