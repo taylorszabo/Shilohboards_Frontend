@@ -5,9 +5,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { tempCharacterArray } from "../CharacterOptions";
 import PerformanceBar from '../reusableComponents/PerformanceBar';
 import { gamesArray, alphabetArray, numbersArray } from "../GameContent";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 type ReportQuery = {
   playerId: number;
@@ -16,20 +19,111 @@ type ReportQuery = {
 }
 
 export default function PerformanceReports() {
-  const { playerId = '[name]', game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
+    const [children, setChildren] = useState<any[]>([]);
+    const { game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
+    const [query, setQuery] = useState<ReportQuery>({
+        playerId: parseInt(playerLastSelected.toString()),
+        game: game.toString(),
+        level: parseInt(level.toString()),
+    });
+
+    useEffect(() => {
+        if (children.length > 0 && query.playerId === 0) {
+            // Set default to first child once loaded
+            setQuery(prev => ({ ...prev, playerId: children[0].id }));
+        }
+    }, [children]);
   const router = useRouter();
   const windowHeight = useWindowDimensions().height;
-  const [query, setQuery] = useState<ReportQuery>({playerId: parseInt(playerLastSelected.toString()), game: game.toString(), level: parseInt(level.toString())});
-  const middleIndex = Math.ceil(query.game === gamesArray[0].title ? alphabetArray.length / 2 : numbersArray.length / 2); 
+  const middleIndex = Math.ceil(query.game === gamesArray[0].title ? alphabetArray.length / 2 : numbersArray.length / 2);
+  const [completedGames, setCompletedGames] = useState(0);
+  const [averageScore, setAverageScore] = useState(0);
+  const [questionPerformance, setQuestionPerformance] = useState<Record<string, number>>({});
+  const [parentId, setParentId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   //----------------------------------------------------------
   //API is called when component loaded & everytime the query is updated
-  useEffect(() => {
-    //fetch with new params
-    //console.log(query);
-  }, [query]);
+    useEffect(() => {
+        const fetchPerformanceData = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/report/${query.playerId}?gameType=${query.game}&level=${query.level}`);
+                const data = await response.json();
 
-  //----------------------------------------------------------
+                setCompletedGames(data.completedGames || 0);
+                setAverageScore(data.averageScore || 0);
+                setQuestionPerformance(data.questionPerformance || {});
+            } catch (error) {
+                console.error("Failed to fetch performance data:", error);
+            }
+        };
+
+        fetchPerformanceData();
+    }, [query]);
+
+    useEffect(() => {
+        const fetchParentId = async () => {
+            const userId = await AsyncStorage.getItem("userId");
+            if (userId) {
+                setParentId(userId);
+                fetchChildren(userId);
+            } else {
+                setErrorMessage("Error: Parent ID not found.");
+                setLoading(false);
+            }
+        };
+
+        fetchParentId();
+    }, []);
+
+    const fetchChildren = async (parentId: string) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/users/children/${parentId}`);
+            const childrenData = response.data;
+
+            if (!Array.isArray(childrenData) || childrenData.length === 0) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildren([]);
+                return;
+            }
+
+            const profiles = await Promise.all(
+                childrenData.map(async (child: any) => {
+                    try {
+                        const res = await axios.get(`${API_BASE_URL}/users/profile/${child.profile_id}`);
+                        return { ...res.data, id: child.profile_id };
+                    } catch (error) {
+                        console.error(`Error fetching profile for child ${child.profile_id}:`, error);
+                        return null;
+                    }
+                })
+            );
+
+            const validProfiles = profiles.filter(profile => profile && profile.profile_image);
+
+            if (validProfiles.length === 0) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildren([]);
+            } else {
+                setChildren(validProfiles);
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildren([]);
+                return;
+            }
+            console.error("Error fetching children:", error);
+            setErrorMessage("Failed to load characters.");
+            setChildren([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    //----------------------------------------------------------
   function setGameSelected(game: string) {
     //if level 3 is selected/underlined while the alphabet game is chosen and then you switch to the numbers game,
     //set the level to 2 since level 3 doesn't exist in the numbers game
@@ -47,7 +141,7 @@ export default function PerformanceReports() {
         <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
             <View  style={styles.header}>
               {/* Back Button */}
-              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
+              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${query.playerId}`}/>
 
               <Text style={styles.headerText}>Performance Reports</Text>
             </View>
@@ -56,11 +150,13 @@ export default function PerformanceReports() {
 
             {/* =============== Names Row =============== */}
             <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
-                {[...tempCharacterArray].map((user, index) => (
+                {[...children].map((user) => (
                     <View key={user.id}>
-                        <Text key={user.id} style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]} 
-                              onPress={() => setQuery({...query, playerId: user.id})}>
-                          {user.name}
+                        <Text
+                            style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
+                            onPress={() => setQuery({ ...query, playerId: user.id })}
+                        >
+                            {user.profile_name}
                         </Text>
                     </View>
                 ))}
@@ -90,9 +186,9 @@ export default function PerformanceReports() {
                 ))}
             </LinearGradient>
 
-            <Text style={styles.bodyText}>Number of Games Completed:</Text>
+            <Text style={styles.bodyText}>Number of Games Completed: {completedGames}</Text>
+            <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed()}%</Text>
 
-            <Text style={[styles.bodyText, {paddingTop: 0}]}>Average Score:</Text>
 
             <Text style={[styles.bodyText, {paddingTop: 0}]}>Number of times each question was correct:</Text>
 
@@ -102,7 +198,7 @@ export default function PerformanceReports() {
                     {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(0, middleIndex).map((item) => (
                         <View key={item.id} style={styles.arrayItem}>
                             <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
-                            <PerformanceBar fillPercent={30} />
+                            <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
                         </View>
                     ))}
                 </View>
@@ -112,15 +208,15 @@ export default function PerformanceReports() {
                     {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(middleIndex).map((item) => (
                         <View key={item.id} style={styles.arrayItem}>
                             <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
-                            <PerformanceBar fillPercent={60} />
+                            <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
                         </View>
                     ))}
                 </View>
 
             </View>
 
-            <Text style={[styles.bodyText, styles.gameInstructionLink]} 
-                  onPress={() => router.push(`/GameDescriptions?playerId=${playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
+            <Text style={[styles.bodyText, styles.gameInstructionLink]}
+                  onPress={() => router.push(`/GameDescriptions?playerId=${query.playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
               Click here for game & level descriptions if needed
             </Text>
         </View>

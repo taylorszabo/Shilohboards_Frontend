@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -11,7 +11,6 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import {alphabetLetters, alphabetSounds} from '../assets/imageMapping';
 import GameComplete from '../reusableComponents/GameComplete';
-import SoundPressable from '../reusableComponents/SoundPressable';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
@@ -54,7 +53,7 @@ export default function LevelThree() {
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
-    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
+    const recordedAnswers = useRef<QuestionAnswers[]>([]);
 
     const soundObject = useRef(new Audio.Sound());
 
@@ -178,11 +177,26 @@ export default function LevelThree() {
         } 
 
         playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
-        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetter, correct: isCorrect} as QuestionAnswers]);
+        if (questionLetter) {
+            recordedAnswers.current.push({
+                id: questionLetter,
+                correct: isCorrect
+            });
+        }
     }
 
     async function endGame() {
         setGameComplete(true);
+
+        const resultsPayload = {
+            child_id: playerId,
+            game_type: game,
+            level: 3,
+            results: recordedAnswers.current.map(ans => ({
+                id: ans.id,
+                correct: ans.correct,
+            }))
+        };
 
         try {
             await axios.post(`${API_BASE_URL}/${String(game).toLowerCase()}/score`, {
@@ -191,11 +205,16 @@ export default function LevelThree() {
                 level: 3,
                 score: correctAnswers,
             });
-
+            await axios.post(`${API_BASE_URL}/users/report`, resultsPayload);
         } catch (error) {
             console.error('Failed to send final score:', error);
         }
     }
+
+    const handleExit = () => {
+        recordedAnswers.current = [];
+        router.replace(`/LevelChoice?game=${game}&playerId=${playerId}`);
+    };
 
     function moveToNextQuestion() {
         if (currentQuestion < gameQuestions.length - 1) {
@@ -234,7 +253,7 @@ export default function LevelThree() {
         <BackgroundLayout>
             <View style={styles.container}>
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
-                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+                {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
 
                 <CharacterCard
                     id={character.id}
