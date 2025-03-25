@@ -107,9 +107,7 @@ export default function GameComplete(props: { game: string | string[], score: st
                     {/* Updated image line */}
                     <Image source={getStarImage(level)} style={styles.starImg} />
 
-                    <View style={styles.submitBtnContainer}>
-                        <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} />
-                    </View>
+                    <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} uniqueButtonStyling={styles.submitBtnContainer}/>
                 </View>
             ) : (
                 <Text style={styles.textCSS}>Loading character...</Text>
@@ -122,7 +120,7 @@ export default function GameComplete(props: { game: string | string[], score: st
 const styles = StyleSheet.create({
     textContainer: {
         alignItems: 'center',
-        marginTop: 40
+        flex: 1
     },
     textCSS: {
         fontWeight: 'bold',
@@ -132,8 +130,8 @@ const styles = StyleSheet.create({
     },
     starImg: {
         marginTop: 30,
-        width: 100,
-        height: 100,
+        width: 150,
+        height: 150,
         resizeMode: 'contain',
     },
     submitBtnContainer: {
