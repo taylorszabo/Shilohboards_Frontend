@@ -62,15 +62,19 @@ export default function OptionCard(props: Props) {
     //-----------------------------------------------
     return (
         <Pressable disabled={disabled} testID={testID}
-        style={[styles.card, selected && {borderWidth: 5, borderRightWidth: 5, borderBottomWidth: 5, borderColor: '#0098A6'}, 
-            { 
-                backgroundColor: bgColor, 
-                width: screenWidth * customWidth, 
-                height: height, 
-                ...(image && { padding: 20 }) 
-            }
-        ]} 
-        onPress={() => handlePressEvent()}>
+            style={({ pressed }) => [
+                styles.card, 
+                selected && styles.selectedStyling, 
+                { 
+                    backgroundColor: bgColor, 
+                    width: screenWidth * customWidth, 
+                    height: height, 
+                    ...(image && { padding: 20 }) 
+                },
+                pressed && styles.pressedStyle
+            ]} 
+            onPress={() => handlePressEvent()}
+        >
             {image ?
                 <Image source={image} style={styles.image} />
                 :
@@ -120,5 +124,14 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         color: '#3E1911',
         fontWeight: 'bold',
+    },
+    selectedStyling: {
+        borderWidth: 5, 
+        borderRightWidth: 5, 
+        borderBottomWidth: 5, 
+        borderColor: '#0098A6'
+    },
+    pressedStyle: { 
+        backgroundColor: '#E9E0D6',
     }
 });

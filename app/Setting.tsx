@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
   mainHeader: {
     fontSize: width * 0.08,
     fontWeight: "bold",
-    textDecorationLine: "underline",
     marginVertical: height * 0.02,
     color: "#3E1911",
   },
@@ -326,7 +325,6 @@ const styles = StyleSheet.create({
   },
   button: {
     width: width * 0.5,
-    height: height * 0.06,
     backgroundColor: "#C3E2E5",
     borderRadius: 8,
   },

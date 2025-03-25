@@ -20,6 +20,7 @@ import {
 } from "../assets/imageMapping";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -40,6 +41,11 @@ export interface GameQuestion {
     exampleImage?: number;
 }
 
+type QuestionAnswers = {
+    id: string,
+    correct: boolean
+}
+
 export default function LevelTwo() {
     const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
     const router = useRouter();
@@ -56,6 +62,8 @@ export default function LevelTwo() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
+    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
     const soundObject = useRef(new Audio.Sound());
 
 
@@ -194,7 +202,7 @@ export default function LevelTwo() {
         };
     }, [game]);
 
-    function markAnswer(answerSubmitted: string) {
+    function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
             setAnswerSelected(answerSubmitted);
         }
@@ -207,15 +215,16 @@ export default function LevelTwo() {
 
         const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct);
         const correctValue = game === "Alphabet" ? correctAnswer?.object : correctAnswer?.number?.toString();
+        const questionLetterOrNumber = game === "Alphabet" ? gameQuestions[currentQuestion].letter : gameQuestions[currentQuestion].number?.toString();
 
         const isCorrect = answerSelected === correctValue;
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-            playAudio(require("../assets/Sounds/correctSound.mp3"));
-        } else {
-            playAudio(require("../assets/Sounds/incorrectSound.mp3"));
-        }
+        } 
+
+        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetterOrNumber, correct: isCorrect} as QuestionAnswers]);
     }
 
     async function endGame() {
@@ -270,7 +279,9 @@ export default function LevelTwo() {
         <BackgroundLayout>
             <View style={styles.container}>
                 {/* =============== Back Button =============== */}
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`}/>
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
+                
 
                 {/* =============== Player Card =============== */}
                 <CharacterCard
@@ -317,7 +328,7 @@ export default function LevelTwo() {
                                     height={140}
                                     image={option.image}
                                     lowerText={game === "Alphabet" ? option.object : ""}
-                                    functionToExecute={() => markAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
+                                    functionToExecute={() => selectAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
                                     disabled={answerDisplayed}
                                     selected={answerSelected === (game === "Alphabet" ? option.object : option.number?.toString())}
                                     boldFirstLetter={game === "Alphabet"}
@@ -331,10 +342,11 @@ export default function LevelTwo() {
                         </View>
                     </View>
 
-                    {answerDisplayed ?
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} />
-                    : answerSelected &&
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} />}
+                    {answerDisplayed ? 
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                    : answerSelected && 
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                    }
                 </View>
             </View>
         </BackgroundLayout>
@@ -385,11 +397,17 @@ const styles = StyleSheet.create({
   },
   submitBtnContainer: {
     marginTop: 'auto',
+    flexDirection: 'row',
   },
   backBtnContainer: {
     position: 'absolute',
     top: 0,
     left: 0,
     paddingVertical: 20
+  },
+  btnIcon: {
+    height: '150%',
+    width: '7%',
+    resizeMode: 'contain',
   }
 });

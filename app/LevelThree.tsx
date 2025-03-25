@@ -14,6 +14,7 @@ import GameComplete from '../reusableComponents/GameComplete';
 import SoundPressable from '../reusableComponents/SoundPressable';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
@@ -32,6 +33,11 @@ export interface GameQuestion {
     exampleImage?: number;
 }
 
+type QuestionAnswers = {
+    id: string,
+    correct: boolean
+}
+
 export default function LevelThree() {
     const { game = 'Alphabet', playerId = '0' } = useLocalSearchParams();
     const router = useRouter();
@@ -47,6 +53,8 @@ export default function LevelThree() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
+    const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
+    const [recordedAnswers, setRecordedAnswers] = useState<QuestionAnswers[]>([]);
 
     const soundObject = useRef(new Audio.Sound());
 
@@ -150,7 +158,7 @@ export default function LevelThree() {
     }
 
 
-    function markAnswer(answerSubmitted: string) {
+    function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
             setAnswerSelected(answerSubmitted);
         }
@@ -163,13 +171,14 @@ export default function LevelThree() {
 
         const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object;
         const isCorrect = answerSelected === correctAnswer;
+        const questionLetter = gameQuestions[currentQuestion].letter;
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-            playAudio(require('../assets/Sounds/correctSound.mp3'));
-        } else {
-            playAudio(require('../assets/Sounds/incorrectSound.mp3'));
-        }
+        } 
+
+        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        setRecordedAnswers(prevItems => [...prevItems, {id: questionLetter, correct: isCorrect} as QuestionAnswers]);
     }
 
     async function endGame() {
@@ -224,7 +233,8 @@ export default function LevelThree() {
     return (
         <BackgroundLayout>
             <View style={styles.container}>
-                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} />
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
+                {exitPopupOpen && <ExitConfirmation exitRoute={`/LevelChoice?game=${game}&playerId=${playerId}`} setExitPopupOpen={setExitPopupOpen}/>}
 
                 <CharacterCard
                     id={character.id}
@@ -250,10 +260,8 @@ export default function LevelThree() {
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-                            {/* TODO: remove the answer once development done!!!!!!!!!! */}
-                            {/* !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */}
-                            <Text style={styles.headerText}>Choose the correct letter ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) for the sound or beginning of the word:</Text>
+                            {/* answer for troubleshooting: ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) */}
+                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
                                 {gameQuestions[currentQuestion].options.map((option, index) => (
@@ -261,7 +269,7 @@ export default function LevelThree() {
                                         customWidth={0.38} 
                                         height={140} 
                                         image={option.image} 
-                                        functionToExecute={() => markAnswer(option.object)} 
+                                        functionToExecute={() => selectAnswer(option.object)} 
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={
@@ -278,7 +286,11 @@ export default function LevelThree() {
                                 ))}
                             </View>
 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text={answerDisplayed ? 'Next' : 'Submit'} functionToExecute={answerDisplayed ? moveToNextQuestion : submitAnswer} />
+                            {answerDisplayed ? 
+                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                            : answerSelected && 
+                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                            }
                         </View>
                     </View>
                 ) : null}
@@ -318,6 +330,12 @@ const styles = StyleSheet.create({
   },
   submitBtnContainer: {
     marginTop: 'auto', 
+    flexDirection: 'row',
+  },
+  btnIcon: {
+    height: '150%',
+    width: '7%',
+    resizeMode: 'contain',
   },
   backBtnContainer: {
     position: 'absolute', 

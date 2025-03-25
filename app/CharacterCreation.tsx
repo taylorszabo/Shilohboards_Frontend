@@ -7,7 +7,7 @@ import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useEffect, useState } from "react";
 import OptionCard from "../reusableComponents/OptionCard";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import { characterOptions, bgColorOptions, isNameInvalid, isCharacterInvalid, isBgColorInvalid } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -32,6 +32,7 @@ export default function CharacterCreation() {
     const [processStep, setProcessStep] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
 
     //--------------------------------------------------------------------------
     useEffect(() => {
@@ -112,21 +113,24 @@ export default function CharacterCreation() {
     //--------------------------------------------------------------------------
     function verifyInformationEntered() {
         let missingInfo: boolean = false;
+        setInfoBeingVerified(true);
 
         if (processStep === 1) {
-            if (characterCreated.name.trim().length < 2 || !characterOptions.find(option => option.id === characterCreated.picture)) {
+            if (isNameInvalid(characterCreated.name) || isCharacterInvalid(characterCreated.picture)) {
                 missingInfo = true;
             }
         }
 
         if (processStep === 2) {
-            if (!bgColorOptions.includes(characterCreated.bgColor)) {
+            if (isBgColorInvalid(characterCreated.bgColor)) {
                 missingInfo = true;
             }
         }
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
+            setCharacterCreated({ ...characterCreated, name: characterCreated.name.trim() })
+            setInfoBeingVerified(false);
         }
     }
 
@@ -143,14 +147,19 @@ export default function CharacterCreation() {
                 {/* Step 1 - Enter Name & Choose Character */}
                 {processStep === 1 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please enter your name:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isNameInvalid(characterCreated.name) && {color: 'red'}]}>
+                            Please enter your name:
+                        </Text>
                         <TextInput
                             style={[styles.input, { fontSize: RFPercentage(2.5) }]}
                             value={characterCreated.name}
-                            onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input })}
+                            maxLength={37}
+                            onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
 
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your character:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
+                            Please choose your character:
+                        </Text>
                         <View style={styles.optionCardContainer}>
                             {characterOptions.map((item) => (
                                 <OptionCard
@@ -169,7 +178,9 @@ export default function CharacterCreation() {
                 {/* Step 2 - Choose Background Color */}
                 {processStep === 2 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }]}>Please choose your background colour:</Text>
+                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
+                            Please choose your background colour:
+                        </Text>
                         <View style={styles.optionCardContainer}>
                             {bgColorOptions.map((item) => (
                                 <OptionCard
@@ -218,7 +229,18 @@ export default function CharacterCreation() {
                             />
                         )
                     ) : (
-                        <CustomButton text="Next" image={require("../assets/forward.png")} uniqueButtonStyling={styles.forwardBtnContainer}  functionToExecute={() => verifyInformationEntered()} />
+                        <CustomButton 
+                            text="Next" 
+                            image={require("../assets/forward.png")} 
+                            uniqueButtonStyling={styles.forwardBtnContainer}  
+                            functionToExecute={() => verifyInformationEntered()} 
+                            greyedOut={
+                                processStep === 1 ?
+                                isNameInvalid(characterCreated.name) || isCharacterInvalid(characterCreated.picture)
+                                :
+                                isBgColorInvalid(characterCreated.bgColor)
+                            }
+                        />
                     )}
                 </View>
             </View>
