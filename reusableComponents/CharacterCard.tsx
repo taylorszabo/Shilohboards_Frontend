@@ -15,6 +15,8 @@ type Props = {
     disabled?: boolean;
     onPressRoute?: string;
     customCardStyling?: ViewStyle;
+    deleteModeFunction?: Function;
+    selected?: boolean;
 };
 
 // ============================================================================
@@ -28,6 +30,8 @@ export default function CharacterCard(props: Props) {
         disabled = true,
         onPressRoute = "",
         customCardStyling,
+        deleteModeFunction,
+        selected = false,
     } = props;
 
     const router = useRouter();
@@ -44,6 +48,15 @@ export default function CharacterCard(props: Props) {
     // **Check if ID exists in `tempCharacterArray` before accessing it**
     const characterData = id !== undefined && tempCharacterArray[id] ? tempCharacterArray[id] : null;
 
+    function handlePressEvent() {
+        if (deleteModeFunction !== undefined) {
+            deleteModeFunction();
+        }
+        else if (onPressRoute) {
+            router.push(onPressRoute)
+        }
+    }
+
     return (
         <Pressable
             disabled={disabled}
@@ -56,8 +69,9 @@ export default function CharacterCard(props: Props) {
                     height: screenWidth * customWidth,
                 },
                 customCardStyling,
+                selected && deleteModeFunction !== undefined && styles.selectedStyling,
             ]}
-            onPress={() => router.push(onPressRoute)}
+            onPress={() => handlePressEvent()}
         >
             {/* Image Handling Fix */}
             <Image
@@ -100,5 +114,11 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#3E1911",
         fontWeight: "bold",
+    },
+    selectedStyling: {
+        borderWidth: 5, 
+        borderRightWidth: 5, 
+        borderBottomWidth: 5, 
+        borderColor: '#0098A6'
     },
 });
