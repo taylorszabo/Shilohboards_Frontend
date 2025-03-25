@@ -169,7 +169,6 @@ export const LevelOne = () => {
                             />
                         </View>
                         <View style={styles.cubeBackContainer}>
-                            <View style={styles.ovalShape} />
                             <View style={styles.cube}></View>
                         </View>
                     </TouchableOpacity>
@@ -210,6 +209,7 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         width: "100%",
+        overflow: 'visible',
     },
     voiceoverContainer: {
         flexDirection: "row",  
@@ -248,6 +248,7 @@ const styles = StyleSheet.create({
         width: "90%", 
         height: "90%",
         resizeMode: "contain",
+   
     },
     stackedCubeContainer: {
         position: "relative",
@@ -260,16 +261,7 @@ const styles = StyleSheet.create({
         top: 0,
         right: 200,
         zIndex: 0, // Moves it behind the main image
-    },
-    ovalShape: {
-        width: 70, 
-        height: 150, 
-        backgroundColor: "rgba(0, 0, 0, 0.2)", 
-        position: "absolute",
-        left: 350, 
-        top: 50,
-        borderRadius: 50, 
-        zIndex: -1,  // Ensures it is behind everything
+
     },
     backButton: {
         position: "absolute",

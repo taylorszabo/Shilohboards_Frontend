@@ -51,6 +51,8 @@ export default function Login(){
             await AsyncStorage.setItem("authToken", idToken);
             await AsyncStorage.setItem("userId", localId);
             await AsyncStorage.setItem("refreshToken", refreshToken);
+            await AsyncStorage.setItem("parentId", localId);
+
 
             router.push('/SelectCharacter');
 

@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,12 +20,20 @@ export default function GameComplete(props: { game: string | string[], score: st
     const [character, setCharacter] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
 
+    // Function to choose star image based on level
+    const getStarImage = (level: string) => {
+        if (level === "1") return require('../assets/GameOverStar-Silver.png');
+        if (level === "2") return require('../assets/GameOverStar.png');
+        if (level === "3") return require('../assets/GameOverStar-Purple.png');
+        return require('../assets/GameOverStar.png'); // fallback image incase of errors
+    };
+
     // Function to Save Star Count Correctly
     const saveStarCount = async () => {
         try {
             let category = Array.isArray(game) ? game[0] : game;
 
-            // ✅ Normalize "Alphabet" to "Letters"
+            // Normalize "Alphabet" to "Letters"
             if (category === "Alphabet") {
                 category = "Letters";
             }
@@ -96,7 +103,9 @@ export default function GameComplete(props: { game: string | string[], score: st
                     <Text style={[styles.textCSS, { fontSize: 35 }]}>Game Complete!</Text>
                     {showScore && <Text style={styles.textCSS}>Score {score}</Text>}
                     <Text style={styles.textCSS}>You've earned 1 star!</Text>
-                    <Image source={require('../assets/GameOverStar.png')} style={styles.starImg} />
+                    
+                    {/* Updated image line */}
+                    <Image source={getStarImage(level)} style={styles.starImg} />
 
                     <View style={styles.submitBtnContainer}>
                         <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} />
@@ -107,8 +116,8 @@ export default function GameComplete(props: { game: string | string[], score: st
             )}
         </BackgroundLayout>
     );
-
 }
+
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
     textContainer: {
@@ -122,13 +131,16 @@ const styles = StyleSheet.create({
         color: '#3E1911',
     },
     starImg: {
-        marginTop: 30
+        marginTop: 30,
+        width: 100,
+        height: 100,
+        resizeMode: 'contain',
     },
     submitBtnContainer: {
         alignSelf: 'center',
         marginTop: 'auto', 
         padding: 10
-      },
+    },
     headerText: {
         verticalAlign: 'middle',
         padding: 20,

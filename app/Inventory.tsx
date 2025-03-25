@@ -1,141 +1,221 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from '@react-navigation/native';
 import CustomButton from "../reusableComponents/CustomButton";
-import { Dimensions } from "react-native"; // Adding responsiveness
+import axios from 'axios';
+import { Picker } from '@react-native-picker/picker';
 
-const { width, height } = Dimensions.get("window"); // Adding to make the page responsive
+// Get screen dimensions for responsive styling
+const { width, height } = Dimensions.get("window");
 
+// Main functional component for Inventory Screen
 export default function InventoryScreen() {
     const router = useRouter();
-    const [selectedUser, setSelectedUser] = React.useState('Shiloh');
-    const users = ['Shiloh', 'Jessica', 'Mina'];
-    const starIcon = require('../assets/GameOverStar.png');
 
-    const categories = ["Letters", "Numbers"]; // Ensuring Letters and Numbers are both fetched
-    const levels = [1, 2, 3];
+    // State to store selected child account
+    const [selectedUser, setSelectedUser] = React.useState<any>(null);
+    const [errorMessage, setErrorMessage] = React.useState('');
+    const [childAccounts, setChildAccounts] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(false);
     const [levelCounts, setLevelCounts] = React.useState<{ [key: string]: number }>({});
 
-    // Function to Fetch Both Letters & Numbers from AsyncStorage so they save separately.
-    const fetchLevelCounts = async () => {
+
+    const starIcon1 = require('../assets/GameOverStar-Silver.png'); 
+    const starIcon2 = require('../assets/GameOverStar.png');   
+    const starIcon3 = require('../assets/GameOverStar-Purple.png');
+    const categories = ["Letters", "Numbers"];
+    const levels = [1, 2, 3];
+
+    // stored level counts for a specific child
+    const fetchLevelCounts = async (childId: string) => {
         try {
             const newCounts: { [key: string]: number } = {};
-
-            for (const category of categories) { // Loop through both categories letter & numbers
+            for (const category of categories) {
                 for (const level of levels) {
-                    const key = `${category}_level${level}_count`; // 
-                    const count = await AsyncStorage.getItem(key);
-                    newCounts[key] = count ? parseInt(count) : 0; // ✅ Ensure 0 if no value exists
+                    const key = `${childId}_${category}_level${level}_count`;
+
+                    // Try to get child-specific count
+                    let count = await AsyncStorage.getItem(key);
+                    if (!count) {
+                        const legacyKey = `${category}_level${level}_count`;
+                        const legacyCount = await AsyncStorage.getItem(legacyKey);
+                        if (legacyCount) {
+                            await AsyncStorage.setItem(key, legacyCount);
+                            await AsyncStorage.removeItem(legacyKey);
+                            count = legacyCount;
+                        }
+                    }
+
+                 
+                    newCounts[key] = count ? parseInt(count) : 0;
                 }
             }
-
             setLevelCounts(newCounts);
-            console.log(" Updated Inventory:", newCounts);
         } catch (error) {
-            console.error(" Error retrieving level counts:", error);
+            console.error("Error retrieving level counts:", error);
         }
     };
 
-    // Fetch data
-    useFocusEffect(
-        React.useCallback(() => {
-            fetchLevelCounts();
-        }, [])
-    );
+    // getting all child accounts for a parent
+    const fetchChildren = React.useCallback(async (parentId: string) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/children/${parentId}`);
+            const childrenData = response.data;
 
+            // If no children found
+            if (Array.isArray(childrenData) && childrenData.length === 0) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildAccounts([]);
+                return;
+            }
+
+            // get each child profile
+            const profiles: any[] = await Promise.all(
+                childrenData.map(async (child: any) => {
+                    try {
+                        const res = await axios.get(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/profile/${child.profile_id}`);
+                        return { ...res.data, id: child.id };
+                    } catch (error) {
+                        console.error(`Error fetching profile for child ${child.profile_id}:`, error);
+                        return null;
+                    }
+                })
+            );
+
+            const validProfiles = profiles.filter(profile => profile && profile.profile_image);
+            if (validProfiles.length === 0) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildAccounts([]);
+            } else {
+                setChildAccounts(validProfiles);
+            }
+
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                setErrorMessage("No characters found. Please create a new character.");
+                setChildAccounts([]);
+            } else {
+                console.error("Error fetching children:", error);
+                setErrorMessage("Failed to load characters.");
+                setChildAccounts([]);
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        const fetchParentId = async () => {
+            const userId: string | null = await AsyncStorage.getItem("userId");
+            if (userId) {
+                fetchChildren(userId);
+            } else {
+                setErrorMessage("Error: Parent ID not found.");
+            }
+        };
+
+        fetchParentId();
+    }, []);
+
+    // child is selected from the dropdown
+    const handleSelectUser = (userId: string) => {
+        const user = childAccounts.find(u => u.id === userId);
+        if (user) {
+            setSelectedUser(user);
+            fetchLevelCounts(user.id);
+        }
+    };
     return (
         <BackgroundLayout>
             <View style={styles.container}>
+                {/* Back button in top left */}
                 <CustomButton
                     image={require("../assets/back.png")}
                     uniqueButtonStyling={styles.backBtnContainer}
-                    functionToExecute={() => router.back()}
+                    functionToExecute={() => router.canGoBack() ? router.back() : router.replace('/')}
                 />
 
-                <Text style={styles.headerText}>Inventory</Text>
+                {/* Header */}
+                <Text style={styles.headerText}>Reward Inventory</Text>
                 <Text style={styles.subHeaderText}>Select an account to see inventory</Text>
 
-                <View style={styles.tabContainer}>
-                    {users.map((user) => (
-                        <Pressable
-                            key={user}
-                            style={[styles.tab, selectedUser === user && styles.activeTab]}
-                            onPress={() => setSelectedUser(user)}
-                        >
-                            <Text style={styles.tabText}>{user}</Text>
-                        </Pressable>
-                    ))}
+                {/* Dropdown for selecting child */}
+                <View style={styles.dropdownWrapper}>
+                    <Picker
+                        selectedValue={selectedUser?.id || ''}
+                        style={styles.picker}
+                        onValueChange={(itemValue) => handleSelectUser(itemValue)}
+                    >
+                        <Picker.Item label="-- Select Account --" value="" />
+                        {childAccounts.map((user) => (
+                            <Picker.Item key={user.id} label={user.profile_name} value={user.id} />
+                        ))}
+                    </Picker>
                 </View>
 
-                <View style={styles.inventoryContainer}>
-                    {categories.map((category) => ( // Looping through both categories
-                        <View key={category} style={styles.column}>
-                            <Text style={styles.sectionTitle}>{category}</Text>
-                            {levels.map((level) => (
-                                <View key={`${category}_level${level}`}>
-                                    <Text style={styles.level}>Level {level}</Text>
-                                    <View style={styles.itemRow}>
-                                        <Image source={starIcon} style={styles.starIcon} />
-                                        <Text style={styles.itemText}>
-                                            x {levelCounts[`${category}_level${level}_count`] || 0} 
-                                        </Text>
+                {/* Inventory breakdown per category and level */}
+                {selectedUser && (
+                    <View style={styles.inventoryContainer}>
+                        {categories.map((category) => (
+                            <View key={category} style={styles.column}>
+                                <Text style={styles.sectionTitle}>{category}</Text>
+                                {levels.map((level) => (
+                                    <View key={`${category}_level${level}`}>
+                                        <Text style={styles.level}>Level {level}</Text>
+                                        <View style={styles.itemRow}>
+                                        {
+                                         level === 1 ? <Image source={starIcon1} style={styles.starIcon} /> :
+                                         level === 2 ? <Image source={starIcon2} style={styles.starIcon} /> :
+                                         level === 3 ? <Image source={starIcon3} style={styles.starIcon} /> : null
+                                            }
+                                            <Text style={styles.itemText}>
+                                                x {levelCounts[`${selectedUser.id}_${category}_level${level}_count`] || 0}
+                                            </Text>
+                                        </View>
                                     </View>
-                                </View>
-                            ))}
-                        </View>
-                    ))}
-                </View>
+                                ))}
+                            </View>
+                        ))}
+                    </View>
+                )}
             </View>
         </BackgroundLayout>
     );
 }
 
 const styles = StyleSheet.create({
-    backgroundContainer: {
-        flex: 1,
-        position: 'relative',
-    },
     container: {
         flex: 1,
         alignItems: 'center',
-        padding: width * 0.05, // Add responsive padding
+        padding: width * 0.05,
     },
     headerText: {
-        fontSize: width * 0.08,  // Scales based on screen width
+        fontSize: width * 0.08,
         fontWeight: 'bold',
         color: '#3E1911',
         marginBottom: 50,
         textAlign: 'center',
     },
     subHeaderText: {
-        fontSize: width * 0.05,  // Scales text size
+        fontSize: width * 0.05,
         color: '#3E1911',
         marginBottom: height * 0.02,
         textAlign: 'center',
     },
-    tabContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-        width: '100%',
-        borderBottomWidth: 2,
-        borderBottomColor: '#3E1911',
+    dropdownWrapper: {
+        width: '80%',
+        borderColor: '#3E1911',
+        borderWidth: 2,
+        borderRadius: 8,
         marginBottom: height * 0.02,
+        backgroundColor: 'white',
     },
-    tab: {
-        paddingVertical: height * 0.015,
-        paddingHorizontal: width * 0.05,
-        marginHorizontal: width * 0.02,
-    },
-    activeTab: {
-        borderBottomWidth: 3,
-        borderBottomColor: '#3E1911',
-    },
-    tabText: {
-        fontSize: width * 0.05,
-        fontWeight: 'bold',
+    picker: {
+        width: '100%',
+        height: 50,
         color: '#3E1911',
     },
     inventoryContainer: {

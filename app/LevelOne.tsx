@@ -190,8 +190,8 @@ export default function LevelOne() {
                     <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
                 <SoundIcon size='20%' onPress={playSound}/>
-                {/* // === OVAL SHAPE ===  This will always be rendered */}
-                <View style={styles.ovalShape} /> 
+                
+                 
                 {doorOpened ? (
                     <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
                         <View style={styles.cube}>
@@ -287,17 +287,7 @@ const styles = StyleSheet.create({
         top: 0,
         right: width * 0.5,  // Adjust dynamically based on screen width
         zIndex: 0, // Moves it behind the main image
-    },
-    ovalShape: {  
-        width: width * 0.15,  
-        height: height * 0.1,  
-        backgroundColor: "rgba(0, 0, 0, 0.2)",
-        position: "absolute",
-        left: width * 0.65,  // Moves it towards the right
-        top: height * 0.63,  
-        borderRadius: width * 0.05,  
-        zIndex: -1,
-        
+       
     },
     backButton: {
         position: "absolute",

@@ -9,9 +9,11 @@ import axios, {AxiosError} from "axios";
 
 const { width, height } = Dimensions.get("window");
 
+
 // Firebase API Key and Endpoints
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_GET_USER_URL = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`
+const FIREBASE_UPDATE_EMAIL = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`;
 const FIREBASE_UPDATE_PASSWORD = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`
 
 export default function Settings() {
@@ -28,9 +30,7 @@ export default function Settings() {
   const [tempVolume, setTempVolume] = useState(50); 
   const [volumeSaved, setVolumeSaved] = useState(false); 
 
-  //Accessibility settings state
-  const [colourBlindMode, setColourBlindMode] = useState(true); // Controls Colour Blind Mode
-
+  // Function to refresh the authentication token
   const refreshAuthToken = async (refreshToken: string | null) => {
     try {
       console.log("Refreshing authentication token...");
@@ -121,6 +121,7 @@ export default function Settings() {
     };
     fetchUserData();
   }, []);
+
   const handleSaveAllSettings = async () => {
     try {
       const authToken = await AsyncStorage.getItem("authToken");
@@ -128,26 +129,45 @@ export default function Settings() {
         console.warn("No authentication token found.");
         return;
       }
-
-      const response = await axios.post(FIREBASE_UPDATE_PASSWORD, {
-        idToken: authToken, 
-        password: newPassword, 
-        returnSecureToken: true, 
-      });
-
-      console.log("Password updated successfully.");
-
-      //Store the new authentication token after password updates
-      await AsyncStorage.setItem("authToken", response.data.idToken);
-
-      //Clear password field and notify user of save
-      setNewPassword("");
-      alert("Password updated successfully.");
+  
+      // Save password
+      if (newPassword) {
+        const response = await axios.post(FIREBASE_UPDATE_PASSWORD, {
+          idToken: authToken,
+          password: newPassword,
+          returnSecureToken: true,
+        });
+        await AsyncStorage.setItem("authToken", response.data.idToken);
+        setNewPassword("");
+        console.log("Password updated.");
+      }
+  
+      // Save email
+      const storedEmail = await AsyncStorage.getItem("email");
+      if (storedEmail !== email) {
+        const emailUpdateResponse = await axios.post(FIREBASE_UPDATE_EMAIL, {
+          idToken: authToken,
+          email: email,
+          returnSecureToken: true,
+        });
+        await AsyncStorage.setItem("authToken", emailUpdateResponse.data.idToken);
+        await AsyncStorage.setItem("email", email);
+        console.log("Email updated.");
+      }
+  
+      // Save volume
+      await AsyncStorage.setItem("volume", tempVolume.toString());
+      setVolume(tempVolume);
+      setVolumeSaved(true);
+      console.log("Volume saved.");
+  
+      alert("Settings saved successfully.");
     } catch (error) {
-      console.error("Error updating password:", error);
-      alert("Failed to update password. Please try again.");
+      console.error("Error saving settings:", error);
+      alert("Failed to save settings. Please try again.");
     }
   };
+  
 
   //navigate back to the LevelChoice screen
   const goBack = () => {
@@ -224,32 +244,6 @@ export default function Settings() {
 
         <View style={styles.line} />
 
-        {/* Accessibility Settings Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionHeader}>Accessibility</Text>
-
-          {/* Colour Blind Mode Toggle */}
-          <Text style={styles.label}>Colour Blind Mode</Text>
-          <View style={styles.optionRow}>
-            <TouchableOpacity
-              style={styles.radioGroup}
-              onPress={() => setColourBlindMode(true)}
-            >
-              <Text style={styles.optionText}>ON</Text>
-              <View style={colourBlindMode ? styles.radioSelected : styles.radio} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.radioGroup}
-              onPress={() => setColourBlindMode(false)}
-            >
-              <Text style={styles.optionText}>OFF</Text>
-              <View style={!colourBlindMode ? styles.radioSelected : styles.radio} />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.line} />
-
         {/* Save Button */}
         <View style={styles.buttonContainer}>
           <CustomButton
@@ -267,8 +261,9 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
-    paddingHorizontal: width * -1,
+    paddingHorizontal: 0, 
   },
+  
   backButton: {
     position: "absolute",
     top: height * 0.02,
@@ -335,26 +330,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#C3E2E5",
     borderRadius: 8,
   },
-  radioGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: height * 0.01,
-  },
-  radio: {
-    width: width * 0.05,
-    height: width * 0.05,
-    borderRadius: width * 0.025,
-    borderWidth: 1,
-    borderColor: "#3E1911",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  radioSelected: {
-    width: width * 0.05,
-    height: width * 0.05,
-    borderRadius: width * 0.025,
-    backgroundColor: "#3E1911",
-  },
   optionText: {
     fontSize: width * 0.05,
     color: "#3E1911",
@@ -363,7 +338,6 @@ const styles = StyleSheet.create({
   toggleText: {
     color: "#3E1911",
     fontSize: width * 0.04,
-    textDecorationLine: "underline",
     marginVertical: height * 0.01,
   },
   slider: {
