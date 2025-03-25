@@ -187,7 +187,7 @@ export default function PerformanceReports() {
             </LinearGradient>
 
             <Text style={styles.bodyText}>Number of Games Completed: {completedGames}</Text>
-            <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed(1)}</Text>
+            <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed()}%</Text>
 
 
             <Text style={[styles.bodyText, {paddingTop: 0}]}>Number of times each question was correct:</Text>
