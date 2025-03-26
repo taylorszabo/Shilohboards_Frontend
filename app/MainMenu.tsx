@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import {StyleSheet, Text, View, Image, Pressable, ActivityIndicator} from 'react-native';
+import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -10,6 +10,7 @@ import { formatNameWithCapitals } from "../CharacterOptions";
 import {bgColorOptions, characterOptions} from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import LoadingMessage from '../reusableComponents/LoadingMessage';
 
 type HamburgerMenuItem = {
   text: string;
@@ -114,7 +115,7 @@ export default function MainMenu() {
               />
 
               {loading ? (
-                  <ActivityIndicator size="large" color="#0000ff" />
+                  <LoadingMessage />
               ) : character ? (
                   <>
                     <CharacterCard

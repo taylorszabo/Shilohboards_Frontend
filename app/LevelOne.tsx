@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -20,6 +20,7 @@ import { Dimensions } from "react-native";//adding responsiveness
 import { Audio } from "expo-av";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -165,7 +166,7 @@ export default function LevelOne() {
     };
 
 
-    if (loading || !character) return <ActivityIndicator size="large" color="#0000ff" />;
+    if (loading || !character) return <LoadingMessage backgroundNeeded={true}/> ;
     if (error) return <Text style={{ color: "red" }}>{error}</Text>;
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;

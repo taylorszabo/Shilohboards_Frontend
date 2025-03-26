@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import OptionCard from "../reusableComponents/OptionCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -52,7 +53,7 @@ export default function LevelChoice() {
                 <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`} />
 
                 {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
+                    <LoadingMessage />
                 ) : character ? (
                     <>
                         <CharacterCard

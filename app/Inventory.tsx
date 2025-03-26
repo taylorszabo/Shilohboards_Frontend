@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import LoadingMessage from '../reusableComponents/LoadingMessage';
 
 // Get screen dimensions for responsive styling
 const { width, height } = Dimensions.get("window");
@@ -128,6 +129,9 @@ export default function InventoryScreen() {
             fetchLevelCounts(user.id);
         }
     };
+
+    if (loading) return <LoadingMessage backgroundNeeded={true}/>;
+
     return (
         <BackgroundLayout>
             <View style={styles.container}>

@@ -9,6 +9,7 @@ import PerformanceBar from '../reusableComponents/PerformanceBar';
 import { gamesArray, alphabetArray, numbersArray } from "../GameContent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import LoadingMessage from '../reusableComponents/LoadingMessage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -134,6 +135,8 @@ export default function PerformanceReports() {
     
     setQuery({...query, game: game});
   }
+
+  if (loading) return <LoadingMessage backgroundNeeded={true}/>;
 
   //----------------------------------------------------------
   return (

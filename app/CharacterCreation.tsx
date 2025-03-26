@@ -1,5 +1,5 @@
 import * as React from "react";
-import { StyleSheet, Text, TextInput, View, useWindowDimensions, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, TextInput, View, useWindowDimensions } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import CustomButton from "../reusableComponents/CustomButton";
@@ -10,6 +10,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { characterOptions, bgColorOptions, isNameInvalid, isCharacterInvalid, isBgColorInvalid } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -219,7 +220,7 @@ export default function CharacterCreation() {
 
                     {processStep === numberOfSteps ? (
                         loading ? (
-                            <ActivityIndicator size="large" color="#0000ff" />
+                            <LoadingMessage />
                         ) : (
                             <CustomButton
                                 text="Finish"

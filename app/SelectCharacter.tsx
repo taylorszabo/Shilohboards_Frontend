@@ -1,12 +1,13 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import CustomButton from "../reusableComponents/CustomButton";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 // Backend API URL
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -138,7 +139,7 @@ export default function SelectCharacter() {
           </Text>
 
           {loading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
+              <LoadingMessage smallVersion={true} />
           ) : errorMessage || children.length === 0 ? (
               <Text style={styles.errorText}>{errorMessage || "No characters found. Please create a new one."}</Text>
           ) : (

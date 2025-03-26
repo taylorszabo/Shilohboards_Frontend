@@ -21,6 +21,7 @@ import {
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from '../reusableComponents/LoadingMessage';
 
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -286,9 +287,7 @@ export default function LevelTwo() {
         await sound.playAsync();
     }
 
-    if (loading) {
-        return <Text>Loading questions...</Text>;
-    }
+    if (loading) return <LoadingMessage backgroundNeeded={true}/>;
 
     if (!character) {
         console.warn("Character profile is null, redirecting...");
