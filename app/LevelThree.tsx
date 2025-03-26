@@ -280,20 +280,39 @@ export default function LevelThree() {
                             <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
-                                {gameQuestions[currentQuestion].options.map((option, index) => (
-                                    <OptionCard key={index} 
-                                        square={true}
-                                        image={option.image} 
-                                        functionToExecute={() => selectAnswer(option.object)} 
-                                        disabled={answerDisplayed} 
-                                        selected={answerSelected === option.object} 
-                                        bgColor={
-                                            answerDisplayed
-                                                ? option.correct ? "#CFFFC0" : "#F69292"
-                                                : "#FFF8F0"
-                                        }
-                                    />
-                                ))}
+                                <View style={{gap: 15}}>
+                                    {gameQuestions[currentQuestion].options.slice(0, 2).map((option, index) => (
+                                        <OptionCard key={index} 
+                                            square={true}
+                                            image={option.image} 
+                                            functionToExecute={() => selectAnswer(option.object)} 
+                                            disabled={answerDisplayed} 
+                                            selected={answerSelected === option.object} 
+                                            bgColor={
+                                                answerDisplayed
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                            }
+                                        />
+                                    ))}
+                                </View>
+
+                                <View style={{gap: 15}}>
+                                    {gameQuestions[currentQuestion].options.slice(2).map((option, index) => (
+                                        <OptionCard key={index} 
+                                            square={true}
+                                            image={option.image} 
+                                            functionToExecute={() => selectAnswer(option.object)} 
+                                            disabled={answerDisplayed} 
+                                            selected={answerSelected === option.object} 
+                                            bgColor={
+                                                answerDisplayed
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                            }
+                                        />
+                                    ))}
+                                </View>
                             </View>
 
                             {/* Before an answer is selected, there should NOT be a submit button but since we need to keep the space for responsiveness, a 3rd invisible/disabled button is there.  Once 
@@ -328,10 +347,12 @@ const styles = StyleSheet.create({
     gap: '1%'
   },
   answerContainer: {
+    flex: 1,
     flexDirection: 'row', 
     justifyContent: 'center', 
     flexWrap: 'wrap', 
-    gap: 15
+    gap: 15,
+    marginBottom: '4%'
   },
   headerText: {
     verticalAlign: 'middle',
