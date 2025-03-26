@@ -346,10 +346,12 @@ export default function LevelTwo() {
                                     game === "Numbers" && styles.alphaImageOverride
                                 ]}
                             />
+                            {game === "Alphabet" &&
                                 <View style={{alignItems: 'center'}}>
-                                    <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                                    <SoundIcon size='9%' onPress={playCurrentSound}/>
+                                    <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
+                                    <SoundIcon size='15%' onPress={playCurrentSound}/>
                                 </View>
+                            }
                         </View>
 
                         {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}

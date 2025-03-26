@@ -269,12 +269,10 @@ export default function LevelThree() {
                     <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
+                            <Text style={[styles.headerText, {width: '40%'}]}>
+                                Tap the ear to replay sound
+                            </Text>
                             <SoundIcon size='25%' onPress={playCurrentSound}/>
-                            {/*<View style={styles.replayBtn}>*/}
-                            {/*    <SoundPressable soundFile={alphabetSounds[gameQuestions[currentQuestion].letter]}>*/}
-                            {/*        <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic} />*/}
-                            {/*    </SoundPressable>*/}
-                            {/*</View>*/}
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
@@ -329,7 +327,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
     alignItems: 'center',
-    gap: 30
+    gap: '1%'
   },
   answerContainer: {
     flexDirection: 'row', 
