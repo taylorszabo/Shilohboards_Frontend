@@ -10,6 +10,8 @@ import { Picker } from '@react-native-picker/picker';
 // Get screen dimensions for responsive styling
 const { width, height } = Dimensions.get("window");
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
 // Main functional component for Inventory Screen
 export default function InventoryScreen() {
     const router = useRouter();
@@ -31,32 +33,22 @@ export default function InventoryScreen() {
     // stored level counts for a specific child
     const fetchLevelCounts = async (childId: string) => {
         try {
+            const response = await axios.get(`${API_BASE_URL}/users/rewards/${childId}`);
+            const rewards = response.data;
             const newCounts: { [key: string]: number } = {};
             for (const category of categories) {
                 for (const level of levels) {
+                    const count = rewards?.[category]?.[`level${level}`] || 0;
                     const key = `${childId}_${category}_level${level}_count`;
-
-                    // Try to get child-specific count
-                    let count = await AsyncStorage.getItem(key);
-                    if (!count) {
-                        const legacyKey = `${category}_level${level}_count`;
-                        const legacyCount = await AsyncStorage.getItem(legacyKey);
-                        if (legacyCount) {
-                            await AsyncStorage.setItem(key, legacyCount);
-                            await AsyncStorage.removeItem(legacyKey);
-                            count = legacyCount;
-                        }
-                    }
-
-                 
-                    newCounts[key] = count ? parseInt(count) : 0;
+                    newCounts[key] = count;
                 }
             }
             setLevelCounts(newCounts);
         } catch (error) {
-            console.error("Error retrieving level counts:", error);
+            console.error("Error fetching reward counts from backend:", error);
         }
     };
+
 
     // getting all child accounts for a parent
     const fetchChildren = React.useCallback(async (parentId: string) => {
