@@ -130,7 +130,7 @@ export default function CharacterCreation() {
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
-            setCharacterCreated({ ...characterCreated, name: formatNameWithCapitals(characterCreated.name.trim()) })
+            setCharacterCreated({ ...characterCreated, name: (characterCreated.name.trim()) }) //add formatNameWithCapitals in later once all temp data deleted in backend
             setInfoBeingVerified(false);
         }
     }
@@ -165,8 +165,7 @@ export default function CharacterCreation() {
                             {characterOptions.map((item) => (
                                 <OptionCard
                                     key={item.id}
-                                    customWidth={0.35}
-                                    height={135}
+                                    square={true}
                                     image={item.picture}
                                     functionToExecute={() => setCharacterCreated({ ...characterCreated, picture: item.id })}
                                     selected={item.id === characterCreated.picture}
@@ -186,8 +185,7 @@ export default function CharacterCreation() {
                             {bgColorOptions.map((item) => (
                                 <OptionCard
                                     key={item}
-                                    customWidth={0.35}
-                                    height={135}
+                                    square={true}
                                     bgColor={item}
                                     functionToExecute={() => setCharacterCreated({ ...characterCreated, bgColor: item })}
                                     selected={item === characterCreated.bgColor}

@@ -296,10 +296,14 @@ export default function LevelThree() {
                                 ))}
                             </View>
 
+                            {/* Before an answer is selected, there should NOT be a submit button but since we need to keep the space for responsiveness, a 3rd invisible/disabled button is there.  Once 
+                                an answer is selected, the submit button appears.  After they submit their answer, the next button appears to move to the next question after reviewing feedback */}
                             {answerDisplayed ? 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
-                            : answerSelected && 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                            : answerSelected ? 
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                                :
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                             }
                         </View>
                     </View>
@@ -341,6 +345,11 @@ const styles = StyleSheet.create({
   submitBtnContainer: {
     marginTop: 'auto', 
     flexDirection: 'row',
+  },
+  submitBtnContainerInvisible: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+    opacity: 0
   },
   btnIcon: {
     height: '150%',
