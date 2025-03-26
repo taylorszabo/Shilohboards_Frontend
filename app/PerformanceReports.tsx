@@ -11,6 +11,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LoadingMessage from '../reusableComponents/LoadingMessage';
 import { formatNameWithCapitals } from "../CharacterOptions";
+import RNPickerSelect from 'react-native-picker-select';
+import { Picker } from '@react-native-picker/picker';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -22,13 +24,13 @@ type ReportQuery = {
 
 export default function PerformanceReports() {
     const [children, setChildren] = useState<any[]>([]);
-    const { game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
+    const { playerId, game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
     const [query, setQuery] = useState<ReportQuery>({
         playerId: parseInt(playerLastSelected.toString()),
         game: game.toString(),
         level: parseInt(level.toString()),
     });
-
+ 
     useEffect(() => {
         if (children.length > 0 && query.playerId === 0) {
             // Set default to first child once loaded
@@ -145,7 +147,7 @@ export default function PerformanceReports() {
         <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
             <View  style={styles.header}>
               {/* Back Button */}
-              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${query.playerId}`}/>
+              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
 
               <Text style={styles.headerText}>Performance Reports</Text>
             </View>
@@ -153,18 +155,34 @@ export default function PerformanceReports() {
             <Text style={styles.bodyText}>Select the following options to view results:</Text>
 
             {/* =============== Names Row =============== */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
-                {[...children].map((user) => (
-                    <View key={user.id}>
-                        <Text
-                            style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
-                            onPress={() => setQuery({ ...query, playerId: user.id })}
-                        >
-                            {formatNameWithCapitals(user.profile_name)}
-                        </Text>
-                    </View>
-                ))}
-            </LinearGradient>
+            {children.length < 6 ?
+                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+                    {[...children].map((user) => (
+                        <View key={user.id}>
+                            <Text
+                                style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
+                                onPress={() => setQuery({ ...query, playerId: user.id })}
+                            >
+                                {formatNameWithCapitals(user.profile_name)}
+                            </Text>
+                        </View>
+                    ))}
+                </LinearGradient>
+                :
+                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBarsDropdown}>
+                    <RNPickerSelect
+                        onValueChange={(value) => setQuery({ ...query, playerId: value })}
+                        items={children.map((user) => ({
+                            label: formatNameWithCapitals(user.profile_name),
+                            value: user.id,
+                            color: '#3E1911',
+                        }))}
+                        value={query.playerId}
+                        placeholder={{}}
+                        style={pickerSelectStyles}
+                    />
+                </LinearGradient>
+            }
 
             {/* =============== Game Row =============== */}
             <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
@@ -220,7 +238,7 @@ export default function PerformanceReports() {
             </View>
 
             <Text style={[styles.bodyText, styles.gameInstructionLink]}
-                  onPress={() => router.push(`/GameDescriptions?playerId=${query.playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
+                  onPress={() => router.push(`/GameDescriptions?playerId=${playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
               Click here for game & level descriptions if needed
             </Text>
         </View>
@@ -263,6 +281,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap'
   },
+  selectionBarsDropdown: {
+    borderBottomWidth: 4,
+    borderBottomColor: 'rgba(62, 25, 17, 0.3)',
+  },
   barsContainer: {
     flex: 1,
     flexDirection: 'row',
@@ -294,3 +316,19 @@ const styles = StyleSheet.create({
     fontSize: 16
   }
 });
+
+const pickerSelectStyles = {
+    inputIOS: {
+        fontSize: 18,
+        borderColor: '#3E1911',
+        color: '#3E1911',
+    },
+    inputAndroid: {
+        fontSize: 18,
+        borderColor: '#3E1911',
+        color: '#3E1911',
+    },
+    viewContainer: {
+        height: 50
+    }
+};
