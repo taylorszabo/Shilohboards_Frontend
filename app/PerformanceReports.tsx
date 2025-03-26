@@ -10,6 +10,7 @@ import { gamesArray, alphabetArray, numbersArray } from "../GameContent";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { formatNameWithCapitals } from "../CharacterOptions";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -159,7 +160,7 @@ export default function PerformanceReports() {
                             style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
                             onPress={() => setQuery({ ...query, playerId: user.id })}
                         >
-                            {user.profile_name}
+                            {formatNameWithCapitals(user.profile_name)}
                         </Text>
                     </View>
                 ))}
@@ -193,7 +194,7 @@ export default function PerformanceReports() {
             <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed()}%</Text>
 
 
-            <Text style={[styles.bodyText, {paddingTop: 0}]}>Number of times each question was correct:</Text>
+            <Text style={[styles.bodyText, {paddingTop: 0}]}>How often each question was correct:</Text>
 
             <View style={styles.barsContainer}>
                 {/* 1st half */}

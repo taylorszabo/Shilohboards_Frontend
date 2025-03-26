@@ -7,6 +7,7 @@ import CustomButton from "../reusableComponents/CustomButton";
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { formatNameWithCapitals } from "../CharacterOptions";
 
 // Get screen dimensions for responsive styling
 const { width, height } = Dimensions.get("window");
@@ -155,7 +156,7 @@ export default function InventoryScreen() {
                     >
                         <Picker.Item label="-- Select Account --" value="" />
                         {childAccounts.map((user) => (
-                            <Picker.Item key={user.id} label={user.profile_name} value={user.id} />
+                            <Picker.Item key={user.id} label={formatNameWithCapitals(user.profile_name)} value={user.id} />
                         ))}
                     </Picker>
                 </View>

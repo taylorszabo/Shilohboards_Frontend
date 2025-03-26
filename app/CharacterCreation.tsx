@@ -7,7 +7,7 @@ import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useEffect, useState } from "react";
 import OptionCard from "../reusableComponents/OptionCard";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { characterOptions, bgColorOptions, isNameInvalid, isCharacterInvalid, isBgColorInvalid } from "../CharacterOptions";
+import { characterOptions, bgColorOptions, isNameInvalid, isCharacterInvalid, isBgColorInvalid, maxCharacterNameLength, formatNameWithCapitals } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
@@ -130,7 +130,7 @@ export default function CharacterCreation() {
 
         if (!missingInfo) {
             setProcessStep((prev) => prev + 1);
-            setCharacterCreated({ ...characterCreated, name: characterCreated.name.trim() })
+            setCharacterCreated({ ...characterCreated, name: formatNameWithCapitals(characterCreated.name.trim()) })
             setInfoBeingVerified(false);
         }
     }
@@ -154,7 +154,7 @@ export default function CharacterCreation() {
                         <TextInput
                             style={[styles.input, { fontSize: RFPercentage(2.5) }]}
                             value={characterCreated.name}
-                            maxLength={37}
+                            maxLength={maxCharacterNameLength}
                             onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
 
@@ -220,7 +220,7 @@ export default function CharacterCreation() {
 
                     {processStep === numberOfSteps ? (
                         loading ? (
-                            <LoadingMessage />
+                            <LoadingMessage smallVersion={true} oneRow={true} />
                         ) : (
                             <CustomButton
                                 text="Finish"
