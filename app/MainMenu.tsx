@@ -87,7 +87,7 @@ export default function MainMenu() {
                 <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
                   <Image source={require("../assets/back.png")} />
                 </Pressable>
-                <Image source={require("../assets/logo.png")} style={styles.hamburgerLogo} />
+                <Image source={require("../assets/logo.png")} style={styles.shilohLogoInHamburgerMenu} />
               </View>
 
               {/* ---------------------- Menu Links --------------------- */}
@@ -108,17 +108,16 @@ export default function MainMenu() {
         ) : (
             // ===================== main menu games =====================
             <View style={styles.container}>
-              <CustomButton
-                  image={require("../assets/hamburgerMenuIcon.png")}
-                  uniqueButtonStyling={styles.hamburgerButton}
-                  uniqueImageStyling={{ width: 28, height: 28 }}
-                  functionToExecute={() => setHamburgerMenuOpen(true)}
-              />
-
               {loading ? (
                   <LoadingMessage />
               ) : character ? (
                   <View style={{width: '100%', alignItems: 'center', flex: 1}}>
+                    <CustomButton
+                        image={require("../assets/hamburgerMenuIcon.png")}
+                        uniqueButtonStyling={styles.hamburgerButton}
+                        uniqueImageStyling={{ width: 28, height: 28 }}
+                        functionToExecute={() => setHamburgerMenuOpen(true)}
+                    />
                     <CharacterCard
                         id={character.id}
                         name={character.profile_name}
@@ -171,9 +170,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#FCCF9D',
     position: 'relative'
   },
-  hamburgerLogo: {
+  shilohLogoInHamburgerMenu: {
     position: 'absolute',
-    bottom: -100
+    bottom: -100,
   },
   closeHamburgerMenuBtn: {
     position: 'absolute',
