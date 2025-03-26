@@ -340,14 +340,14 @@ export default function LevelTwo() {
                     <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '5%', flex: 1, marginBottom: '3%'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <View style={{height: '50%', width: '100%'}}>
+                            <View style={{height: '30%', width: '100%'}}>
                                 <Image
                                     source={gameQuestions[currentQuestion].exampleImage}
                                     style={styles.alphaNumLeftImage}
                                 />
                             </View>
                             {game === "Alphabet" &&
-                                <View style={{alignItems: 'center', width: '100%'}}>
+                                <View style={{alignItems: 'center', width: '100%', marginVertical: '5%'}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
                                     <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>

@@ -66,7 +66,7 @@ export default function LevelChoice() {
 
                         <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
 
-                        <View style={styles.cardDiv}>
+                        <View style={[styles.cardDiv, game === "Alphabet" ? {flex: 0.6} : {flex: 0.4}]}>
                             <OptionCard upperText="Level 1" square={false} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
                             <OptionCard upperText="Level 2" square={false} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
                             {game === "Alphabet" && (
@@ -101,7 +101,6 @@ const styles = StyleSheet.create({
         gap: 15,
         width: '100%',
         alignItems: "center",
-        flex: 0.6
     },
     backBtnContainer: {
         position: "absolute",
