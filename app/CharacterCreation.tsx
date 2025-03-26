@@ -162,15 +162,29 @@ export default function CharacterCreation() {
                             Please choose your character:
                         </Text>
                         <View style={styles.optionCardContainer}>
-                            {characterOptions.map((item) => (
-                                <OptionCard
-                                    key={item.id}
-                                    square={true}
-                                    image={item.picture}
-                                    functionToExecute={() => setCharacterCreated({ ...characterCreated, picture: item.id })}
-                                    selected={item.id === characterCreated.picture}
-                                />
-                            ))}
+                            <View style={{gap: '3%', alignItems: 'center'}}>
+                                {characterOptions.slice(0, characterOptions.length / 2).map((item) => (
+                                    <OptionCard
+                                        key={item.id}
+                                        square={true}
+                                        image={item.picture}
+                                        functionToExecute={() => setCharacterCreated({ ...characterCreated, picture: item.id })}
+                                        selected={item.id === characterCreated.picture}
+                                    />
+                                ))}
+                            </View>
+
+                            <View style={{gap: '3%', alignItems: 'center'}}>
+                                {characterOptions.slice(characterOptions.length / 2).map((item) => (
+                                    <OptionCard
+                                        key={item.id}
+                                        square={true}
+                                        image={item.picture}
+                                        functionToExecute={() => setCharacterCreated({ ...characterCreated, picture: item.id })}
+                                        selected={item.id === characterCreated.picture}
+                                    />
+                                ))}
+                            </View>
                         </View>
                     </View>
                 )}
@@ -182,16 +196,31 @@ export default function CharacterCreation() {
                             Please choose your background colour:
                         </Text>
                         <View style={styles.optionCardContainer}>
-                            {bgColorOptions.map((item) => (
-                                <OptionCard
-                                    key={item}
-                                    square={true}
-                                    bgColor={item}
-                                    functionToExecute={() => setCharacterCreated({ ...characterCreated, bgColor: item })}
-                                    selected={item === characterCreated.bgColor}
-                                    upperText=""
-                                />
-                            ))}
+                            <View style={{gap: '3%', alignItems: 'center'}}>
+                                {bgColorOptions.slice(0, bgColorOptions.length / 2).map((item) => (
+                                    <OptionCard
+                                        key={item}
+                                        square={true}
+                                        bgColor={item}
+                                        functionToExecute={() => setCharacterCreated({ ...characterCreated, bgColor: item })}
+                                        selected={item === characterCreated.bgColor}
+                                        upperText=""
+                                    />
+                                ))}
+                            </View>
+
+                            <View style={{gap: '3%', alignItems: 'center'}}>
+                                {bgColorOptions.slice(bgColorOptions.length / 2).map((item) => (
+                                    <OptionCard
+                                        key={item}
+                                        square={true}
+                                        bgColor={item}
+                                        functionToExecute={() => setCharacterCreated({ ...characterCreated, bgColor: item })}
+                                        selected={item === characterCreated.bgColor}
+                                        upperText=""
+                                    />
+                                ))}
+                            </View>
                         </View>
                     </View>
                 )}
@@ -285,11 +314,12 @@ const styles = StyleSheet.create({
     borderColor: '#A9A9A9',
   },
   optionCardContainer: {
+    flex: 1,
+    flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: '3%',
+    marginBottom: '4%',
   },
   bottomBtns: {
     width: '100%',
@@ -303,9 +333,9 @@ const styles = StyleSheet.create({
   forwardBtnContainer: {
     flexDirection: 'row',
   },
-    errorText: {
-        color: "red",
-        textAlign: "center",
-        marginBottom: 10,
-    },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    marginBottom: 10,
+  },
 });
