@@ -326,7 +326,7 @@ export default function LevelTwo() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {/* =============== Top Instruction =============== */}
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative"}}>
                     <Text style={styles.headerText}>
                         {answerDisplayed
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
@@ -336,20 +336,20 @@ export default function LevelTwo() {
                                                     'Choose the correct number that matches how many objects are shown:'}
                     </Text>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
+                    {/* =============== Main Section =============== */}
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '5%', flex: 1, marginBottom: '3%'}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <Image
-                                source={gameQuestions[currentQuestion].exampleImage}
-                                style={[
-                                    styles.alphaNumLeftImage,
-                                    game === "Numbers" && styles.alphaImageOverride
-                                ]}
-                            />
+                            <View style={{height: '50%', width: '100%'}}>
+                                <Image
+                                    source={gameQuestions[currentQuestion].exampleImage}
+                                    style={styles.alphaNumLeftImage}
+                                />
+                            </View>
                             {game === "Alphabet" &&
-                                <View style={{alignItems: 'center'}}>
+                                <View style={{alignItems: 'center', width: '100%'}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
-                                    <SoundIcon size='15%' onPress={playCurrentSound}/>
+                                    <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>
                             }
                         </View>
@@ -359,8 +359,7 @@ export default function LevelTwo() {
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
                                     key={index}
-                                    customWidth={0.38}
-                                    height={140}
+                                    square={true}
                                     image={option.image}
                                     lowerText={game === "Alphabet" ? option.object : ""}
                                     functionToExecute={() => selectAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
@@ -402,13 +401,12 @@ const styles = StyleSheet.create({
   },
   leftSideContainer: {
     flex: 1,
-    maxHeight: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingRight: 25,
   },
   rightSideContainer: {
-    gap: 15
+    gap: 15,
+    alignItems: 'center',
   },
   headerText: {
     verticalAlign: 'middle',
@@ -420,13 +418,9 @@ const styles = StyleSheet.create({
     color: '#3E1911',
   },
   alphaNumLeftImage: {
-    width: '100%',
-    resizeMode: 'contain'
-  },
-  alphaImageOverride: {
-    maxHeight: 180,
-    maxWidth:180,
-    aspectRatio: 1,
+    resizeMode: 'contain',
+    maxHeight: '100%',
+    maxWidth: '100%',
   },
   alphaNumLeftInstructionText: {
     textAlign: 'center',
@@ -435,13 +429,10 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: '#3E1911'
   },
-    submitBtnContainer: {
-        position: 'absolute',
-        bottom: 10,
-        alignSelf: 'center',
-        flexDirection: 'row',
-        zIndex: 10,
-    },
+  submitBtnContainer: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+  },
   backBtnContainer: {
     position: 'absolute',
     top: 0,

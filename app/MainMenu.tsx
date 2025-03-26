@@ -80,6 +80,7 @@ export default function MainMenu() {
   return (
       <BackgroundLayout>
         {hamburgerMenuOpen ? (
+          // ===================== hamburger menu =====================
             <View style={styles.hamburgerMenuContainer}>
               {/* ---------------------- Header --------------------- */}
               <View style={styles.hamburgerTopHeaderPortion}>
@@ -105,6 +106,7 @@ export default function MainMenu() {
               </View>
             </View>
         ) : (
+            // ===================== main menu games =====================
             <View style={styles.container}>
               <CustomButton
                   image={require("../assets/hamburgerMenuIcon.png")}
@@ -116,7 +118,7 @@ export default function MainMenu() {
               {loading ? (
                   <LoadingMessage />
               ) : character ? (
-                  <>
+                  <View style={{width: '100%', alignItems: 'center', flex: 1}}>
                     <CharacterCard
                         id={character.id}
                         name={character.profile_name}
@@ -130,10 +132,10 @@ export default function MainMenu() {
                     </Text>
 
                     <View style={styles.cardDiv}>
-                      <OptionCard lowerText="Alphabet" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
-                      <OptionCard lowerText="Numbers" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
+                      <OptionCard lowerText="Alphabet" square={false} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
+                      <OptionCard lowerText="Numbers" square={false} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
                     </View>
-                  </>
+                  </View>
               ) : (
                   <Text style={styles.errorText}>{errorMessage}</Text>
               )}
@@ -148,6 +150,7 @@ export default function MainMenu() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: 'center',
   },
   hamburgerMenuContainer: {
@@ -157,16 +160,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#A9A9A9',
-    //iOS shadow
-    shadowColor: 'rgba(0, 0, 0, 0.25)',
-    shadowOffset: {
-      width: 1,
-      height: 4
-    },
-    shadowRadius: 4,
-    shadowOpacity: 0.2,
-    //android shadow
-    elevation: 3,
   },
   hamburgerTopHeaderPortion: {
     width: '100%',
@@ -198,7 +191,10 @@ const styles = StyleSheet.create({
     color: '#3E1911',
   },
   cardDiv: {
-    gap: 15
+    gap: 15,
+    width: '100%',
+    flex: 0.65,
+    alignItems: 'center',
   },
   hamburgerButton: {
     position: 'absolute',

@@ -272,7 +272,7 @@ export default function LevelThree() {
                             <Text style={[styles.headerText, {width: '40%'}]}>
                                 Tap the ear to replay sound
                             </Text>
-                            <SoundIcon size='25%' onPress={playCurrentSound}/>
+                            <SoundIcon widthPercent={25} onPress={playCurrentSound}/>
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
@@ -282,18 +282,12 @@ export default function LevelThree() {
                             <View style={styles.answerContainer}>
                                 {gameQuestions[currentQuestion].options.map((option, index) => (
                                     <OptionCard key={index} 
-                                        customWidth={0.38} 
-                                        height={140} 
+                                        square={true}
                                         image={option.image} 
                                         functionToExecute={() => selectAnswer(option.object)} 
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={
-                                            // answerDisplayed
-                                            //     ? answerSelected === option.object
-                                            //         ? option.correct ? "#CFFFC0" : "#F69292"
-                                            //         : "#FFF8F0"
-                                            //     : "#FFF8F0"
                                             answerDisplayed
                                                 ? option.correct ? "#CFFFC0" : "#F69292"
                                                 : "#FFF8F0"

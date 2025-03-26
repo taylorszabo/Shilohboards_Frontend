@@ -199,7 +199,7 @@ export default function LevelOne() {
                 
                  
                 <View style={{margin: '10%'}}>
-                    <SoundIcon size='20%' onPress={playSound}/>
+                    <SoundIcon widthPercent={25} onPress={playSound}/>
                 </View>
                 
                

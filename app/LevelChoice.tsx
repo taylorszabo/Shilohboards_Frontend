@@ -67,10 +67,10 @@ export default function LevelChoice() {
                         <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
 
                         <View style={styles.cardDiv}>
-                            <OptionCard upperText="Level 1" customWidth={0.8} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
-                            <OptionCard upperText="Level 2" customWidth={0.8} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
+                            <OptionCard upperText="Level 1" square={false} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
+                            <OptionCard upperText="Level 2" square={false} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
                             {game === "Alphabet" && (
-                                <OptionCard upperText="Level 3" customWidth={0.8} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
+                                <OptionCard upperText="Level 3" square={false} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
                             )}
                         </View>
                     </>
@@ -86,6 +86,7 @@ export default function LevelChoice() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: '100%',
         alignItems: "center",
     },
     headerText: {
@@ -98,6 +99,9 @@ const styles = StyleSheet.create({
     },
     cardDiv: {
         gap: 15,
+        width: '100%',
+        alignItems: "center",
+        flex: 0.6
     },
     backBtnContainer: {
         position: "absolute",

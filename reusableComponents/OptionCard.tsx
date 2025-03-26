@@ -6,9 +6,9 @@ import { useState } from 'react';
 const screenWidth = Dimensions.get('window').width; //get device width
 
 type Props = {
-    customWidth: number;
+    square: boolean;
+    customWidth?: number;
     //optional
-    height?: number;
     bgColor?: string;
     image?: any;
     upperText?: string;
@@ -23,13 +23,13 @@ type Props = {
 };
 
 export default function OptionCard(props: Props) {
-    const { bgColor = '#FFF8F0', 
+    const { square,
+            bgColor = '#FFF8F0', 
             image, 
             lowerText, 
             upperText = 'Option', 
-            customWidth, 
+            customWidth = '85%', 
             disabled = false, 
-            height = 100, 
             onPressRoute, 
             textSize = 24,
             functionToExecute,
@@ -65,10 +65,9 @@ export default function OptionCard(props: Props) {
             style={({ pressed }) => [
                 styles.card, 
                 selected && styles.selectedStyling, 
+                square ? {aspectRatio: 1} : {width: customWidth},
                 { 
                     backgroundColor: bgColor, 
-                    width: screenWidth * customWidth, 
-                    height: height, 
                     ...(image && { padding: 20 }) 
                 },
                 pressed && styles.pressedStyle
@@ -98,6 +97,9 @@ export default function OptionCard(props: Props) {
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
     card: {
+        flex: 1,
+        flexGrow: 1,
+        flexShrink: 1,
         borderRadius: 10,
         justifyContent: 'center',
         alignItems: 'center',
