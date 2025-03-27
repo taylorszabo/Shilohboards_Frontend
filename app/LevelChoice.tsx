@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
         gap: 15,
         width: '100%',
         alignItems: "center",
-        maxWidth: 500
+        maxWidth: 600
     },
     backBtnContainer: {
         position: "absolute",

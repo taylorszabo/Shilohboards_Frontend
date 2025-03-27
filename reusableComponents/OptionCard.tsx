@@ -104,6 +104,7 @@ const styles = StyleSheet.create({
         borderRightWidth: 2,
         borderBottomWidth: 3,
         borderColor: '#A9A9A9',
+        maxWidth: '100%'
     },
     image: {
         width: '80%',

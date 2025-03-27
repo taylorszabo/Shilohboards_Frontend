@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     flexWrap: "wrap",
     gap: 10,
-    maxWidth: 500,
+    maxWidth: 700,
     paddingHorizontal: 20,
   },
   createNewBtnContainer: {

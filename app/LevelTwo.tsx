@@ -324,8 +324,9 @@ export default function LevelTwo() {
                 {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                {/* =============== Top Instruction =============== */}
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 500}}>
+                
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
+                    {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
                         {answerDisplayed
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
@@ -336,7 +337,7 @@ export default function LevelTwo() {
                     </Text>
 
                     {/* =============== Main Section =============== */}
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 20, flex: 1, marginBottom: 15}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 30, flex: 1, marginBottom: 15}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <View style={{height: '30%', width: '100%', alignItems: 'center'}}>
@@ -403,7 +404,7 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    flex: 1.5,
+    flex: 1.1,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -418,7 +419,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     color: '#3E1911',
   },
   alphaNumLeftImage: {

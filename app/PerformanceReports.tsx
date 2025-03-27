@@ -343,5 +343,7 @@ const pickerSelectStyles = {
         width: '100%' as const,
         maxWidth: 500,
         marginHorizontal: 'auto' as const,
+        justifyContent: 'center' as const,
+        
     }
 };

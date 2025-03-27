@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   overlay: {
-    flex: 1
+    flex: 1,
   },
 });
 

@@ -200,14 +200,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     color: '#3E1911',
-    maxWidth: 500
+    maxWidth: 600
   },
   cardDiv: {
     gap: 15,
     width: '100%',
     flex: 0.65,
     alignItems: 'center',
-    maxWidth: 500
+    maxWidth: 600
   },
   hamburgerButton: {
     position: 'absolute',

@@ -265,7 +265,7 @@ export default function LevelThree() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 500}}>
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <Text style={[styles.headerText, {width: '40%'}]}>
@@ -276,7 +276,15 @@ export default function LevelThree() {
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
                             {/* answer for troubleshooting: ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) */}
-                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
+                            {/* =============== Top Instruction =============== */}
+                            <Text style={styles.headerText}>
+                                {answerDisplayed
+                                    ? answerSelected === (gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object)
+                                        ? "Great job! Your answer is correct ✅"
+                                        : "Good try! Your answer is incorrect ❌"
+                                    : 'Choose the correct letter for the sound or beginning of the word:'
+                                }
+                            </Text>
 
                             <View style={styles.answerContainer}>
                                 <View style={{gap: 15, flex: 1, alignItems: 'flex-end'}}>
@@ -353,6 +361,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap', 
     gap: 15,
     marginBottom: 15,
+    width: '90%'
   },
   headerText: {
     verticalAlign: 'middle',
@@ -360,7 +369,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     color: '#3E1911',
   },
   submitBtnContainer: {
