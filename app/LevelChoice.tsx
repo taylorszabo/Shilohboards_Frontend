@@ -8,6 +8,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -18,12 +19,11 @@ export default function LevelChoice() {
 
     const [character, setCharacter] = useState<any | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
             if (!playerId || playerId === "0") {
-                router.replace("/SelectCharacter");
+                router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 return;
             }
 
@@ -32,12 +32,11 @@ export default function LevelChoice() {
                 if (response.data) {
                     setCharacter(response.data);
                 } else {
-                    router.replace("/SelectCharacter");
+                    router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setErrorMessage("Failed to load character. Redirecting...");
-                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+                router.replace("/error?message=Failed%20to%20load%20character%20profile");
             } finally {
                 setLoading(false);
             }
@@ -46,14 +45,13 @@ export default function LevelChoice() {
         fetchCharacterProfile();
     }, [playerId, router]);
 
+    if (loading || !character) {
+        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+    }
     return (
         <BackgroundLayout>
             <View style={styles.container}>
                 <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`} />
-
-                {loading ? (
-                    <ActivityIndicator size="large" color="#0000ff" />
-                ) : character ? (
                     <>
                         <CharacterCard
                             id={character.id}
@@ -73,9 +71,6 @@ export default function LevelChoice() {
                             )}
                         </View>
                     </>
-                ) : (
-                    <Text style={styles.errorText}>{errorMessage}</Text>
-                )}
             </View>
         </BackgroundLayout>
     );

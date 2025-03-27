@@ -18,7 +18,6 @@ export default function InventoryScreen() {
 
     // State to store selected child account
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
-    const [errorMessage, setErrorMessage] = React.useState('');
     const [childAccounts, setChildAccounts] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(false);
     const [levelCounts, setLevelCounts] = React.useState<{ [key: string]: number }>({});
@@ -59,9 +58,8 @@ export default function InventoryScreen() {
 
             // If no children found
             if (Array.isArray(childrenData) && childrenData.length === 0) {
-                setErrorMessage("No characters found. Please create a new character.");
                 setChildAccounts([]);
-                return;
+                router.replace("/error?message=No%20Children%20Found");
             }
 
             // get each child profile
@@ -79,20 +77,22 @@ export default function InventoryScreen() {
 
             const validProfiles = profiles.filter(profile => profile && profile.profile_image);
             if (validProfiles.length === 0) {
-                setErrorMessage("No characters found. Please create a new character.");
                 setChildAccounts([]);
+                router.replace("/error?message=No%20characters%20found");
+
             } else {
                 setChildAccounts(validProfiles);
             }
 
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                setErrorMessage("No characters found. Please create a new character.");
                 setChildAccounts([]);
+                router.replace("/error?message=No%20characters%20found");
+
             } else {
                 console.error("Error fetching children:", error);
-                setErrorMessage("Failed to load characters.");
                 setChildAccounts([]);
+                router.replace("/error?message=Failed%20characters%20found");
             }
         } finally {
             setLoading(false);
@@ -105,7 +105,7 @@ export default function InventoryScreen() {
             if (userId) {
                 fetchChildren(userId);
             } else {
-                setErrorMessage("Error: Parent ID not found.");
+                router.replace("/error?message=Parent%20could%20not%20be%20found");
             }
         };
 

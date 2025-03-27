@@ -66,7 +66,7 @@ export default function LevelOne() {
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                router.replace("/error?message=Failed%20to%20load%20character%20profile");
+                setTimeout(() => router.replace("/error?message=Failed%20to%20load%20character%20profile"), 2000);
             }
         };
 
@@ -162,9 +162,9 @@ export default function LevelOne() {
             console.error("Error playing sound:", error);
         }
     };
-
-
-    if (loading || !character) return <ErrorScreen />;
+    if (loading || !character) {
+        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+    }
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;
     }

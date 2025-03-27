@@ -10,6 +10,7 @@ import { formatNameWithCapitals } from "../CharacterOptions";
 import {bgColorOptions, characterOptions} from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 type HamburgerMenuItem = {
   text: string;
@@ -53,7 +54,7 @@ export default function MainMenu() {
   useEffect(() => {
     const fetchCharacterProfile = async () => {
       if (!playerId) {
-        router.replace("/SelectCharacter");
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
         return;
       }
 
@@ -62,12 +63,11 @@ export default function MainMenu() {
         if (response.data) {
           setCharacter(response.data);
         } else {
-          router.replace("/SelectCharacter");
+          router.replace("/error?message=Failed%20to%20load%20character%20profile");
         }
       } catch (error) {
         console.error("Error fetching character profile:", error);
-        setErrorMessage("Failed to load character. Redirecting...");
-        setTimeout(() => router.replace("/SelectCharacter"), 2000);
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
       } finally {
         setLoading(false);
       }
@@ -76,6 +76,9 @@ export default function MainMenu() {
     fetchCharacterProfile();
   }, [playerId, router]);
 
+  if (loading || !character) {
+    return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+  }
   //---------------------------------------------------------------------------
   return (
       <BackgroundLayout>
@@ -112,10 +115,6 @@ export default function MainMenu() {
                   uniqueImageStyling={{ width: 28, height: 28 }}
                   functionToExecute={() => setHamburgerMenuOpen(true)}
               />
-
-              {loading ? (
-                  <ActivityIndicator size="large" color="#0000ff" />
-              ) : character ? (
                   <>
                     <CharacterCard
                         id={character.id}
@@ -134,9 +133,6 @@ export default function MainMenu() {
                       <OptionCard lowerText="Numbers" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
                     </View>
                   </>
-              ) : (
-                  <Text style={styles.errorText}>{errorMessage}</Text>
-              )}
             </View>
         )}
       </BackgroundLayout>

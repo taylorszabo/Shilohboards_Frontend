@@ -60,8 +60,8 @@ export default function CharacterCreation() {
                 });
             }
         } catch (error) {
-            console.error("Error fetching character:", error);
-            setErrorMessage("Failed to load character data.");
+            console.error("Error fetching character profile:", error);
+            router.replace("/error?message=Failed%20to%20load%20character%20profile");
         }
     }
 
@@ -103,7 +103,7 @@ export default function CharacterCreation() {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Error saving character:", error.response?.data || error.message);
-                setErrorMessage("Failed to save character: " + (error.response?.data?.error || "Unknown error"));
+                router.replace("/error?message=Failed%20to%20save%20character%20profile");
             }
         } finally {
             setLoading(false);

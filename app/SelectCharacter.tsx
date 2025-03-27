@@ -35,7 +35,8 @@ export default function SelectCharacter() {
         setParentId(userId);
         fetchChildren(userId);
       } else {
-        setErrorMessage("Error: Parent ID not found.");
+        console.error("Error: Parent ID not found.");
+        router.replace("/error?message=Account%20cannot%20not%20be%20found");
       }
     };
 
@@ -60,6 +61,7 @@ export default function SelectCharacter() {
               return { ...res.data, id: child.profile_id };
             } catch (error) {
               console.error(`Error fetching profile for child ${child.profile_id}:`, error);
+              router.replace("/error?message=Failed%20to%20load%20the%20profile%20for%20that%20child");
               return null;
             }
           })
@@ -80,7 +82,7 @@ export default function SelectCharacter() {
         return;
       }
       console.error("Error fetching children:", error);
-      setErrorMessage("Failed to load characters.");
+      router.replace("/error?message=Failed%20to%20load%20characters");
       setChildren([]);
     } finally {
       setLoading(false);
