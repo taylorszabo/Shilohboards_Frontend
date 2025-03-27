@@ -15,6 +15,7 @@ type GameDescriptionQuery = {
 export default function GameDescriptions() {
   const { playerId = '[name]', game = gamesArray[0].title, level = '1', playerLastSelected = '0' } = useLocalSearchParams();
   const windowHeight = useWindowDimensions().height;
+  const windowWidth = useWindowDimensions().width;
   const [query, setQuery] = useState<GameDescriptionQuery>({game: game.toString(), level: parseInt(level.toString())});
 
   //----------------------------------------------------------
@@ -33,18 +34,16 @@ export default function GameDescriptions() {
   return (
     <BackgroundLayout>
         <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
-            <View style={styles.header}>
-              {/* Back Button */}
-              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} 
-                            onPressRoute={`/PerformanceReports?&playerId=${playerId}&game=${query.game}&level=${query.level === 1 ? 2 : query.level}&playerLastSelected=${playerLastSelected}`}/>
+            {/* Back Button */}
+            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} 
+                          onPressRoute={`/PerformanceReports?&playerId=${playerId}&game=${query.game}&level=${query.level === 1 ? 2 : query.level}&playerLastSelected=${playerLastSelected}`}/>
 
-              <Text style={styles.headerText}>Game Descriptions</Text>
-            </View>
+            <Text style={styles.headerText}>Game Descriptions</Text>
 
             <Text style={styles.bodyText}>Select the following options to view what each game & level is teaching:</Text>
 
             {/* ---------------- Game Row ---------------- */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
                 {[...gamesArray].map((game, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, game.title === query.game && styles.selectedUnderline]} 
@@ -56,7 +55,7 @@ export default function GameDescriptions() {
             </LinearGradient>
 
             {/* ---------------- Level Row ---------------- */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
                 {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].map((level, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, index + 1 === query.level && styles.selectedUnderline]} 
@@ -71,7 +70,7 @@ export default function GameDescriptions() {
             <View style={styles.bodyContainer}>
                 {query.game === 'Alphabet' && query.level === 1 &&
                     <View style={styles.innerBodyContainer}>
-                        <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
+                        <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are able to view each letter on top of the door and then they are 
                             able to open the door to see an object that begins with that letter. They can also tap to
                             hear the short sound or the word. There is no score or report for level 1.
@@ -82,7 +81,7 @@ export default function GameDescriptions() {
 
                 {query.game === 'Alphabet' && query.level === 2 &&
                     <View style={styles.innerBodyContainer}>
-                        <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
+                        <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are presented with a letter. They are given three objects to choose
                             from and the goal is to select the one that begins with the letter provided. They can tap the 
                             letter to hear the short sound if that helps. The order of the letters, and the options, are
@@ -94,7 +93,7 @@ export default function GameDescriptions() {
 
                 {query.game === 'Alphabet' && query.level === 3 &&
                     <View style={styles.innerBodyContainer}>
-                        <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
+                        <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, audio plays at the beginning of each question with the letter long sound,
                             short sound, and a word that begins with the letter. They are presented with four letters and 
                             the goal is to choose the correct one that matches the audio. They can replay the audio if
@@ -107,7 +106,7 @@ export default function GameDescriptions() {
 
                 {query.game === 'Numbers' && query.level === 1 &&
                     <View style={styles.innerBodyContainer}>
-                        <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
+                        <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are able to view each number on top of the door and then they are 
                             able to open the door to see or count that many objects. They can also tap to
                             hear the number.  There is no score or report for level 1.
@@ -118,7 +117,7 @@ export default function GameDescriptions() {
 
                 {query.game === 'Numbers' && query.level === 2 &&
                     <View style={styles.innerBodyContainer}>
-                        <Text style={[styles.bodyText, {padding: 0, paddingHorizontal: 0, fontWeight: '500'}]}>
+                        <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are presented with a picture of a certain number of objects. They are given three numbers to choose
                             from and the goal is to select the one that matches. The order of the numbers, and the options, are
                             randomized each game.
@@ -140,8 +139,6 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     width: '100%',
-    maxWidth: 500,
-    marginHorizontal: 'auto'
   },
   bodyContainer: {
     flex: 1,
@@ -157,10 +154,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     alignItems: 'center',
   },
-  header: {
-    flexDirection: 'row'
-  },
   backBtnContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 5,
     paddingVertical: 20
   },
   headerText: {
@@ -180,7 +178,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#3E1911',
     flexWrap: 'wrap',
-    flexShrink: 1
+    textAlign: 'center',
+  },
+  descriptionText: {
+    padding: 0, 
+    paddingHorizontal: 0, 
+    fontWeight: '500', 
+    maxWidth: 800
   },
   selectionBars: {
     borderBottomWidth: 4,

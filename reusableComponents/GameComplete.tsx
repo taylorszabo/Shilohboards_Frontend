@@ -93,7 +93,6 @@ export default function GameComplete(props: { game: string | string[], score: st
                         name={character.profile_name}
                         image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                         bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                        customWidth={0.25}
                     />
 
                     <Text style={styles.headerText}>{game} - Level {level}</Text>

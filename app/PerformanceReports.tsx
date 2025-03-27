@@ -39,6 +39,7 @@ export default function PerformanceReports() {
     }, [children]);
   const router = useRouter();
   const windowHeight = useWindowDimensions().height;
+  const windowWidth = useWindowDimensions().width;
   const middleIndex = Math.ceil(query.game === gamesArray[0].title ? alphabetArray.length / 2 : numbersArray.length / 2);
   const [completedGames, setCompletedGames] = useState(0);
   const [averageScore, setAverageScore] = useState(0);
@@ -145,18 +146,16 @@ export default function PerformanceReports() {
   return (
     <BackgroundLayout>
         <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
-            <View  style={styles.header}>
-              {/* Back Button */}
-              <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
+            {/* Back Button */}
+            <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
 
-              <Text style={styles.headerText}>Performance Reports</Text>
-            </View>
+            <Text style={styles.headerText}>Performance Reports</Text>
 
             <Text style={styles.bodyText}>Select the following options to view results:</Text>
 
             {/* =============== Names Row =============== */}
             {children.length < 6 ?
-                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
                     {[...children].map((user) => (
                         <View key={user.id}>
                             <Text
@@ -185,7 +184,7 @@ export default function PerformanceReports() {
             }
 
             {/* =============== Game Row =============== */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
                 {[...gamesArray].map((game, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, game.title === query.game && styles.selectedUnderline]} 
@@ -197,7 +196,7 @@ export default function PerformanceReports() {
             </LinearGradient>
 
             {/* =============== Level Row =============== */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBars}>
+            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
                 {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].slice(1).map((level, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, index + 2 === query.level && styles.selectedUnderline]} 
@@ -209,33 +208,38 @@ export default function PerformanceReports() {
             </LinearGradient>
 
             <Text style={styles.bodyText}>Number of Games Completed: {completedGames}</Text>
-            <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed()}%</Text>
 
-
-            <Text style={[styles.bodyText, {paddingTop: 0}]}>How often each question was correct:</Text>
-
-            <View style={styles.barsContainer}>
-                {/* 1st half */}
+            {completedGames > 0 && 
                 <View style={{flex: 1}}>
-                    {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(0, middleIndex).map((item) => (
-                        <View key={item.id} style={styles.arrayItem}>
-                            <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
-                            <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
-                        </View>
-                    ))}
-                </View>
+                    <Text style={[styles.bodyText, { paddingTop: 0 }]}>Average Score: {averageScore.toFixed()}%</Text>
 
-                {/* 2nd half */}
-                <View style={{flex: 1}}>
-                    {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(middleIndex).map((item) => (
-                        <View key={item.id} style={styles.arrayItem}>
-                            <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
-                            <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
-                        </View>
-                    ))}
-                </View>
 
-            </View>
+                    <Text style={[styles.bodyText, {paddingTop: 0}]}>How often each question was correct:</Text>
+
+                    <View style={styles.barsContainer}>
+                        {/* 1st half */}
+                        <View style={{flex: 1}}>
+                            {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(0, middleIndex).map((item) => (
+                                <View key={item.id} style={styles.arrayItem}>
+                                    <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
+                                    <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
+                                </View>
+                            ))}
+                        </View>
+
+                        {/* 2nd half */}
+                        <View style={{flex: 1}}>
+                            {(query.game === gamesArray[0].title ? alphabetArray : numbersArray).slice(middleIndex).map((item) => (
+                                <View key={item.id} style={styles.arrayItem}>
+                                    <Text style={[styles.letterNumberStyle]}>{item.id}</Text>
+                                    <PerformanceBar fillPercent={questionPerformance[item.id] || 0} />
+                                </View>
+                            ))}
+                        </View>
+
+                    </View>
+                </View>
+            }
 
             <Text style={[styles.bodyText, styles.gameInstructionLink]}
                   onPress={() => router.push(`/GameDescriptions?playerId=${playerId}&game=${query.game}&level=${query.level}&playerLastSelected=${query.playerId}`)}>
@@ -251,13 +255,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     height: '100%',
-    maxWidth: 500,
-    marginHorizontal: 'auto'
-  },
-  header: {
-    flexDirection: 'row'
   },
   backBtnContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    zIndex: 5,
     paddingVertical: 20
   },
   headerText: {
@@ -276,12 +279,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     color: '#3E1911',
+    textAlign: 'center'
   },
   selectionBars: {
     borderBottomWidth: 4,
     borderBottomColor: 'rgba(62, 25, 17, 0.3)',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   selectionBarsDropdown: {
     borderBottomWidth: 4,
@@ -289,10 +293,13 @@ const styles = StyleSheet.create({
   },
   barsContainer: {
     flex: 1,
+    width: '100%',
     flexDirection: 'row',
     padding: 20,
     paddingTop: 0,
     columnGap: '10%',
+    maxWidth: 500,
+    marginHorizontal: 'auto'
   },
   arrayItem: {
     flexDirection: 'row', 
@@ -311,6 +318,7 @@ const styles = StyleSheet.create({
     fontSize: 17
   },
   gameInstructionLink: {
+    marginTop: 'auto',
     textDecorationLine: 'underline', 
     textAlign: 'center', 
     paddingTop: 0, 
@@ -331,6 +339,9 @@ const pickerSelectStyles = {
         color: '#3E1911',
     },
     viewContainer: {
-        height: 50
+        height: 50,
+        width: '100%' as const,
+        maxWidth: 500,
+        marginHorizontal: 'auto' as const,
     }
 };
