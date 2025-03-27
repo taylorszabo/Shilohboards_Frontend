@@ -299,6 +299,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     columnGap: '10%',
     maxWidth: 500,
+    maxHeight: 900,
     marginHorizontal: 'auto'
   },
   arrayItem: {
