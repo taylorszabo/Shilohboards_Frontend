@@ -271,7 +271,7 @@ export default function LevelThree() {
                             <Text style={[styles.headerText, {width: '40%'}]}>
                                 Tap the ear to replay sound
                             </Text>
-                            <SoundIcon widthPercent={20} onPress={playCurrentSound}/>
+                            <SoundIcon widthPercent={15} onPress={playCurrentSound}/>
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
