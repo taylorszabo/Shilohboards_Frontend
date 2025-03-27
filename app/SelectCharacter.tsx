@@ -7,6 +7,7 @@ import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {router} from "expo-router";
 
 // Backend API URL
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -16,6 +17,16 @@ export default function SelectCharacter() {
   const [children, setChildren] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push('/Login');
+      }
+    };
+    checkUser();
+  }, []);
 
   useEffect(() => {
     const fetchParentId = async () => {
