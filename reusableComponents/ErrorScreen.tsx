@@ -1,14 +1,10 @@
 import BackgroundLayout from "./BackgroundLayout";
-
 import * as React from "react";
 import {Image, StyleSheet, Text, View} from "react-native";
 import CustomButton from "./CustomButton";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ErrorScreen(props: { errorMessage?: string}) {
     const { errorMessage } = props;
-    const token =  AsyncStorage.getItem("authToken");
-
 
     return (
         <BackgroundLayout>
