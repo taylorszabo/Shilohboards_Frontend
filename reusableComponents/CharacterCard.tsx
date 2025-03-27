@@ -63,7 +63,7 @@ export default function CharacterCard(props: Props) {
         <Pressable
             disabled={disabled}
             onLayout={onLayout}
-            style={[
+            style={({ pressed }) =>[
                 styles.card,
                 customWidth ?
                     {
@@ -79,6 +79,7 @@ export default function CharacterCard(props: Props) {
                     },
                 customCardStyling,
                 selected && deleteModeFunction !== undefined && styles.selectedStyling,
+                pressed && !disabled && styles.selectedStyling
             ]}
             onPress={() => handlePressEvent()}
         >

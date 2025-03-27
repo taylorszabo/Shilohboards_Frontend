@@ -167,7 +167,7 @@ export default function SelectCharacter() {
               </ScrollView>
           )}
 
-          <View style={{ width: '100%', flexDirection: 'row-reverse', marginTop: 'auto', justifyContent: 'space-between'}}>
+          <View style={{ width: '100%', flexDirection: 'row-reverse', marginTop: 'auto', justifyContent: 'space-between', maxWidth: 700}}>
             <CustomButton
               text={inDeleteCharacterMode ? "Cancel" : "Create New"}
               image={inDeleteCharacterMode ? require('../assets/Icons/undo.png') : require('../assets/Icons/new.png')}
@@ -181,7 +181,7 @@ export default function SelectCharacter() {
                 text="Delete"
                 image={require('../assets/Icons/delete.png')}
                 uniqueImageStyling={{height: 30, width: 30, resizeMode: 'contain'}}
-                uniqueButtonStyling={{flexDirection: 'row-reverse'}}
+                uniqueButtonStyling={inDeleteCharacterMode ? {flexDirection: 'row-reverse', backgroundColor: '#ED5454', borderWidth: 3, borderColor: "#3E1911"} : {flexDirection: 'row-reverse'}}
                 functionToExecute={() => inDeleteCharacterMode ? deleteSelectedCharacters() : setInDeleteCharacterMode(true)}
             />
           </View>
@@ -190,7 +190,7 @@ export default function SelectCharacter() {
   );
 }
 
-// ================================== STYLING ==================================
+// ================================== STYLING ================================== 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     gap: 10,
     maxWidth: 500,
-    paddingBottom: 50,
     paddingHorizontal: 20,
   },
   createNewBtnContainer: {

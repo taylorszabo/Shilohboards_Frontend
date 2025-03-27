@@ -327,6 +327,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    maxWidth: 700
   },
   backBtnContainer: {
     flexDirection: 'row-reverse'
