@@ -15,6 +15,7 @@ import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { feedbackSound } from "../GameContent";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
 
@@ -177,7 +178,7 @@ export default function LevelThree() {
             setCorrectAnswers(prev => prev + 1);
         } 
 
-        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        playAudio(isCorrect ? feedbackSound.correct : feedbackSound.incorrect);
         if (questionLetter) {
             recordedAnswers.current.push({
                 id: questionLetter,
