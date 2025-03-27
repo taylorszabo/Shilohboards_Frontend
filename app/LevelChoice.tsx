@@ -61,7 +61,7 @@ export default function LevelChoice() {
                             name={character.profile_name}
                             image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                             bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                            customWidth={0.3}
+                            heightPercentNumber={15}
                         />
 
                         <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
@@ -101,6 +101,7 @@ const styles = StyleSheet.create({
         gap: 15,
         width: '100%',
         alignItems: "center",
+        maxWidth: 500
     },
     backBtnContainer: {
         position: "absolute",

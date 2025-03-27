@@ -3,8 +3,6 @@ import { Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
-const screenWidth = Dimensions.get('window').width; //get device width
-
 type Props = {
     square: boolean;
     customWidth?: number;

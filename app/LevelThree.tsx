@@ -259,20 +259,19 @@ export default function LevelThree() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
 
                 <Text style={styles.headerText}>{game} - Level 3</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 500}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <Text style={[styles.headerText, {width: '40%'}]}>
                                 Tap the ear to replay sound
                             </Text>
-                            <SoundIcon widthPercent={25} onPress={playCurrentSound}/>
+                            <SoundIcon widthPercent={20} onPress={playCurrentSound}/>
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
@@ -280,7 +279,7 @@ export default function LevelThree() {
                             <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
-                                <View style={{gap: 15}}>
+                                <View style={{gap: 15, flex: 1, alignItems: 'flex-end'}}>
                                     {gameQuestions[currentQuestion].options.slice(0, 2).map((option, index) => (
                                         <OptionCard key={index} 
                                             square={true}
@@ -297,7 +296,7 @@ export default function LevelThree() {
                                     ))}
                                 </View>
 
-                                <View style={{gap: 15}}>
+                                <View style={{gap: 15, flex: 1, alignItems: 'flex-start'}}>
                                     {gameQuestions[currentQuestion].options.slice(2).map((option, index) => (
                                         <OptionCard key={index} 
                                             square={true}
@@ -344,6 +343,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginTop: 20,
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '1%'
   },
   answerContainer: {
@@ -352,7 +352,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', 
     flexWrap: 'wrap', 
     gap: 15,
-    marginBottom: '4%'
+    marginBottom: 15,
   },
   headerText: {
     verticalAlign: 'middle',
@@ -373,8 +373,8 @@ const styles = StyleSheet.create({
     opacity: 0
   },
   btnIcon: {
-    height: '150%',
-    width: '7%',
+    height: 30,
+    width: 30,
     resizeMode: 'contain',
   },
   backBtnContainer: {

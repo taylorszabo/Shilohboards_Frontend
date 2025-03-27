@@ -16,6 +16,7 @@ export default function ProgressBar(props: {fillPercent: number}) {
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
     progressBarContainer: {
+        maxWidth: 500,
         width: "90%",
         height: 18,
         backgroundColor: "#E3D1B9", 

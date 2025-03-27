@@ -79,39 +79,43 @@ export default function MainMenu() {
   //---------------------------------------------------------------------------
   return (
       <BackgroundLayout>
-        {hamburgerMenuOpen ? (
-          // ===================== hamburger menu =====================
-            <View style={styles.hamburgerMenuContainer}>
-              {/* ---------------------- Header --------------------- */}
-              <View style={styles.hamburgerTopHeaderPortion}>
-                <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
-                  <Image source={require("../assets/back.png")} />
-                </Pressable>
-                <Image source={require("../assets/logo.png")} style={styles.shilohLogoInHamburgerMenu} />
-              </View>
-
-              {/* ---------------------- Menu Links --------------------- */}
-              <View style={styles.linkList}>
-                {hamburgerMenuOptions.map((item, index) => (
-                    <View style={styles.linkRow} key={index}>
-                      <Image source={item.icon} style={styles.icons} />
-                      <Text
-                          onPress={() => (item.action ? item.action() : item.route && router.push(item.route))}
-                          style={styles.linkText}
-                      >
-                        {item.text}
-                      </Text>
-                    </View>
-                ))}
-              </View>
-            </View>
-        ) : (
-            // ===================== main menu games =====================
+            
             <View style={styles.container}>
               {loading ? (
                   <LoadingMessage />
               ) : character ? (
                   <View style={{width: '100%', alignItems: 'center', flex: 1}}>
+                    {/* // ===================== hamburger menu ===================== */}
+                    {hamburgerMenuOpen &&
+                      <View style={styles.hamburgerMenuContainer}>
+                        {/* ---------------------- Header --------------------- */}
+                        <View style={styles.hamburgerTopHeaderPortion}>
+                          <Pressable onPress={() => setHamburgerMenuOpen(false)} style={styles.closeHamburgerMenuBtn}>
+                            <Image source={require("../assets/back.png")} />
+                          </Pressable>
+                          <View style={{width: '100%', height: '100%', alignItems: 'center'}}>
+                            <Image source={require("../assets/logo.png")} style={styles.shilohLogoInHamburgerMenu} />
+                          </View>
+                        </View>
+          
+                        {/* ---------------------- Menu Links --------------------- */}
+                        <View style={styles.linkList}>
+                          {hamburgerMenuOptions.map((item, index) => (
+                              <View style={styles.linkRow} key={index}>
+                                <Image source={item.icon} style={styles.icons} />
+                                <Text
+                                    onPress={() => (item.action ? item.action() : item.route && router.push(item.route))}
+                                    style={styles.linkText}
+                                >
+                                  {item.text}
+                                </Text>
+                              </View>
+                          ))}
+                        </View>
+                      </View>
+                    }
+
+                    {/* // ===================== main menu game option screen ===================== */}
                     <CustomButton
                         image={require("../assets/hamburgerMenuIcon.png")}
                         uniqueButtonStyling={styles.hamburgerButton}
@@ -123,7 +127,7 @@ export default function MainMenu() {
                         name={character.profile_name}
                         image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                         bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                        customWidth={0.3}
+                        heightPercentNumber={15}
                     />
 
                     <Text style={styles.headerText}>
@@ -139,7 +143,6 @@ export default function MainMenu() {
                   <Text style={styles.errorText}>{errorMessage}</Text>
               )}
             </View>
-        )}
       </BackgroundLayout>
   );
 }
@@ -151,14 +154,21 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     alignItems: 'center',
+    marginHorizontal: 'auto',
   },
   hamburgerMenuContainer: {
-    flex: 1,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    zIndex: 10,
     margin: 10,
     backgroundColor: '#C3E2E5',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#A9A9A9',
+    maxWidth: 500
   },
   hamburgerTopHeaderPortion: {
     width: '100%',
@@ -173,6 +183,8 @@ const styles = StyleSheet.create({
   shilohLogoInHamburgerMenu: {
     position: 'absolute',
     bottom: -100,
+    resizeMode: 'contain',
+    height: '170%'
   },
   closeHamburgerMenuBtn: {
     position: 'absolute',
@@ -188,12 +200,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     color: '#3E1911',
+    maxWidth: 500
   },
   cardDiv: {
     gap: 15,
     width: '100%',
     flex: 0.65,
     alignItems: 'center',
+    maxWidth: 500
   },
   hamburgerButton: {
     position: 'absolute',
@@ -202,7 +216,7 @@ const styles = StyleSheet.create({
   },
   icons: {
     width: 30,
-    aspectRatio: 1, // Maintains the aspect ratio
+    aspectRatio: 1,
     resizeMode: 'contain',
   },
   linkList: {

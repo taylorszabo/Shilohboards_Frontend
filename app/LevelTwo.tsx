@@ -316,7 +316,6 @@ export default function LevelTwo() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
 
                 {/* =============== Game/Level Title =============== */}
@@ -326,7 +325,7 @@ export default function LevelTwo() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {/* =============== Top Instruction =============== */}
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative"}}>
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 500}}>
                     <Text style={styles.headerText}>
                         {answerDisplayed
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
@@ -337,17 +336,17 @@ export default function LevelTwo() {
                     </Text>
 
                     {/* =============== Main Section =============== */}
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '5%', flex: 1, marginBottom: '3%'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 20, flex: 1, marginBottom: 15}}>
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <View style={{height: '30%', width: '100%'}}>
+                            <View style={{height: '30%', width: '100%', alignItems: 'center'}}>
                                 <Image
                                     source={gameQuestions[currentQuestion].exampleImage}
                                     style={styles.alphaNumLeftImage}
                                 />
                             </View>
                             {game === "Alphabet" &&
-                                <View style={{alignItems: 'center', width: '100%', marginVertical: '5%'}}>
+                                <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
                                     <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>
@@ -404,11 +403,12 @@ const styles = StyleSheet.create({
     height: 25
   },
   leftSideContainer: {
-    flex: 1,
+    flex: 1.5,
     alignItems: 'center',
     justifyContent: 'center',
   },
   rightSideContainer: {
+    flex: 1,
     gap: 15,
     alignItems: 'center',
   },
@@ -449,8 +449,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20
   },
   btnIcon: {
-    height: '150%',
-    width: '7%',
+    height: 30,
+    width: 30,
     resizeMode: 'contain',
   }
 });

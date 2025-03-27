@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ScrollView } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import CustomButton from "../reusableComponents/CustomButton";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
@@ -111,11 +111,9 @@ export default function SelectCharacter() {
 
   function adjustCardSize(): number {
     if (children.length <= 6) {
-      return 0.4;
-    } else if (children.length === 7 || children.length === 8) {
-      return 0.35;
+      return 150;
     } else {
-      return 0.28;
+      return 100;
     }
   }
 
@@ -124,7 +122,7 @@ export default function SelectCharacter() {
         <View style={styles.container}>
           {inDeleteCharacterMode &&
             <View style={{width: '100%', backgroundColor: '#ED5454'}}>
-              <Text style={{textAlign: 'center', fontWeight: 'bold', padding: '1%'}}>
+              <Text style={{textAlign: 'center', fontWeight: 'bold', padding: 10}}>
                 DELETE MODE
               </Text>
             </View>
@@ -143,7 +141,7 @@ export default function SelectCharacter() {
           ) : errorMessage || children.length === 0 ? (
               <Text style={styles.errorText}>{errorMessage || "No characters found. Please create a new one."}</Text>
           ) : (
-              <View style={styles.grid}>
+              <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={true} overScrollMode="always">
                 {children.map((user) => {
                   if (!user || !user.profile_image || !user.profile_color) return null;
                   const characterOption = characterOptions.find((option) => option.id === user.profile_image);
@@ -166,14 +164,13 @@ export default function SelectCharacter() {
                       </View>
                   );
                 })}
-              </View>
+              </ScrollView>
           )}
 
           <View style={{ width: '100%', flexDirection: 'row-reverse', marginTop: 'auto', justifyContent: 'space-between'}}>
-
             <CustomButton
               text={inDeleteCharacterMode ? "Cancel" : "Create New"}
-              image={inDeleteCharacterMode ? undefined : require('../assets/Icons/new.png')}
+              image={inDeleteCharacterMode ? require('../assets/Icons/undo.png') : require('../assets/Icons/new.png')}
               uniqueImageStyling={{height: 30, width: 30, resizeMode: 'contain'}}
               uniqueButtonStyling={{flexDirection: 'row'}}
               onPressRoute={inDeleteCharacterMode ? undefined : `/CharacterCreation?isNewOrUpdateId=New`}
@@ -197,6 +194,7 @@ export default function SelectCharacter() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    width: '100%',
     alignItems: "center",
   },
   headerText: {
@@ -208,14 +206,16 @@ const styles = StyleSheet.create({
   },
   grid: {
     flexDirection: "row",
+    alignItems: 'flex-start',
     justifyContent: "center",
     flexWrap: "wrap",
-    paddingBottom: 50,
-    marginHorizontal: '5%',
     gap: 10,
+    maxWidth: 500,
+    paddingBottom: 50,
+    paddingHorizontal: 20,
   },
   createNewBtnContainer: {
-    marginTop: "auto",
+    marginTop: "auto"
   },
   errorText: {
     color: "red",

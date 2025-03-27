@@ -250,7 +250,9 @@ export default function PerformanceReports() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%'
+    height: '100%',
+    maxWidth: 500,
+    marginHorizontal: 'auto'
   },
   header: {
     flexDirection: 'row'
@@ -306,7 +308,7 @@ const styles = StyleSheet.create({
   letterNumberStyle: {
     fontWeight: 'bold', 
     color: '#3E1911',
-    fontSize: 20
+    fontSize: 17
   },
   gameInstructionLink: {
     textDecorationLine: 'underline', 

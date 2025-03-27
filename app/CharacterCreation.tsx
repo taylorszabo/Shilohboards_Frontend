@@ -139,7 +139,7 @@ export default function CharacterCreation() {
     return (
         <BackgroundLayout>
             <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
-                <Text style={[styles.headerText, { fontSize: RFPercentage(4.5) }]}>
+                <Text style={[styles.headerText, { fontSize: 35 }]}>
                     {processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}
                 </Text>
 
@@ -148,21 +148,21 @@ export default function CharacterCreation() {
                 {/* Step 1 - Enter Name & Choose Character */}
                 {processStep === 1 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isNameInvalid(characterCreated.name) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isNameInvalid(characterCreated.name) && {color: 'red'}]}>
                             Please enter your name:
                         </Text>
                         <TextInput
-                            style={[styles.input, { fontSize: RFPercentage(2.5) }]}
+                            style={[styles.input, { fontSize: 20 }]}
                             value={characterCreated.name}
                             maxLength={maxCharacterNameLength}
                             onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
 
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
                             Please choose your character:
                         </Text>
                         <View style={styles.optionCardContainer}>
-                            <View style={{gap: '3%', alignItems: 'center'}}>
+                            <View style={{gap: '3%', alignItems: 'flex-end', flex: 1}}>
                                 {characterOptions.slice(0, characterOptions.length / 2).map((item) => (
                                     <OptionCard
                                         key={item.id}
@@ -174,7 +174,7 @@ export default function CharacterCreation() {
                                 ))}
                             </View>
 
-                            <View style={{gap: '3%', alignItems: 'center'}}>
+                            <View style={{gap: '3%', alignItems: 'flex-start', flex: 1}}>
                                 {characterOptions.slice(characterOptions.length / 2).map((item) => (
                                     <OptionCard
                                         key={item.id}
@@ -192,11 +192,11 @@ export default function CharacterCreation() {
                 {/* Step 2 - Choose Background Color */}
                 {processStep === 2 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: RFPercentage(3) }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
                             Please choose your background colour:
                         </Text>
                         <View style={styles.optionCardContainer}>
-                            <View style={{gap: '3%', alignItems: 'center'}}>
+                            <View style={{gap: '3%', alignItems: 'flex-end', flex: 1}}>
                                 {bgColorOptions.slice(0, bgColorOptions.length / 2).map((item) => (
                                     <OptionCard
                                         key={item}
@@ -209,7 +209,7 @@ export default function CharacterCreation() {
                                 ))}
                             </View>
 
-                            <View style={{gap: '3%', alignItems: 'center'}}>
+                            <View style={{gap: '3%', alignItems: 'flex-start', flex: 1}}>
                                 {bgColorOptions.slice(bgColorOptions.length / 2).map((item) => (
                                     <OptionCard
                                         key={item}
@@ -232,7 +232,7 @@ export default function CharacterCreation() {
                             name={characterCreated.name}
                             image={characterOptions.find((option) => option.id === characterCreated.picture)?.picture}
                             bgColor={characterCreated.bgColor}
-                            customWidth={0.8}
+                            heightPercentNumber={50}
                         />
                     </View>
                 )}
@@ -283,10 +283,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    position: 'relative'
+    position: 'relative',
   },
   headerText: {
-    padding: '5%',
+    padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 36,
@@ -301,13 +301,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#3E1911',
     textAlign: 'center',
-    marginBottom: '5%'
+    marginBottom: 20
   },
   input : {
     width: '80%',
+    maxWidth: 500,
     backgroundColor: 'white',
-    padding: '3%',
-    marginBottom: '5%',
+    padding: 13,
+    marginBottom: 20,
     borderRadius: 8,
     borderRightWidth: 2,
     borderBottomWidth: 3,
@@ -319,7 +320,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     gap: '3%',
-    marginBottom: '4%',
+    marginBottom: 20,
   },
   bottomBtns: {
     width: '100%',

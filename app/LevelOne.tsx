@@ -186,7 +186,6 @@ export default function LevelOne() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
@@ -195,8 +194,6 @@ export default function LevelOne() {
                 <TouchableOpacity style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
-              
-                
                  
                 <View style={{margin: '10%'}}>
                     <SoundIcon widthPercent={25} onPress={playSound}/>

@@ -138,7 +138,10 @@ export default function GameDescriptions() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%'
+    height: '100%',
+    width: '100%',
+    maxWidth: 500,
+    marginHorizontal: 'auto'
   },
   bodyContainer: {
     flex: 1,

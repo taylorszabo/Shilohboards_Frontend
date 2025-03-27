@@ -7,7 +7,8 @@ import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "..
 const screenWidth = Dimensions.get("window").width; // Get device width
 
 type Props = {
-    customWidth: number;
+    heightPercentNumber?: number;
+    customWidth?: number;
     id?: number;
     bgColor?: string;
     image?: any;
@@ -22,11 +23,12 @@ type Props = {
 // ============================================================================
 export default function CharacterCard(props: Props) {
     const {
+        customWidth,
         id,
         bgColor,
         image,
         name = "",
-        customWidth,
+        heightPercentNumber = 13,
         disabled = true,
         onPressRoute = "",
         customCardStyling,
@@ -63,11 +65,18 @@ export default function CharacterCard(props: Props) {
             onLayout={onLayout}
             style={[
                 styles.card,
-                {
-                    backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
-                    width: screenWidth * customWidth,
-                    height: screenWidth * customWidth,
-                },
+                customWidth ?
+                    {
+                        backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
+                        width: customWidth,
+                        height: customWidth,
+                    } 
+                    :
+                    {
+                        backgroundColor: characterData ? characterData.bgColor : bgColor || "#FFFFFF", // Default if missing
+                        height: `${heightPercentNumber}%`,
+                        aspectRatio: 1
+                    },
                 customCardStyling,
                 selected && deleteModeFunction !== undefined && styles.selectedStyling,
             ]}
@@ -114,6 +123,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#3E1911",
         fontWeight: "bold",
+        maxWidth: '100%'
     },
     selectedStyling: {
         borderWidth: 5, 
