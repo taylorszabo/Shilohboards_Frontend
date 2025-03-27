@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 26,
+    fontSize: 20,
     color: '#3E1911',
   },
   bodyText: {
