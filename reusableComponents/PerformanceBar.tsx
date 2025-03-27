@@ -3,9 +3,9 @@ import { StyleSheet, View } from 'react-native';
 
 export default function PerformanceBar(props: {fillPercent: number}) {
     const { fillPercent } = props;
-    const red: string = '#F97777';
-    const yellow: string = '#F9E577';
-    const green: string = '#85EC65';
+    const red: string = '#C77E62';
+    const yellow: string = '#F2CF5D';
+    const green: string = '#A0C787';
 
     function getFillColor(): string {
         if (fillPercent >= 0 && fillPercent <= 33) {
