@@ -156,7 +156,7 @@ export default function InventoryScreen() {
                         {categories.map((category) => (
                             <View key={category} style={styles.column}>
                                 <Text style={styles.sectionTitle}>{category}</Text>
-                                {levels.map((level) => (
+                                {levels.filter(level => !(category === "Numbers" && level === 3)).map((level) => (
                                     <View key={`${category}_level${level}`}>
                                         <Text style={styles.level}>Level {level}</Text>
                                         <View style={styles.itemRow}>
@@ -187,7 +187,7 @@ const styles = StyleSheet.create({
         padding: width * 0.05,
     },
     headerText: {
-        fontSize: width * 0.08,
+        fontSize: width * 0.07,
         fontWeight: 'bold',
         color: '#3E1911',
         marginBottom: 50,
