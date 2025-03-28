@@ -8,10 +8,11 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import CustomButton from "../reusableComponents/CustomButton";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
@@ -24,6 +25,7 @@ const UpdateUser = () => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
+  const { playerId = "0" } = useLocalSearchParams();
 
   const handleUpdateUser = async () => {
     setErrorMessage("");
@@ -109,11 +111,11 @@ const UpdateUser = () => {
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
         {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <LoadingMessage />
         ) : (
           <>
   {loading ? (
-  <ActivityIndicator size="large" color="#0000ff" />
+    <LoadingMessage />
 ) : (
   <>
     <CustomButton
@@ -122,7 +124,7 @@ const UpdateUser = () => {
       uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
     />
 
-    <TouchableOpacity onPress={() => router.push("/Setting")}>
+    <TouchableOpacity onPress={() => router.push(`/Setting?playerId=${playerId}`)}>
       <Text style={styles.cancelText}>Cancel</Text>
     </TouchableOpacity>
   </>

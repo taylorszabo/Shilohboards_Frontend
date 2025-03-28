@@ -246,17 +246,8 @@ export default function LevelOne() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: height * 0.08, // 🔹 Consistent layout padding
         alignItems: 'center',
-      },
-      headerText: {
-        fontSize: RFPercentage(2.8), // Replaces fixed 20
-        fontWeight: '600',
-        paddingVertical: height * 0.02,
-        paddingHorizontal: width * 0.05,
-        textAlign: 'center',
-        color: '#3E1911',
-      },
+    },
     voiceoverContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -306,30 +297,18 @@ const styles = StyleSheet.create({
         top: 0,
         right: width * 0.5,  // Adjust dynamically based on screen width
         zIndex: 0, // Moves it behind the main image
-       
-    },
-    backButton: {
-        position: "absolute",
-        top: height * 0.02,
-        left: width * 0.05,
-        width: width * 0.12,  
-        height: width * 0.12,  // Makes it proportional
-        backgroundColor: "#C3E2E5",
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 10,
     },
     backIcon: {
-        width: width * 0.06,
-        height: width * 0.06,
+        height: 30,
+        width: 30,
         resizeMode: "contain",
     },
     title: {
-        fontSize: width * 0.08,  // Scales based on screen width
+        fontSize: width * 0.07,  // Scales based on screen width
         fontWeight: "700",
         color: "#3E1911",
         textAlign: "center",
+        paddingVertical: 20
     },
     nextButton: {
         width: width * 0.3,  
@@ -347,19 +326,19 @@ const styles = StyleSheet.create({
     },
     backBtnContainer: {
         position: 'absolute',
-        top: height * 0.02, // Matches LevelTwo/Three
-        left: width * 0.03,
-        paddingVertical: height * 0.015,
-      },
-      submitBtnContainer: {
-        marginTop: height * 0.03, //Standard spacing
+        top: 0,
+        left: 0,
+        paddingVertical: 20,
+    },
+    submitBtnContainer: {
+        marginTop: 'auto', //Standard spacing
         flexDirection: 'row',
-      },
+    },
     cubeRow: {
         marginVertical: height * 0.03, 
         flexDirection: 'row',
         justifyContent: 'center',
         gap: width * 0.03,
-      },
+    },
 });
 

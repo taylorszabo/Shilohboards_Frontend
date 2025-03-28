@@ -81,7 +81,7 @@ export default function Settings() {
           <View style={styles.topButtonContainer}>
             <CustomButton
               text="User Settings"
-              functionToExecute={() => router.push("/UpdateUser")}
+              functionToExecute={() => router.push(`/UpdateUser?playerId=${playerId}`)}
               uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
             />
           </View>

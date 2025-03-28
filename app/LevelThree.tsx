@@ -283,7 +283,7 @@ export default function LevelThree() {
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
                 />
 
-                <Text style={styles.headerText}>{game} - Level 3</Text>
+                <Text style={[styles.headerText, {fontSize: 28}]}>{game} - Level 3</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (

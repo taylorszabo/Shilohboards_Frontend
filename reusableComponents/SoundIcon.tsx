@@ -12,7 +12,7 @@ export default function SoundIcon(props: { widthPercent: number; onPress?: () =>
                 aspectRatio: 1, 
                 backgroundColor: '#FFF8F0', 
                 padding: 12, 
-                borderRadius: 50,
+                borderRadius: 10,
                 borderRightWidth: 1,
                 borderBottomWidth: 1,
                 borderRightColor: '#A9A9A9',

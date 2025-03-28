@@ -337,7 +337,7 @@ export default function LevelTwo() {
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
                 />
-                <Text style={styles.headerText}>{game} - Level 2</Text>
+                <Text style={[styles.headerText, {fontSize: 28}]}>{game} - Level 2</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
