@@ -14,8 +14,12 @@ import GameComplete from '../reusableComponents/GameComplete';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import { Dimensions } from 'react-native'; 
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+const { width, height } = Dimensions.get("window"); 
 
 export interface GameOption {
     object: string;
@@ -137,7 +141,6 @@ export default function LevelThree() {
         }
     }, [currentQuestion, gameQuestions]);
 
-
     async function playCurrentSound() {
         try {
             if (soundObject.current) {
@@ -147,13 +150,23 @@ export default function LevelThree() {
             const soundPath = alphabetSounds[currentItem.letter];
             if (soundPath) {
                 await soundObject.current.loadAsync(soundPath);
+
+                // Get saved volume from AsyncStorage
+                const savedVolume = await AsyncStorage.getItem("volume");
+                const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+                console.log(`Loaded Volume: ${savedVolume}`);
+                console.log(`Applying Volume: ${volumeLevel}`);
+
+                // Apply volume before playing
+                await soundObject.current.setVolumeAsync(volumeLevel);
+
                 await soundObject.current.playAsync();
             }
         } catch (error) {
             console.error("Error playing sound:", error);
         }
     }
-
 
     function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
@@ -225,9 +238,24 @@ export default function LevelThree() {
     }
 
     async function playAudio(soundFile: any) {
-        const { sound } = await Audio.Sound.createAsync(soundFile);
-        setSound(sound);
-        await sound.playAsync();
+        try {
+            const { sound } = await Audio.Sound.createAsync(soundFile);
+            
+            // Get saved volume from AsyncStorage
+            const savedVolume = await AsyncStorage.getItem("volume");
+            const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+            console.log(`Loaded Volume: ${savedVolume}`);
+            console.log(`Applying Volume: ${volumeLevel}`);
+
+            // Apply volume before playing
+            await sound.setVolumeAsync(volumeLevel);
+
+            setSound(sound);
+            await sound.playAsync();
+        } catch (error) {
+            console.error("Error playing audio:", error);
+        }
     }
 
     if (loading || !character) {
@@ -257,18 +285,11 @@ export default function LevelThree() {
 
                 {currentQuestion !== gameQuestions.length ? (
                     <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
-                        {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <SoundIcon size='25%' onPress={playCurrentSound}/>
-                            {/*<View style={styles.replayBtn}>*/}
-                            {/*    <SoundPressable soundFile={alphabetSounds[gameQuestions[currentQuestion].letter]}>*/}
-                            {/*        <Image source={require('../assets/Icons/replay.png')} style={styles.replayIconPic} />*/}
-                            {/*    </SoundPressable>*/}
-                            {/*</View>*/}
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            {/* answer for troubleshooting: ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) */}
                             <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
 
                             <View style={styles.answerContainer}>
@@ -281,11 +302,6 @@ export default function LevelThree() {
                                         disabled={answerDisplayed} 
                                         selected={answerSelected === option.object} 
                                         bgColor={
-                                            // answerDisplayed
-                                            //     ? answerSelected === option.object
-                                            //         ? option.correct ? "#CFFFC0" : "#F69292"
-                                            //         : "#FFF8F0"
-                                            //     : "#FFF8F0"
                                             answerDisplayed
                                                 ? option.correct ? "#CFFFC0" : "#F69292"
                                                 : "#FFF8F0"
@@ -310,75 +326,73 @@ export default function LevelThree() {
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    position: 'relative'
-  },
-  topPortion: {
-    flexDirection: 'row',
-    marginTop: 20,
-    alignItems: 'center',
-    gap: 30
-  },
-  answerContainer: {
-    flexDirection: 'row', 
-    justifyContent: 'center', 
-    flexWrap: 'wrap', 
-    gap: 15
-  },
-  headerText: {
-    verticalAlign: 'middle',
-    padding: 20,
-    paddingHorizontal: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: '#3E1911',
-  },
-  submitBtnContainer: {
-    marginTop: 'auto', 
-    flexDirection: 'row',
-  },
-  btnIcon: {
-    height: '150%',
-    width: '7%',
-    resizeMode: 'contain',
-  },
-  backBtnContainer: {
-    position: 'absolute', 
-    top: 0, 
-    left: 0, 
-    paddingVertical: 20
-  },
-  soundBtn: {
-    backgroundColor: '#FFF8F0',
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    fontSize: 24,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    borderRightWidth: 2,
-    borderBottomWidth: 3,
-    borderColor: '#A9A9A9',
-  },
-  replayBtn: {
-    width: '25%', 
-    aspectRatio: 1, 
-    padding: '3%', 
-    borderRadius: 10,
-    borderRightWidth: 2,
-    borderBottomWidth: 3,
-    borderColor: '#A9A9A9',
-    backgroundColor: '#FFF8F0',
-  },
-  replayIconPic: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'contain'
-  }
-});
+    container: {
+      flex: 1,
+      paddingTop: height * 0.05, // 🔹 Reduced from 0.08 to fit on screen
+      alignItems: 'center',
+    },
+    topPortion: {
+      flexDirection: 'row',
+      marginTop: height * 0.015, // 🔹 Tighter spacing
+      alignItems: 'center',
+      gap: width * 0.04, // 🔹 Tighter horizontal gap
+    },
+    answerContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      flexWrap: 'wrap',
+      gap: width * 0.03, // 🔹 Slightly tighter
+      marginTop: height * 0.015, // 🔹 Slight space from instruction
+    },
+    headerText: {
+      fontSize: RFPercentage(2.4), // 🔹 Slightly smaller
+      fontWeight: '600',
+      paddingVertical: height * 0.015, // 🔹 Tighter
+      paddingHorizontal: width * 0.05,
+      textAlign: 'center',
+      color: '#3E1911',
+    },
+    submitBtnContainer: {
+      marginTop: 'auto', // 🔹 Push button to bottom of view space
+      flexDirection: 'row',
+      alignSelf: 'center',
+    },
+    btnIcon: {
+      height: RFPercentage(2.8),
+      width: RFPercentage(2.8),
+      resizeMode: 'contain',
+    },
+    backBtnContainer: {
+      position: 'absolute',
+      top: height * 0.02,
+      left: width * 0.03,
+      paddingVertical: height * 0.015,
+    },
+    soundBtn: {
+      backgroundColor: '#FFF8F0',
+      paddingVertical: height * 0.012,
+      paddingHorizontal: width * 0.08,
+      borderRadius: 10,
+      borderRightWidth: 2,
+      borderBottomWidth: 3,
+      borderColor: '#A9A9A9',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    replayBtn: {
+      width: '25%',
+      aspectRatio: 1,
+      padding: '3%',
+      borderRadius: 10,
+      borderRightWidth: 2,
+      borderBottomWidth: 3,
+      borderColor: '#A9A9A9',
+      backgroundColor: '#FFF8F0',
+    },
+    replayIconPic: {
+      height: '100%',
+      width: '100%',
+      resizeMode: 'contain',
+    },
+  });
+  

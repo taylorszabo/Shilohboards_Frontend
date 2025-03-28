@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  Dimensions, // 🔹 For responsive spacing
+} from "react-native";
+import { RFPercentage } from "react-native-responsive-fontsize"; // 🔹 For responsive fonts
 import CharacterCard from "../reusableComponents/CharacterCard";
 import OptionCard from "../reusableComponents/OptionCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
@@ -9,12 +16,13 @@ import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 
-
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
+const { width, height } = Dimensions.get("window"); // 🔹 Responsive layout base
+
 export default function LevelChoice() {
-    const { game = "[game]", playerId = "0" } = useLocalSearchParams();
-    const router = useRouter();
+  const { game = "[game]", playerId = "0" } = useLocalSearchParams();
+  const router = useRouter();
 
     const [character, setCharacter] = useState<any | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -41,8 +49,8 @@ export default function LevelChoice() {
             }
         };
 
-        fetchCharacterProfile();
-    }, [playerId, router]);
+    fetchCharacterProfile();
+  }, [playerId, router]);
 
     if (loading || !character) {
         return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
@@ -60,7 +68,7 @@ export default function LevelChoice() {
                             customWidth={0.3}
                         />
 
-                        <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
+            <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
 
                         <View style={styles.cardDiv}>
                             <OptionCard upperText="Level 1" customWidth={0.8} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
@@ -71,37 +79,45 @@ export default function LevelChoice() {
                         </View>
                     </>
             </View>
-        </BackgroundLayout>
-    );
+          </>
+        ) : (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        )}
+      </View>
+    </BackgroundLayout>
+  );
 }
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-    },
-    headerText: {
-        verticalAlign: "middle",
-        padding: 20,
-        textAlign: "center",
-        fontWeight: "bold",
-        fontSize: 24,
-        color: "#3E1911",
-    },
-    cardDiv: {
-        gap: 15,
-    },
-    backBtnContainer: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        paddingVertical: 20,
-    },
-    errorText: {
-        color: "red",
-        textAlign: "center",
-        fontSize: 18,
-        marginTop: 20,
-    },
+  container: {
+    flex: 1,
+    alignItems: "center",
+    paddingTop: height * 0.08, // Balanced top spacing
+    paddingHorizontal: width * 0.05,
+  },
+  headerText: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: RFPercentage(3.2), // Responsive font size
+    color: "#3E1911",
+    marginVertical: height * 0.03, // Vertical spacing for balance
+  },
+  cardDiv: {
+    gap: height * 0.025, 
+    marginTop: height * 0.02, 
+  },
+  backBtnContainer: {
+    position: "absolute",
+    top: height * 0.02, 
+    left: width * 0.03,
+  },
+  errorText: {
+    color: "red",
+    textAlign: "center",
+    fontSize: RFPercentage(2.4),
+    marginTop: height * 0.04,
+    paddingHorizontal: width * 0.08,
+    fontWeight: "500", 
+  },
 });
