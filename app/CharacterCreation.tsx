@@ -10,8 +10,13 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { characterOptions, bgColorOptions, isNameInvalid, isCharacterInvalid, isBgColorInvalid } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Dimensions } from "react-native"; //Added for responsive padding
+
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+const { width, height } = Dimensions.get("window"); //  Added to use in responsive styles
+
 
 export default function CharacterCreation() {
     const router = useRouter();
@@ -138,7 +143,8 @@ export default function CharacterCreation() {
     return (
         <BackgroundLayout>
             <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
-                <Text style={[styles.headerText, { fontSize: RFPercentage(4.5) }]}>
+            <Text style={styles.headerText}> {/* 🔹 Changed to use static style for font size */}
+
                     {processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}
                 </Text>
 
@@ -261,9 +267,11 @@ const styles = StyleSheet.create({
     padding: '5%',
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 36,
+    fontSize: RFPercentage(4), // Updated for  responsiveness
     color: '#3E1911',
-  },
+},
+
+
   body: {
     flex: 1,
     width: '100%',
