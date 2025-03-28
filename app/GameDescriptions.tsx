@@ -129,69 +129,7 @@ export default function GameDescriptions() {
                     </View>
                 }
             </View>
-          ))}
-        </LinearGradient>
-
-        {/* ============================================= BODY ============================================= */}
-        <View style={styles.bodyContainer}>
-          {query.game === 'Alphabet' && query.level === 1 && (
-            <View style={styles.innerBodyContainer}>
-              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
-                In this activity, children are able to view each letter on top of the door and then they are
-                able to open the door to see an object that begins with that letter. They can also tap to
-                hear the short sound or the word. There is no score or report for level 1.
-              </Text>
-              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level1.png')} style={styles.pics} />
-            </View>
-          )}
-
-          {query.game === 'Alphabet' && query.level === 2 && (
-            <View style={styles.innerBodyContainer}>
-              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
-                In this activity, children are presented with a letter. They are given three objects to choose
-                from and the goal is to select the one that begins with the letter provided. They can tap the
-                letter to hear the short sound if that helps. The order of the letters, and the options, are
-                randomized each game.
-              </Text>
-              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level2.png')} style={styles.pics} />
-            </View>
-          )}
-
-          {query.game === 'Alphabet' && query.level === 3 && (
-            <View style={styles.innerBodyContainer}>
-              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
-                In this activity, audio plays at the beginning of each question with the letter long sound,
-                short sound, and a word that begins with the letter. They are presented with four letters and
-                the goal is to choose the correct one that matches the audio. They can replay the audio if
-                needed. The order of the letters/sounds, and the options, are randomized each game.
-              </Text>
-              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level3.png')} style={styles.pics} />
-            </View>
-          )}
-
-          {query.game === 'Numbers' && query.level === 1 && (
-            <View style={styles.innerBodyContainer}>
-              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
-                In this activity, children are able to view each number on top of the door and then they are
-                able to open the door to see or count that many objects. They can also tap to hear the number.
-                There is no score or report for level 1.
-              </Text>
-              <Image source={require('../assets/GameDescriptionPics/Numbers_Level1.png')} style={styles.pics} />
-            </View>
-          )}
-
-          {query.game === 'Numbers' && query.level === 2 && (
-            <View style={styles.innerBodyContainer}>
-              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
-                In this activity, children are presented with a picture of a certain number of objects. They are given three numbers to choose
-                from and the goal is to select the one that matches. The order of the numbers, and the options, are
-                randomized each game.
-              </Text>
-              <Image source={require('../assets/GameDescriptionPics/Numbers_Level2.png')} style={styles.pics} />
-            </View>
-          )}
         </View>
-      </View>
     </BackgroundLayout>
   );
 }

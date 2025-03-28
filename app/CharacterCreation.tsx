@@ -14,8 +14,6 @@ import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
-const { width, height } = Dimensions.get("window"); //  Added to use in responsive styles
-
 
 export default function CharacterCreation() {
     const router = useRouter();

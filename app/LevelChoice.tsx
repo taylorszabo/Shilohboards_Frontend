@@ -81,8 +81,6 @@ export default function LevelChoice() {
                         </View>
                     </>
             </View>
-          </>
-      </View>
     </BackgroundLayout>
   );
 }
