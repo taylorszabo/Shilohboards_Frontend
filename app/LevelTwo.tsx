@@ -21,7 +21,11 @@ import {
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import { Dimensions } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const { width, height } = Dimensions.get("window");
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -104,6 +108,17 @@ export default function LevelTwo() {
 
             if (soundPath) {
                 await soundObject.current.loadAsync(soundPath);
+
+                // Get saved volume from AsyncStorage
+                const savedVolume = await AsyncStorage.getItem("volume");
+                const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+                console.log(`Loaded Volume: ${savedVolume}`);
+                console.log(`Applying Volume: ${volumeLevel}`);
+
+                // Apply volume before playing
+                await soundObject.current.setVolumeAsync(volumeLevel);
+
                 await soundObject.current.playAsync();
             }
         } catch (error) {
@@ -221,7 +236,7 @@ export default function LevelTwo() {
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-        } 
+        }
 
         playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
 
@@ -281,9 +296,24 @@ export default function LevelTwo() {
     }
 
     async function playAudio(soundFile: any) {
-        const { sound } = await Audio.Sound.createAsync(soundFile);
-        setSound(sound);
-        await sound.playAsync();
+        try {
+            const { sound } = await Audio.Sound.createAsync(soundFile);
+            
+            // Get saved volume from AsyncStorage
+            const savedVolume = await AsyncStorage.getItem("volume");
+            const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+            console.log(`Loaded Volume: ${savedVolume}`);
+            console.log(`Applying Volume: ${volumeLevel}`);
+
+            // Apply volume before playing
+            await sound.setVolumeAsync(volumeLevel);
+
+            setSound(sound);
+            await sound.playAsync();
+        } catch (error) {
+            console.error("Error playing audio:", error);
+        }
     }
 
     if (loading) {
@@ -306,12 +336,8 @@ export default function LevelTwo() {
     return (
         <BackgroundLayout>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-                {/* =============== Back Button =============== */}
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
                 {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
-
-
-                {/* =============== Player Card =============== */}
                 <CharacterCard
                     id={character.id}
                     name={character.profile_name}
@@ -319,14 +345,8 @@ export default function LevelTwo() {
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
                     customWidth={0.25}
                 />
-
-                {/* =============== Game/Level Title =============== */}
                 <Text style={styles.headerText}>{game} - Level 2</Text>
-
-                {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
-
-                {/* =============== Top Instruction =============== */}
                 <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
                     <Text style={styles.headerText}>
                         {answerDisplayed
@@ -338,7 +358,6 @@ export default function LevelTwo() {
                     </Text>
 
                     <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
-                        {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <Image
                                 source={gameQuestions[currentQuestion].exampleImage}
@@ -347,13 +366,12 @@ export default function LevelTwo() {
                                     game === "Numbers" && styles.alphaImageOverride
                                 ]}
                             />
-                                <View style={{alignItems: 'center'}}>
-                                    <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                                    <SoundIcon size='9%' onPress={playCurrentSound}/>
-                                </View>
+                            <View style={{alignItems: 'center'}}>
+                                <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
+                                <SoundIcon size='9%' onPress={playCurrentSound}/>
+                            </View>
                         </View>
 
-                        {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
@@ -389,67 +407,63 @@ export default function LevelTwo() {
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    width: '100%',
-    alignItems: 'center',
-    position: 'relative',
-  },
-  progressBarImg: {
-    width: '80%',
-    height: 25
-  },
-  leftSideContainer: {
-    flex: 1,
-    maxHeight: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingRight: 25,
-  },
-  rightSideContainer: {
-    gap: 15
-  },
-  headerText: {
-    verticalAlign: 'middle',
-    padding: 20,
-    paddingHorizontal: 20,
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: '#3E1911',
-  },
-  alphaNumLeftImage: {
-    width: '100%',
-    resizeMode: 'contain'
-  },
-  alphaImageOverride: {
-    maxHeight: 180,
-    maxWidth:180,
-    aspectRatio: 1,
-  },
-  alphaNumLeftInstructionText: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 18,
-    paddingVertical: 10,
-    color: '#3E1911'
-  },
-    submitBtnContainer: {
-        position: 'absolute',
-        bottom: 10,
-        alignSelf: 'center',
-        flexDirection: 'row',
-        zIndex: 10,
+    container: {
+      flex: 1,
+      paddingTop: height * 0.05, // 🔹 Reduced from 0.08 to save space
+      alignItems: 'center',
     },
-  backBtnContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    paddingVertical: 20
-  },
-  btnIcon: {
-    height: '150%',
-    width: '7%',
-    resizeMode: 'contain',
-  }
-});
+    progressBarImg: {
+      width: '80%',
+      height: 25,
+    },
+    leftSideContainer: {
+      flex: 1,
+      maxHeight: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingRight: 20, // 🔹 Slightly tighter
+    },
+    rightSideContainer: {
+      gap: 10, // 🔹 Reduced vertical spacing between options
+    },
+    headerText: {
+      fontSize: RFPercentage(2.4), // 🔹 Was 2.8
+      fontWeight: '600',
+      paddingVertical: height * 0.015, // 🔹 Was 0.02
+      paddingHorizontal: width * 0.05,
+      textAlign: 'center',
+      color: '#3E1911',
+    },
+    alphaNumLeftImage: {
+      width: '90%', // 🔹 Slightly reduced from full
+      resizeMode: 'contain',
+    },
+    alphaImageOverride: {
+      maxHeight: 150, // 🔹 Was 180
+      maxWidth: 150,
+      aspectRatio: 1,
+    },
+    alphaNumLeftInstructionText: {
+      fontSize: RFPercentage(2.2), // 🔹 Slightly smaller for tight fit
+      fontWeight: '500',
+      paddingVertical: height * 0.01, // 🔹 Tighter spacing
+      textAlign: 'center',
+      color: '#3E1911',
+    },
+    submitBtnContainer: {
+      marginTop: height * 0.02, // 🔹 Reduced space above button
+      flexDirection: 'row',
+      alignSelf: 'center',
+    },
+    backBtnContainer: {
+      position: 'absolute',
+      top: height * 0.02,
+      left: width * 0.03,
+    },
+    btnIcon: {
+      height: RFPercentage(2.8), // 🔹 Resized icon
+      width: RFPercentage(2.8),
+      resizeMode: 'contain',
+    },
+  });
+  
