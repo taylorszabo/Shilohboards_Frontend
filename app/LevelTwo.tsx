@@ -21,6 +21,8 @@ import {
 import SoundIcon from "../reusableComponents/SoundIcon";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { feedbackSound } from "../GameContent";
 import { Dimensions } from 'react-native';
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -236,7 +238,7 @@ export default function LevelTwo() {
             setCorrectAnswers(prev => prev + 1);
         }
 
-        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        playAudio(isCorrect ? feedbackSound.correct : feedbackSound.incorrect);
 
         if(questionLetterOrNumber)
         {
@@ -301,8 +303,11 @@ export default function LevelTwo() {
             const savedVolume = await AsyncStorage.getItem("volume");
             const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
 
+            if (loading) return <LoadingMessage backgroundNeeded={true}/>;
+
             console.log(`Loaded Volume: ${savedVolume}`);
             console.log(`Applying Volume: ${volumeLevel}`);
+
 
             // Apply volume before playing
             await sound.setVolumeAsync(volumeLevel);
@@ -331,41 +336,44 @@ export default function LevelTwo() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
                 <Text style={styles.headerText}>{game} - Level 2</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative" }}>
+
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
+                    {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
                         {answerDisplayed
                             ? answerSelected === (game === "Alphabet" ? gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object : gameQuestions[currentQuestion].options.find(opt => opt.correct)?.number?.toString())
-                                ? "Great job! Your answer is correct."
-                                : "Good try! Unfortunately, that is incorrect."
+                                ? "Great job! Your answer is correct ✅"
+                                : "Good try! Your answer is incorrect ❌"
                             : game === 'Alphabet' ? 'Choose the correct object that matches the letter shown on the left:' :
                                                     'Choose the correct number that matches how many objects are shown:'}
                     </Text>
 
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: '3%'}}>
+                    {/* =============== Main Section =============== */}
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 30, flex: 1, marginBottom: 15}}>
+                        {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
-                            <Image
-                                source={gameQuestions[currentQuestion].exampleImage}
-                                style={[
-                                    styles.alphaNumLeftImage,
-                                    game === "Numbers" && styles.alphaImageOverride
-                                ]}
-                            />
-                            <View style={{alignItems: 'center'}}>
-                                <Text style={styles.alphaNumLeftInstructionText}>Tap letter to hear sound</Text>
-                                <SoundIcon size='9%' onPress={playCurrentSound}/>
+                            <View style={{height: '30%', width: '100%', alignItems: 'center'}}>
+                                <Image
+                                    source={gameQuestions[currentQuestion].exampleImage}
+                                    style={styles.alphaNumLeftImage}
+                                />
                             </View>
+                            {game === "Alphabet" &&
+                                <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
+                                    <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
+                                    <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
+                                </View>
+                            }
                         </View>
 
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
                                     key={index}
-                                    customWidth={0.38}
-                                    height={140}
+                                    square={true}
                                     image={option.image}
                                     lowerText={game === "Alphabet" ? option.object : ""}
                                     functionToExecute={() => selectAnswer(game === "Alphabet" ? option.object! : option.number!.toString())}
@@ -382,10 +390,14 @@ export default function LevelTwo() {
                         </View>
                     </View>
 
+                    {/* Before an answer is selected, there should NOT be a submit button but since we need to keep the space for responsiveness, a 3rd invisible/disabled button is there.  Once 
+                        an answer is selected, the submit button appears.  After they submit their answer, the next button appears to move to the next question after reviewing feedback */}
                     {answerDisplayed ? 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
-                    : answerSelected && 
-                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                    : answerSelected ? 
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                        :
+                        <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                     }
                 </View>
             </ScrollView>
@@ -395,63 +407,65 @@ export default function LevelTwo() {
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: height * 0.05, // 🔹 Reduced from 0.08 to save space
-      alignItems: 'center',
-    },
-    progressBarImg: {
-      width: '80%',
-      height: 25,
-    },
-    leftSideContainer: {
-      flex: 1,
-      maxHeight: '100%',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingRight: 20, // 🔹 Slightly tighter
-    },
-    rightSideContainer: {
-      gap: 10, // 🔹 Reduced vertical spacing between options
-    },
-    headerText: {
-      fontSize: RFPercentage(2.4), // 🔹 Was 2.8
-      fontWeight: '600',
-      paddingVertical: height * 0.015, // 🔹 Was 0.02
-      paddingHorizontal: width * 0.05,
-      textAlign: 'center',
-      color: '#3E1911',
-    },
-    alphaNumLeftImage: {
-      width: '90%', // 🔹 Slightly reduced from full
-      resizeMode: 'contain',
-    },
-    alphaImageOverride: {
-      maxHeight: 150, // 🔹 Was 180
-      maxWidth: 150,
-      aspectRatio: 1,
-    },
-    alphaNumLeftInstructionText: {
-      fontSize: RFPercentage(2.2), // 🔹 Slightly smaller for tight fit
-      fontWeight: '500',
-      paddingVertical: height * 0.01, // 🔹 Tighter spacing
-      textAlign: 'center',
-      color: '#3E1911',
-    },
-    submitBtnContainer: {
-      marginTop: height * 0.02, // 🔹 Reduced space above button
-      flexDirection: 'row',
-      alignSelf: 'center',
-    },
-    backBtnContainer: {
-      position: 'absolute',
-      top: height * 0.02,
-      left: width * 0.03,
-    },
-    btnIcon: {
-      height: RFPercentage(2.8), // 🔹 Resized icon
-      width: RFPercentage(2.8),
-      resizeMode: 'contain',
-    },
-  });
-  
+  container: {
+    flex: 1,
+    width: '100%',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  progressBarImg: {
+    width: '80%',
+    height: 25
+  },
+  leftSideContainer: {
+    flex: 1.1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  rightSideContainer: {
+    flex: 1,
+    gap: 15,
+    alignItems: 'center',
+  },
+  headerText: {
+    verticalAlign: 'middle',
+    padding: 20,
+    paddingHorizontal: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#3E1911',
+  },
+  alphaNumLeftImage: {
+    resizeMode: 'contain',
+    maxHeight: '100%',
+    maxWidth: '100%',
+  },
+  alphaNumLeftInstructionText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    paddingVertical: 10,
+    color: '#3E1911'
+  },
+  submitBtnContainer: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+  },
+  submitBtnContainerInvisible: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+    opacity: 0
+  },
+  backBtnContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    paddingVertical: 20
+  },
+  btnIcon: {
+    height: 30,
+    width: 30,
+    resizeMode: 'contain',
+  }
+});

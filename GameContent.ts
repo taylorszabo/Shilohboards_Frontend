@@ -23,6 +23,14 @@ export type Number = {
 }
 
 //=========================================================================================
+/*  Sound reference/attributions:
+    https://pixabay.com/sound-effects/search/incorrect/        -->   Training Program, Incorrect1 by freesound_community (https://pixabay.com/sound-effects/training-program-incorrect1-88736/)
+    https://pixabay.com/sound-effects/search/correct/?pagi=5   -->   Correct-2 by freesound_community (https://pixabay.com/sound-effects/correct-2-46134/)
+*/
+export const feedbackSound = {
+    correct: require("./assets/Sounds/correctSound.mp3"),
+    incorrect: require("./assets/Sounds/incorrectSound.mp3")
+}
 
 export const gamesArray: Game[] = [
     { title: 'Alphabet', numberOfLevels: 3 },

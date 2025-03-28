@@ -14,6 +14,8 @@ import GameComplete from '../reusableComponents/GameComplete';
 import SoundIcon from '../reusableComponents/SoundIcon';
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from '../reusableComponents/LoadingMessage';
+import { feedbackSound } from "../GameContent";
 import { Dimensions } from 'react-native'; 
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -187,7 +189,7 @@ export default function LevelThree() {
             setCorrectAnswers(prev => prev + 1);
         } 
 
-        playAudio(isCorrect ? require("../assets/Sounds/correctSound.mp3") : require("../assets/Sounds/incorrectSound.mp3"));
+        playAudio(isCorrect ? feedbackSound.correct : feedbackSound.incorrect);
         if (questionLetter) {
             recordedAnswers.current.push({
                 id: questionLetter,
@@ -245,6 +247,8 @@ export default function LevelThree() {
             const savedVolume = await AsyncStorage.getItem("volume");
             const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
 
+            if (loading) return <LoadingMessage backgroundNeeded={true}/>;
+
             console.log(`Loaded Volume: ${savedVolume}`);
             console.log(`Applying Volume: ${volumeLevel}`);
 
@@ -277,43 +281,77 @@ export default function LevelThree() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
 
                 <Text style={styles.headerText}>{game} - Level 3</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative'}}>
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600}}>
+                        {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
-                            <SoundIcon size='25%' onPress={playCurrentSound}/>
+                            <Text style={[styles.headerText, {width: '40%'}]}>
+                                Tap the ear to replay sound
+                            </Text>
+                            <SoundIcon widthPercent={15} onPress={playCurrentSound}/>
                         </View>
                         
                         <View style={{ alignItems: 'center', flex: 1, width: '100%', position: 'relative' }}>
-                            <Text style={styles.headerText}>Choose the correct letter for the sound or beginning of the word:</Text>
+                            {/* answer for troubleshooting: ({gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object.toString()}) */}
+                            {/* =============== Top Instruction =============== */}
+                            <Text style={styles.headerText}>
+                                {answerDisplayed
+                                    ? answerSelected === (gameQuestions[currentQuestion].options.find(opt => opt.correct)?.object)
+                                        ? "Great job! Your answer is correct ✅"
+                                        : "Good try! Your answer is incorrect ❌"
+                                    : 'Choose the correct letter for the sound or beginning of the word:'
+                                }
+                            </Text>
 
                             <View style={styles.answerContainer}>
-                                {gameQuestions[currentQuestion].options.map((option, index) => (
-                                    <OptionCard key={index} 
-                                        customWidth={0.38} 
-                                        height={140} 
-                                        image={option.image} 
-                                        functionToExecute={() => selectAnswer(option.object)} 
-                                        disabled={answerDisplayed} 
-                                        selected={answerSelected === option.object} 
-                                        bgColor={
-                                            answerDisplayed
-                                                ? option.correct ? "#CFFFC0" : "#F69292"
-                                                : "#FFF8F0"
-                                        }
-                                    />
-                                ))}
+                                <View style={{gap: 15, flex: 1, alignItems: 'flex-end'}}>
+                                    {gameQuestions[currentQuestion].options.slice(0, 2).map((option, index) => (
+                                        <OptionCard key={index} 
+                                            square={true}
+                                            image={option.image} 
+                                            functionToExecute={() => selectAnswer(option.object)} 
+                                            disabled={answerDisplayed} 
+                                            selected={answerSelected === option.object} 
+                                            bgColor={
+                                                answerDisplayed
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                            }
+                                        />
+                                    ))}
+                                </View>
+
+                                <View style={{gap: 15, flex: 1, alignItems: 'flex-start'}}>
+                                    {gameQuestions[currentQuestion].options.slice(2).map((option, index) => (
+                                        <OptionCard key={index} 
+                                            square={true}
+                                            image={option.image} 
+                                            functionToExecute={() => selectAnswer(option.object)} 
+                                            disabled={answerDisplayed} 
+                                            selected={answerSelected === option.object} 
+                                            bgColor={
+                                                answerDisplayed
+                                                    ? option.correct ? "#CFFFC0" : "#F69292"
+                                                    : "#FFF8F0"
+                                            }
+                                        />
+                                    ))}
+                                </View>
                             </View>
 
+                            {/* Before an answer is selected, there should NOT be a submit button but since we need to keep the space for responsiveness, a 3rd invisible/disabled button is there.  Once 
+                                an answer is selected, the submit button appears.  After they submit their answer, the next button appears to move to the next question after reviewing feedback */}
                             {answerDisplayed ? 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
-                            : answerSelected && 
-                            <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} /> 
+                            : answerSelected ? 
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Submit" functionToExecute={submitAnswer} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
+                                :
+                                <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                             }
                         </View>
                     </View>
@@ -326,73 +364,84 @@ export default function LevelThree() {
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      paddingTop: height * 0.05, // 🔹 Reduced from 0.08 to fit on screen
-      alignItems: 'center',
-    },
-    topPortion: {
-      flexDirection: 'row',
-      marginTop: height * 0.015, // 🔹 Tighter spacing
-      alignItems: 'center',
-      gap: width * 0.04, // 🔹 Tighter horizontal gap
-    },
-    answerContainer: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      flexWrap: 'wrap',
-      gap: width * 0.03, // 🔹 Slightly tighter
-      marginTop: height * 0.015, // 🔹 Slight space from instruction
-    },
-    headerText: {
-      fontSize: RFPercentage(2.4), // 🔹 Slightly smaller
-      fontWeight: '600',
-      paddingVertical: height * 0.015, // 🔹 Tighter
-      paddingHorizontal: width * 0.05,
-      textAlign: 'center',
-      color: '#3E1911',
-    },
-    submitBtnContainer: {
-      marginTop: 'auto', // 🔹 Push button to bottom of view space
-      flexDirection: 'row',
-      alignSelf: 'center',
-    },
-    btnIcon: {
-      height: RFPercentage(2.8),
-      width: RFPercentage(2.8),
-      resizeMode: 'contain',
-    },
-    backBtnContainer: {
-      position: 'absolute',
-      top: height * 0.02,
-      left: width * 0.03,
-      paddingVertical: height * 0.015,
-    },
-    soundBtn: {
-      backgroundColor: '#FFF8F0',
-      paddingVertical: height * 0.012,
-      paddingHorizontal: width * 0.08,
-      borderRadius: 10,
-      borderRightWidth: 2,
-      borderBottomWidth: 3,
-      borderColor: '#A9A9A9',
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    replayBtn: {
-      width: '25%',
-      aspectRatio: 1,
-      padding: '3%',
-      borderRadius: 10,
-      borderRightWidth: 2,
-      borderBottomWidth: 3,
-      borderColor: '#A9A9A9',
-      backgroundColor: '#FFF8F0',
-    },
-    replayIconPic: {
-      height: '100%',
-      width: '100%',
-      resizeMode: 'contain',
-    },
-  });
-  
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    position: 'relative'
+  },
+  topPortion: {
+    flexDirection: 'row',
+    marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '1%'
+  },
+  answerContainer: {
+    flex: 1,
+    flexDirection: 'row', 
+    justifyContent: 'center', 
+    flexWrap: 'wrap', 
+    gap: 15,
+    marginBottom: 15,
+    width: '90%'
+  },
+  headerText: {
+    verticalAlign: 'middle',
+    padding: 20,
+    paddingHorizontal: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#3E1911',
+  },
+  submitBtnContainer: {
+    marginTop: 'auto', 
+    flexDirection: 'row',
+  },
+  submitBtnContainerInvisible: {
+    marginTop: 'auto',
+    flexDirection: 'row',
+    opacity: 0
+  },
+  btnIcon: {
+    height: 30,
+    width: 30,
+    resizeMode: 'contain',
+  },
+  backBtnContainer: {
+    position: 'absolute', 
+    top: 0, 
+    left: 0, 
+    paddingVertical: 20
+  },
+  soundBtn: {
+    backgroundColor: '#FFF8F0',
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight: 'bold',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    borderRightWidth: 2,
+    borderBottomWidth: 3,
+    borderColor: '#A9A9A9',
+  },
+  replayBtn: {
+    width: '25%', 
+    aspectRatio: 1, 
+    padding: '3%', 
+    borderRadius: 10,
+    borderRightWidth: 2,
+    borderBottomWidth: 3,
+    borderColor: '#A9A9A9',
+    backgroundColor: '#FFF8F0',
+  },
+  replayIconPic: {
+    height: '100%',
+    width: '100%',
+    resizeMode: 'contain'
+  }
+});

@@ -6,15 +6,14 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
-    ActivityIndicator,
-      Alert,
-      Dimensions
+    Alert,
+    Dimensions
 } from "react-native";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 import CustomButton from "../reusableComponents/CustomButton";
-
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
@@ -90,7 +89,6 @@ const Register = () => {
                 <Image
                     source={require("../assets/logo.png")}
                     style={[styles.logo, { width: width * 0.5, height: width * 0.5 }]} 
-                   
                 />
                 <Text style={styles.title}>Register New Account</Text>
                 
@@ -110,7 +108,6 @@ const Register = () => {
                     secureTextEntry 
                     value={password} 
                     onChangeText={setPassword} 
-                   
                 />
 
                 <TextInput 
@@ -126,15 +123,14 @@ const Register = () => {
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
-  <ActivityIndicator size="large" color="#0000ff" />
-) : (
-  <CustomButton
-    text="Sign Up"
-    functionToExecute={handleRegister}
-    uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
-  />
-)}
-
+                  <LoadingMessage smallVersion={true} />
+                ) : (
+                  <CustomButton
+                    text="Sign Up"
+                    functionToExecute={handleRegister}
+                    uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+                  />
+                )}
 
                 <TouchableOpacity onPress={() => router.push("/Login")}>
                     <Text style={styles.registerText}>Cancel</Text>

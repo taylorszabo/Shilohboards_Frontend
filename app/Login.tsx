@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ActivityIndicator,
-  Dimensions,
-  Pressable,
-  Keyboard,
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    Dimensions, 
+    ActivityIndicator,
+    Pressable,
+    Keyboard,
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 import CustomButton from "../reusableComponents/CustomButton"; 
+
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_AUTH_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
@@ -141,7 +143,7 @@ export default function Login() {
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
         {loading ? (
-  <ActivityIndicator size="large" color="#0000ff" />
+  <LoadingMessage smallVersion={true} />
 ) : (
   <CustomButton
     text="Sign In"

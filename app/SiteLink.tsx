@@ -15,7 +15,7 @@ const { width, height } = Dimensions.get("window");
 
 const SiteLink = () => {
   const router = useRouter();
-  const { game = "Alphabet", playerId = "0" } = useLocalSearchParams();
+  const { playerId = "0" } = useLocalSearchParams();
 
   const handleLinkPress = () => {
     router.push("https://shilohboards.com");
@@ -24,25 +24,15 @@ const SiteLink = () => {
   return (
     <BackgroundLayout>
       <View style={styles.container}>
-      <CustomButton
-  image={require("../assets/back.png")}
-  uniqueButtonStyling={styles.backBtnContainer}
-  functionToExecute={async () => {
-    const id = playerId || await AsyncStorage.getItem("selectedPlayerId");
-    if (id) {
-      router.replace(`/MainMenu?playerId=${id}`);
-    } else {
-      router.replace("/SelectCharacter");
-    }
-  }}
-/>
+        <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
+
         <Image
           source={require("../assets/logo.png")}
           style={styles.logo}
         />
 
         <CustomButton
-          text="Visit Shiloh Boards  Visit our official website to learn more about Shiloh Boards or to
+          text="Visit our official website to learn more about Shiloh Boards or to
             purchase a physical board!"
           functionToExecute={handleLinkPress}
           uniqueButtonStyling={styles.linkButton}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -20,10 +20,9 @@ import { Dimensions } from "react-native";//adding responsiveness
 import { Audio } from "expo-av";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 import { RFPercentage } from 'react-native-responsive-fontsize';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http   ://localhost:3000";
 
@@ -178,9 +177,9 @@ export default function LevelOne() {
           console.error("Error playing sound:", error);
         }
     };
-    if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
-    }
+
+    if (loading || !character) return <LoadingMessage backgroundNeeded={true}/> ;
+
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;
     }
@@ -199,7 +198,6 @@ export default function LevelOne() {
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                    customWidth={0.25}
                 />
                 <Text style={styles.title}>{game} - Level 1</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
@@ -208,11 +206,9 @@ export default function LevelOne() {
                 <TouchableOpacity style={styles.voiceoverContainer}>
                     <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
-              
-                
                  
                 <View style={{margin: '10%'}}>
-                    <SoundIcon size='20%' onPress={playSound}/>
+                    <SoundIcon widthPercent={25} onPress={playSound}/>
                 </View>
                 
                

@@ -1,26 +1,25 @@
 import * as React from 'react';
-import { StyleSheet, View, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { Image, TouchableOpacity } from 'react-native';
 
-const screenWidth = Dimensions.get('window').width;
-
-export default function SoundIcon(props: { size: string; onPress?: () => void }) {
-    const { size = '', onPress } = props;
-
-    //convert width to number if it's a percentage
-    const numericWidth = size.includes('%')
-        ? (parseFloat(size) / 100) * screenWidth  //convert "__%" to pixels
-        : parseFloat(size); //keep as is if it's already a number in a string
+export default function SoundIcon(props: { widthPercent: number; onPress?: () => void }) {
+    const { widthPercent, onPress } = props;
 
     return (
-        <TouchableOpacity onPress={onPress}>
-            <Image source={require('../assets/listen.png')} style={[styles.listenImg, { width: numericWidth, height: numericWidth }]} />
+        <TouchableOpacity 
+            onPress={onPress} 
+            style={{
+                width: `${widthPercent}%`, 
+                aspectRatio: 1, 
+                backgroundColor: '#FFF8F0', 
+                padding: 12, 
+                borderRadius: 50,
+                borderRightWidth: 1,
+                borderBottomWidth: 1,
+                borderRightColor: '#A9A9A9',
+                borderBottomColor: '#A9A9A9'
+            }}
+        >
+            <Image source={require('../assets/listen.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
         </TouchableOpacity>
     );
 }
-
-// ================================== STYLING ==================================
-const styles = StyleSheet.create({
-    listenImg: {
-        resizeMode: 'contain'
-    },
-});

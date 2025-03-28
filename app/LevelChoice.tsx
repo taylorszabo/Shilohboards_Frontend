@@ -15,6 +15,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
+import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -53,8 +54,9 @@ export default function LevelChoice() {
   }, [playerId, router]);
 
     if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+        return <LoadingMessage backgroundNeeded={true}/>
     }
+  
     return (
         <BackgroundLayout>
             <View style={styles.container}>
@@ -65,59 +67,55 @@ export default function LevelChoice() {
                             name={character.profile_name}
                             image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                             bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                            customWidth={0.3}
+                            heightPercentNumber={15}
                         />
 
-            <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
+                        <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
 
-                        <View style={styles.cardDiv}>
-                            <OptionCard upperText="Level 1" customWidth={0.8} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
-                            <OptionCard upperText="Level 2" customWidth={0.8} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
+                        <View style={[styles.cardDiv, game === "Alphabet" ? {flex: 0.6} : {flex: 0.4}]}>
+                            <OptionCard upperText="Level 1" square={false} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />
+                            <OptionCard upperText="Level 2" square={false} onPressRoute={`/LevelTwo?game=${game}&playerId=${playerId}`} />
                             {game === "Alphabet" && (
-                                <OptionCard upperText="Level 3" customWidth={0.8} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
+                                <OptionCard upperText="Level 3" square={false} onPressRoute={`/LevelThree?game=${game}&playerId=${playerId}`} />
                             )}
                         </View>
                     </>
             </View>
-          </>
-        ) : (
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        )}
-      </View>
     </BackgroundLayout>
   );
 }
 
 // ================================== STYLING ==================================
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingTop: height * 0.08, // Balanced top spacing
-    paddingHorizontal: width * 0.05,
-  },
-  headerText: {
-    textAlign: "center",
-    fontWeight: "bold",
-    fontSize: RFPercentage(3.2), // Responsive font size
-    color: "#3E1911",
-    marginVertical: height * 0.03, // Vertical spacing for balance
-  },
-  cardDiv: {
-    gap: height * 0.025, 
-    marginTop: height * 0.02, 
-  },
-  backBtnContainer: {
-    position: "absolute",
-    top: height * 0.02, 
-    left: width * 0.03,
-  },
-  errorText: {
-    color: "red",
-    textAlign: "center",
-    fontSize: RFPercentage(2.4),
-    marginTop: height * 0.04,
-    paddingHorizontal: width * 0.08,
-    fontWeight: "500", 
-  },
+    container: {
+        flex: 1,
+        width: '100%',
+        alignItems: "center",
+    },
+    headerText: {
+        verticalAlign: "middle",
+        padding: 20,
+        textAlign: "center",
+        fontWeight: "bold",
+        fontSize: 24,
+        color: "#3E1911",
+    },
+    cardDiv: {
+        gap: 15,
+        width: '100%',
+        alignItems: "center",
+        maxWidth: 600
+    },
+    backBtnContainer: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        paddingVertical: 20,
+    },
+    errorText: {
+        color: "red",
+        textAlign: "center",
+        fontSize: 18,
+        marginTop: 20,
+    },
 });
