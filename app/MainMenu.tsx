@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   Dimensions,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize'; // 🔹 Responsive font sizing
+import { RFPercentage } from 'react-native-responsive-fontsize'; // Responsive font sizing
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -20,7 +20,7 @@ import { bgColorOptions, characterOptions } from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-const { width, height } = Dimensions.get("window"); // 🔹 Used for layout responsiveness
+const { width, height } = Dimensions.get("window"); // Used for layout responsiveness
 
 type HamburgerMenuItem = {
   text: string;
@@ -140,14 +140,14 @@ export default function MainMenu() {
                 <OptionCard
                   lowerText="Alphabet"
                   customWidth={0.8}
-                  height={height * 0.18} // 🔹 Responsive height
+                  height={height * 0.18} // Responsive height
                   onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`}
                   image={require("../assets/ABC_2.png")}
                 />
                 <OptionCard
                   lowerText="Numbers"
                   customWidth={0.8}
-                  height={height * 0.18} // 🔹 Responsive height
+                  height={height * 0.18} // Responsive height
                   onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`}
                   image={require("../assets/123_2.png")}
                 />

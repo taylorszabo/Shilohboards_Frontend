@@ -19,9 +19,11 @@ const { width, height } = Dimensions.get("window");
 
 export default function Settings() {
   const router = useRouter();
+   // State for storing and temporarily changing volume
   const [volume, setVolume] = useState(50);
   const [tempVolume, setTempVolume] = useState(50);
 
+    // Load the stored volume 
   useEffect(() => {
     const loadVolume = async () => {
       const savedVolume = await AsyncStorage.getItem("volume");
@@ -32,7 +34,7 @@ export default function Settings() {
     };
     loadVolume();
   }, []);
-
+ // Save the current volume to AsyncStorage
   const handleSaveVolume = async () => {
     await AsyncStorage.setItem("volume", tempVolume.toString());
     setVolume(tempVolume);

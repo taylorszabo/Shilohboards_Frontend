@@ -17,6 +17,7 @@ const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
 const { width, height } = Dimensions.get("window");
 
+  // State to store user inputs and loading state
 const UpdateUser = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,14 +26,15 @@ const UpdateUser = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
+    // Validate and update user credentials
   const handleUpdateUser = async () => {
     setErrorMessage("");
 
     if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
       setErrorMessage("Please fill in all fields.");
-      return;
+      return; 
     }
-
+//
     if (password.length < 6) {
       setErrorMessage("Password must be at least 6 characters long.");
       return;
@@ -52,6 +54,7 @@ const UpdateUser = () => {
         returnSecureToken: true,
       });
 
+        // Handle different Firebase errors
       console.log("Update successful!", response.data);
       router.push("/Setting");
     } catch (error: any) {

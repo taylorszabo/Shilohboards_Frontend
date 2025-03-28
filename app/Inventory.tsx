@@ -20,12 +20,15 @@ const { width, height } = Dimensions.get('window');
 
 export default function InventoryScreen() {
   const router = useRouter();
+
+  //holds the selected user and their inventory
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [errorMessage, setErrorMessage] = React.useState('');
   const [childAccounts, setChildAccounts] = React.useState<any[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [levelCounts, setLevelCounts] = React.useState<{ [key: string]: number }>({});
 
+  //icons and category/level structure
   const starIcon1 = require('../assets/GameOverStar-Silver.png');
   const starIcon2 = require('../assets/GameOverStar.png');
   const starIcon3 = require('../assets/GameOverStar-Purple.png');
@@ -33,6 +36,7 @@ export default function InventoryScreen() {
   const levels = [1, 2, 3];
 
   // ---------------- GET LEVEL COUNTS ----------------
+  //set level progress counts for a selected child
   const fetchLevelCounts = async (childId: string) => {
     try {
       const newCounts: { [key: string]: number } = {};
@@ -41,6 +45,7 @@ export default function InventoryScreen() {
           const key = `${childId}_${category}_level${level}_count`;
           let count = await AsyncStorage.getItem(key);
 
+          // Check for legacy key and migrate if necessary
           if (!count) {
             const legacyKey = `${category}_level${level}_count`;
             const legacyCount = await AsyncStorage.getItem(legacyKey);
@@ -50,7 +55,7 @@ export default function InventoryScreen() {
               count = legacyCount;
             }
           }
-
+          // Parse and store count or default to 0
           newCounts[key] = count ? parseInt(count) : 0;
         }
       }
@@ -61,6 +66,7 @@ export default function InventoryScreen() {
   };
 
   // ---------------- FETCH CHILDREN ----------------
+  //get child account profiles based on parent ID
   const fetchChildren = React.useCallback(async (parentId: string) => {
     setLoading(true);
     try {
@@ -68,13 +74,13 @@ export default function InventoryScreen() {
         `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/children/${parentId}`
       );
       const childrenData = response.data;
-
+      // Handle empty child accounts
       if (Array.isArray(childrenData) && childrenData.length === 0) {
         setErrorMessage('No characters found. Please create a new character.');
         setChildAccounts([]);
         return;
       }
-
+      //get profiles for each child and filter out invalid data
       const profiles: any[] = await Promise.all(
         childrenData.map(async (child: any) => {
           try {
@@ -88,7 +94,7 @@ export default function InventoryScreen() {
           }
         })
       );
-
+      // Store valid profiles only
       const validProfiles = profiles.filter(profile => profile && profile.profile_image);
       setChildAccounts(validProfiles.length ? validProfiles : []);
     } catch (error) {
@@ -101,6 +107,7 @@ export default function InventoryScreen() {
   }, []);
 
   // ---------------- INIT FETCH ----------------
+  //get parent ID and load child accounts on component mount
   React.useEffect(() => {
     const fetchParentId = async () => {
       const userId: string | null = await AsyncStorage.getItem('userId');
@@ -114,6 +121,7 @@ export default function InventoryScreen() {
   }, []);
 
   // ---------------- USER SELECTION ----------------
+    // Handle user selection and fetch associated inventory data
   const handleSelectUser = (userId: string) => {
     const user = childAccounts.find(u => u.id === userId);
     if (user) {
