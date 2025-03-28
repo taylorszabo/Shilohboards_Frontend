@@ -21,10 +21,8 @@ import { Audio } from "expo-av";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 import LoadingMessage from "../reusableComponents/LoadingMessage";
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http   ://localhost:3000";
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
 const { width, height } = Dimensions.get("window"); // adding to make the page responsive 
 
@@ -45,6 +43,7 @@ export default function LevelOne() {
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
@@ -55,7 +54,7 @@ export default function LevelOne() {
     useEffect(() => {
         const fetchCharacterProfile = async () => {
             if (!playerId || playerId === "0") {
-                router.replace("/error?message=Failed%20to%20load%20character%20profile");
+                router.replace("/SelectCharacter");
                 return;
             }
 
@@ -64,11 +63,12 @@ export default function LevelOne() {
                 if (response.data) {
                     setCharacter(response.data);
                 } else {
-                    router.replace("/error?message=Failed%20to%20load%20character%20profile");
+                    router.replace("/SelectCharacter");
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setTimeout(() => router.replace("/error?message=Failed%20to%20load%20character%20profile"), 2000);
+                setError("Failed to load character. Redirecting...");
+                setTimeout(() => router.replace("/SelectCharacter"), 2000);
             }
         };
 
@@ -97,7 +97,7 @@ export default function LevelOne() {
                 }
             } catch (err) {
                 if (isMounted) {
-                    router.replace("/error?message=Failed%20to%20load%20game%20questions");
+                    setError("Failed to load game questions.");
                     setLoading(false);
                 }
             }
@@ -145,41 +145,29 @@ export default function LevelOne() {
 
     const playSound = async () => {
         try {
-          // Unload previous sound before playing new sound
-          if (soundObject.current) {
-            await soundObject.current.unloadAsync();
-          }
-      
-          let soundPath: number | undefined;
-          if (game === "Alphabet" && currentItem.letter) {
-            soundPath = alphabetSounds[currentItem.letter];
-          } else if (game === "Numbers" && currentItem.letter) {
-            soundPath = numberSounds[currentItem.letter];
-          }
-      
-          if (soundPath) {
-            await soundObject.current.loadAsync(soundPath);
-      
-            // Get saved volume from AsyncStorage
-            const savedVolume = await AsyncStorage.getItem("volume");
-            const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
-      
-            console.log(`Loaded Volume: ${savedVolume}`);
-            console.log(`Applying Volume: ${volumeLevel}`);
-      
-            // Apply volume before playing
-            await soundObject.current.setVolumeAsync(volumeLevel);
-      
-            // Play sound
-            await soundObject.current.playAsync();
-          }
+            if (soundObject.current) {
+                await soundObject.current.unloadAsync();
+            }
+
+            let soundPath: number | undefined;
+            if (game === "Alphabet" && currentItem.letter) {
+                soundPath = alphabetSounds[currentItem.letter];
+            } else if (game === "Numbers" && currentItem.letter) {
+                soundPath = numberSounds[currentItem.letter];
+            }
+
+            if (soundPath) {
+                await soundObject.current.loadAsync(soundPath);
+                await soundObject.current.playAsync();
+            }
         } catch (error) {
-          console.error("Error playing sound:", error);
+            console.error("Error playing sound:", error);
         }
     };
 
-    if (loading || !character) return <LoadingMessage backgroundNeeded={true}/> ;
 
+    if (loading || !character) return <LoadingMessage backgroundNeeded={true}/> ;
+    if (error) return <Text style={{ color: "red" }}>{error}</Text>;
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;
     }
@@ -246,17 +234,10 @@ export default function LevelOne() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingTop: height * 0.08, // 🔹 Consistent layout padding
-        alignItems: 'center',
-      },
-      headerText: {
-        fontSize: RFPercentage(2.8), // Replaces fixed 20
-        fontWeight: '600',
-        paddingVertical: height * 0.02,
-        paddingHorizontal: width * 0.05,
-        textAlign: 'center',
-        color: '#3E1911',
-      },
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+    },
     voiceoverContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -264,12 +245,11 @@ const styles = StyleSheet.create({
         marginTop: height * 0.02,
     },
     voiceoverText: {
-        fontSize: RFPercentage(2.4), // Responsive font size
-        color: '#3E1911',
-        fontWeight: '500',
-        paddingHorizontal: width * 0.05, //Consistent padding
-        textAlign: 'center',
-      },
+        fontSize: width * 0.05,  // Scales text size
+        fontWeight: "600",
+        color: "#3E1911",
+        textAlign: "center",
+    },
     ear: {
         width: width * 0.08,
         height: width * 0.08,  // Keeping it proportional
@@ -347,19 +327,13 @@ const styles = StyleSheet.create({
     },
     backBtnContainer: {
         position: 'absolute',
-        top: height * 0.02, // Matches LevelTwo/Three
-        left: width * 0.03,
-        paddingVertical: height * 0.015,
-      },
-      submitBtnContainer: {
-        marginTop: height * 0.03, //Standard spacing
+        top: height * 0.02,
+        left: width * 0.02,
+        paddingVertical: height * 0.02,
+    },
+    submitBtnContainer: {
+        marginTop: 'auto',
         flexDirection: 'row',
-      },
-    cubeRow: {
-        marginVertical: height * 0.03, 
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: width * 0.03,
-      },
+    },
 });
 

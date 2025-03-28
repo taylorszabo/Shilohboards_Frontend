@@ -14,15 +14,13 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true,
-      "permissions": ["MEDIA_LIBRARY"]
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      },
-      "permissions": ["AUDIO_RECORDING", "MEDIA_LIBRARY"]
+      }
     },
     "web": {
       "favicon": "./assets/logo.png",
@@ -31,6 +29,5 @@
     "expo": {
       "plugins": ["expo-router"]
     }
-    
   }
 }

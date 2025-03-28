@@ -8,7 +8,6 @@ import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
-import {router} from "expo-router";
 
 // Backend API URL
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
@@ -22,24 +21,13 @@ export default function SelectCharacter() {
   const [characterIdsToDelete, setCharacterIdsToDelete] = useState<string[]>([]);
 
   useEffect(() => {
-    const checkUser = async () => {
-      const token = await AsyncStorage.getItem("authToken");
-      if (!token) {
-        router.push('/Login');
-      }
-    };
-    checkUser();
-  }, []);
-
-  useEffect(() => {
     const fetchParentId = async () => {
       const userId = await AsyncStorage.getItem("userId");
       if (userId) {
         setParentId(userId);
         fetchChildren(userId);
       } else {
-        console.error("Error: Parent ID not found.");
-        router.replace("/error?message=Account%20cannot%20not%20be%20found");
+        setErrorMessage("Error: Parent ID not found.");
       }
     };
 
@@ -64,7 +52,6 @@ export default function SelectCharacter() {
               return { ...res.data, id: child.profile_id };
             } catch (error) {
               console.error(`Error fetching profile for child ${child.profile_id}:`, error);
-              router.replace("/error?message=Failed%20to%20load%20the%20profile%20for%20that%20child");
               return null;
             }
           })
@@ -85,7 +72,7 @@ export default function SelectCharacter() {
         return;
       }
       console.error("Error fetching children:", error);
-      router.replace("/error?message=Failed%20to%20load%20characters");
+      setErrorMessage("Failed to load characters.");
       setChildren([]);
     } finally {
       setLoading(false);
@@ -230,7 +217,7 @@ const styles = StyleSheet.create({
     marginTop: "auto"
   },
   errorText: {
-    color: "#3E1911",
+    color: "red",
     textAlign: "center",
     fontSize: 18,
   },

@@ -46,6 +46,7 @@ export default function PerformanceReports() {
   const [questionPerformance, setQuestionPerformance] = useState<Record<string, number>>({});
   const [parentId, setParentId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   //----------------------------------------------------------
   //API is called when component loaded & everytime the query is updated
@@ -73,7 +74,7 @@ export default function PerformanceReports() {
                 setParentId(userId);
                 fetchChildren(userId);
             } else {
-                router.replace("/error?message=Parent%20could%20not%20be%20found");
+                setErrorMessage("Error: Parent ID not found.");
                 setLoading(false);
             }
         };
@@ -87,7 +88,7 @@ export default function PerformanceReports() {
             const childrenData = response.data;
 
             if (!Array.isArray(childrenData) || childrenData.length === 0) {
-                router.replace("/error?message=No%20characters%20found");
+                setErrorMessage("No characters found. Please create a new character.");
                 setChildren([]);
                 return;
             }
@@ -107,19 +108,19 @@ export default function PerformanceReports() {
             const validProfiles = profiles.filter(profile => profile && profile.profile_image);
 
             if (validProfiles.length === 0) {
-                router.replace("/error?message=No%20characters%20found");
+                setErrorMessage("No characters found. Please create a new character.");
                 setChildren([]);
             } else {
                 setChildren(validProfiles);
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
-                router.replace("/error?message=No%20characters%20found");
+                setErrorMessage("No characters found. Please create a new character.");
                 setChildren([]);
                 return;
             }
             console.error("Error fetching children:", error);
-            router.replace("/error?message=No%20characters%20found");
+            setErrorMessage("Failed to load characters.");
             setChildren([]);
         } finally {
             setLoading(false);

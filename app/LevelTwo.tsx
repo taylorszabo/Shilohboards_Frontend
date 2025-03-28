@@ -23,11 +23,7 @@ import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 import LoadingMessage from '../reusableComponents/LoadingMessage';
 import { feedbackSound } from "../GameContent";
-import { Dimensions } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const { width, height } = Dimensions.get("window");
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -66,6 +62,7 @@ export default function LevelTwo() {
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
     const recordedAnswers = useRef<QuestionAnswers[]>([]);
@@ -109,17 +106,6 @@ export default function LevelTwo() {
 
             if (soundPath) {
                 await soundObject.current.loadAsync(soundPath);
-
-                // Get saved volume from AsyncStorage
-                const savedVolume = await AsyncStorage.getItem("volume");
-                const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
-
-                console.log(`Loaded Volume: ${savedVolume}`);
-                console.log(`Applying Volume: ${volumeLevel}`);
-
-                // Apply volume before playing
-                await soundObject.current.setVolumeAsync(volumeLevel);
-
                 await soundObject.current.playAsync();
             }
         } catch (error) {
@@ -147,7 +133,8 @@ export default function LevelTwo() {
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setTimeout(() => router.replace("/error?message=Failed%20to%20load%20character%20profile"), 2000);
+                setError("Failed to load character. Redirecting...");
+                setTimeout(() => router.replace("/SelectCharacter"), 2000);
             }
         };
 
@@ -204,7 +191,7 @@ export default function LevelTwo() {
                 }
             } catch (err) {
                 if (isMounted) {
-                    router.replace("/error?message=Failed%20to%20load%20game%20questions");
+                    setError("Failed to load game questions.");
                     setLoading(false);
                 }
             }
@@ -236,7 +223,7 @@ export default function LevelTwo() {
 
         if (isCorrect) {
             setCorrectAnswers(prev => prev + 1);
-        }
+        } 
 
         playAudio(isCorrect ? feedbackSound.correct : feedbackSound.incorrect);
 
@@ -296,32 +283,22 @@ export default function LevelTwo() {
     }
 
     async function playAudio(soundFile: any) {
-        try {
-            const { sound } = await Audio.Sound.createAsync(soundFile);
-            
-            // Get saved volume from AsyncStorage
-            const savedVolume = await AsyncStorage.getItem("volume");
-            const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
-
-            if (loading) return <LoadingMessage backgroundNeeded={true}/>;
-
-            console.log(`Loaded Volume: ${savedVolume}`);
-            console.log(`Applying Volume: ${volumeLevel}`);
-
-
-            // Apply volume before playing
-            await sound.setVolumeAsync(volumeLevel);
-
-            setSound(sound);
-            await sound.playAsync();
-        } catch (error) {
-            console.error("Error playing audio:", error);
-        }
+        const { sound } = await Audio.Sound.createAsync(soundFile);
+        setSound(sound);
+        await sound.playAsync();
     }
 
-    if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+    if (loading) return <LoadingMessage backgroundNeeded={true}/>;
+
+    if (!character) {
+        console.warn("Character profile is null, redirecting...");
+        return <ActivityIndicator size="large" color="#0000ff" />;
     }
+
+    if (error) {
+        return <Text style={{ color: "red" }}>{error}</Text>;
+    }
+
     if (gameComplete) {
         return <GameComplete level="2" game={game} score={`${correctAnswers}/${gameQuestions.length}`} />;
     }
@@ -329,17 +306,26 @@ export default function LevelTwo() {
     return (
         <BackgroundLayout>
             <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+                {/* =============== Back Button =============== */}
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
                 {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
+
+
+                {/* =============== Player Card =============== */}
                 <CharacterCard
                     id={character.id}
                     name={character.profile_name}
                     image={characterOptions.find(option => option.id === character.profile_image)?.picture}
                     bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
                 />
+
+                {/* =============== Game/Level Title =============== */}
                 <Text style={styles.headerText}>{game} - Level 2</Text>
+
+                {/* =============== Progress Bar =============== */}
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
+                
                 <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
                     {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
@@ -369,6 +355,7 @@ export default function LevelTwo() {
                             }
                         </View>
 
+                        {/* ========================================= RIGHT SIDE (Answer Options) ============================================ */}
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard

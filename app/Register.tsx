@@ -13,7 +13,6 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
-import CustomButton from "../reusableComponents/CustomButton";
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
@@ -123,13 +122,11 @@ const Register = () => {
                 {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {loading ? (
-                  <LoadingMessage smallVersion={true} />
+                    <LoadingMessage smallVersion={true} />
                 ) : (
-                  <CustomButton
-                    text="Sign Up"
-                    functionToExecute={handleRegister}
-                    uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
-                  />
+                    <TouchableOpacity style={[styles.button, { width: width * 0.6, height: height * 0.08 }]}  onPress={handleRegister}>
+                        <Text style={styles.buttonText}>Sign Up</Text>
+                    </TouchableOpacity>
                 )}
 
                 <TouchableOpacity onPress={() => router.push("/Login")}>
