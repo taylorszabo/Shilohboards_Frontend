@@ -38,7 +38,6 @@ export default function MainMenu() {
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
   const [character, setCharacter] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleLogout = useCallback(async () => {
     try {
@@ -63,7 +62,7 @@ export default function MainMenu() {
   useEffect(() => {
     const fetchCharacterProfile = async () => {
       if (!playerId) {
-        router.replace("/SelectCharacter");
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
         return;
       }
 
@@ -72,12 +71,11 @@ export default function MainMenu() {
         if (response.data) {
           setCharacter(response.data);
         } else {
-          router.replace("/SelectCharacter");
+          router.replace("/error?message=Failed%20to%20load%20character%20profile");
         }
       } catch (error) {
         console.error("Error fetching character profile:", error);
-        setErrorMessage("Failed to load character. Redirecting...");
-        setTimeout(() => router.replace("/SelectCharacter"), 2000);
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
       } finally {
         setLoading(false);
       }
@@ -86,6 +84,10 @@ export default function MainMenu() {
     fetchCharacterProfile();
   }, [playerId, router]);
 
+  if (loading || !character) {
+    return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+  }
+  //---------------------------------------------------------------------------
   return (
     <BackgroundLayout>
       {hamburgerMenuOpen ? (
@@ -119,46 +121,27 @@ export default function MainMenu() {
             uniqueImageStyling={styles.hamburgerIcon}
             functionToExecute={() => setHamburgerMenuOpen(true)}
           />
+                <>
+                  <CharacterCard
+                      id={character.id}
+                      name={character.profile_name}
+                      image={characterOptions.find(option => option.id === character.profile_image)?.picture}
+                      bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
+                      customWidth={0.3}
+                  />
 
-          {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : character ? (
-            <>
-              <CharacterCard
-                id={character.id}
-                name={character.profile_name}
-                image={characterOptions.find(option => option.id === character.profile_image)?.picture}
-                bgColor={bgColorOptions.includes(character.profile_color) ? character.profile_color : "#FFFFFF"}
-                customWidth={0.3}
-              />
+                  <Text style={styles.headerText}>
+                    Welcome {formatNameWithCapitals(character.profile_name)}! Which game would you like to play?
+                  </Text>
 
-              <Text style={styles.headerText}>
-                Welcome {formatNameWithCapitals(character.profile_name)}! Which game would you like to play?
-              </Text>
-
-              <View style={styles.cardDiv}>
-                <OptionCard
-                  lowerText="Alphabet"
-                  customWidth={0.8}
-                  height={height * 0.18} // 🔹 Responsive height
-                  onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`}
-                  image={require("../assets/ABC_2.png")}
-                />
-                <OptionCard
-                  lowerText="Numbers"
-                  customWidth={0.8}
-                  height={height * 0.18} // 🔹 Responsive height
-                  onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`}
-                  image={require("../assets/123_2.png")}
-                />
-              </View>
-            </>
-          ) : (
-            <Text style={styles.errorText}>{errorMessage}</Text>
-          )}
-        </View>
-      )}
-    </BackgroundLayout>
+                  <View style={styles.cardDiv}>
+                    <OptionCard lowerText="Alphabet" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
+                    <OptionCard lowerText="Numbers" customWidth={0.8} height={160} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
+                  </View>
+                </>
+          </View>
+        )}
+      </BackgroundLayout>
   );
 }
 

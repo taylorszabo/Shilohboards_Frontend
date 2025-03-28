@@ -46,7 +46,6 @@ export default function LevelOne() {
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const [gameQuestions, setGameQuestions] = useState<GameQuestion[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [doorOpened, setDoorOpened] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
@@ -57,7 +56,7 @@ export default function LevelOne() {
     useEffect(() => {
         const fetchCharacterProfile = async () => {
             if (!playerId || playerId === "0") {
-                router.replace("/SelectCharacter");
+                router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 return;
             }
 
@@ -66,12 +65,11 @@ export default function LevelOne() {
                 if (response.data) {
                     setCharacter(response.data);
                 } else {
-                    router.replace("/SelectCharacter");
+                    router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setError("Failed to load character. Redirecting...");
-                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+                setTimeout(() => router.replace("/error?message=Failed%20to%20load%20character%20profile"), 2000);
             }
         };
 
@@ -100,7 +98,7 @@ export default function LevelOne() {
                 }
             } catch (err) {
                 if (isMounted) {
-                    setError("Failed to load game questions.");
+                    router.replace("/error?message=Failed%20to%20load%20game%20questions");
                     setLoading(false);
                 }
             }
@@ -179,11 +177,10 @@ export default function LevelOne() {
         } catch (error) {
           console.error("Error playing sound:", error);
         }
-      };
-      
-
-    if (loading || !character) return <ActivityIndicator size="large" color="#0000ff" />;
-    if (error) return <Text style={{ color: "red" }}>{error}</Text>;
+    };
+    if (loading || !character) {
+        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+    }
     if (gameComplete) {
         return <GameComplete level="1" game={game} score="" />;
     }

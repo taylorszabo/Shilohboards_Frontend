@@ -18,6 +18,9 @@ import { RFPercentage } from 'react-native-responsive-fontsize';
 
 const { width, height } = Dimensions.get('window');
 
+const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
+
+// Main functional component for Inventory Screen
 export default function InventoryScreen() {
   const router = useRouter();
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
@@ -26,6 +29,12 @@ export default function InventoryScreen() {
   const [loading, setLoading] = React.useState(false);
   const [levelCounts, setLevelCounts] = React.useState<{ [key: string]: number }>({});
 
+
+    // State to store selected child account
+    const [selectedUser, setSelectedUser] = React.useState<any>(null);
+    const [childAccounts, setChildAccounts] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(false);
+    const [levelCounts, setLevelCounts] = React.useState<{ [key: string]: number }>({});
   const starIcon1 = require('../assets/GameOverStar-Silver.png');
   const starIcon2 = require('../assets/GameOverStar.png');
   const starIcon3 = require('../assets/GameOverStar-Purple.png');
@@ -41,17 +50,29 @@ export default function InventoryScreen() {
           const key = `${childId}_${category}_level${level}_count`;
           let count = await AsyncStorage.getItem(key);
 
-          if (!count) {
-            const legacyKey = `${category}_level${level}_count`;
-            const legacyCount = await AsyncStorage.getItem(legacyKey);
-            if (legacyCount) {
-              await AsyncStorage.setItem(key, legacyCount);
-              await AsyncStorage.removeItem(legacyKey);
-              count = legacyCount;
-            }
-          }
 
-          newCounts[key] = count ? parseInt(count) : 0;
+    const starIcon1 = require('../assets/GameOverStar-Silver.png'); 
+    const starIcon2 = require('../assets/GameOverStar.png');   
+    const starIcon3 = require('../assets/GameOverStar-Purple.png');
+    const categories = ["Letters", "Numbers"];
+    const levels = [1, 2, 3];
+
+    // stored level counts for a specific child
+    const fetchLevelCounts = async (childId: string) => {
+        try {
+            const response = await axios.get(`${API_BASE_URL}/users/rewards/${childId}`);
+            const rewards = response.data;
+            const newCounts: { [key: string]: number } = {};
+            for (const category of categories) {
+                for (const level of levels) {
+                    const count = rewards?.[category]?.[`level${level}`] || 0;
+                    const key = `${childId}_${category}_level${level}_count`;
+                    newCounts[key] = count;
+                }
+            }
+            setLevelCounts(newCounts);
+        } catch (error) {
+            console.error("Error fetching reward counts from backend:", error);
         }
       }
       setLevelCounts(newCounts);
@@ -60,20 +81,18 @@ export default function InventoryScreen() {
     }
   };
 
-  // ---------------- FETCH CHILDREN ----------------
-  const fetchChildren = React.useCallback(async (parentId: string) => {
-    setLoading(true);
-    try {
-      const response = await axios.get(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/children/${parentId}`
-      );
-      const childrenData = response.data;
+    // getting all child accounts for a parent
+    const fetchChildren = React.useCallback(async (parentId: string) => {
+        setLoading(true);
+        try {
+            const response = await axios.get(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/children/${parentId}`);
+            const childrenData = response.data;
 
-      if (Array.isArray(childrenData) && childrenData.length === 0) {
-        setErrorMessage('No characters found. Please create a new character.');
-        setChildAccounts([]);
-        return;
-      }
+            // If no children found
+            if (Array.isArray(childrenData) && childrenData.length === 0) {
+                setChildAccounts([]);
+                router.replace("/error?message=No%20Children%20Found");
+            }
 
       const profiles: any[] = await Promise.all(
         childrenData.map(async (child: any) => {
@@ -89,29 +108,39 @@ export default function InventoryScreen() {
         })
       );
 
-      const validProfiles = profiles.filter(profile => profile && profile.profile_image);
-      setChildAccounts(validProfiles.length ? validProfiles : []);
-    } catch (error) {
-      console.error('Error fetching children:', error);
-      setErrorMessage('Failed to load characters.');
-      setChildAccounts([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+            const validProfiles = profiles.filter(profile => profile && profile.profile_image);
+            if (validProfiles.length === 0) {
+                setChildAccounts([]);
+                router.replace("/error?message=No%20characters%20found");
 
-  // ---------------- INIT FETCH ----------------
-  React.useEffect(() => {
-    const fetchParentId = async () => {
-      const userId: string | null = await AsyncStorage.getItem('userId');
-      if (userId) {
-        fetchChildren(userId);
-      } else {
-        setErrorMessage('Error: Parent ID not found.');
-      }
-    };
-    fetchParentId();
-  }, []);
+            } else {
+                setChildAccounts(validProfiles);
+            }
+
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response?.status === 404) {
+                setChildAccounts([]);
+                router.replace("/error?message=No%20characters%20found");
+
+            } else {
+                console.error("Error fetching children:", error);
+                setChildAccounts([]);
+                router.replace("/error?message=Failed%20characters%20found");
+            }
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    React.useEffect(() => {
+        const fetchParentId = async () => {
+            const userId: string | null = await AsyncStorage.getItem("userId");
+            if (userId) {
+                fetchChildren(userId);
+            } else {
+                router.replace("/error?message=Parent%20could%20not%20be%20found");
+            }
+        };
 
   // ---------------- USER SELECTION ----------------
   const handleSelectUser = (userId: string) => {
