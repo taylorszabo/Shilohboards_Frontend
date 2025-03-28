@@ -16,8 +16,12 @@ import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
 import LoadingMessage from '../reusableComponents/LoadingMessage';
 import { feedbackSound } from "../GameContent";
+import { Dimensions } from 'react-native'; 
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:3000';
+const { width, height } = Dimensions.get("window"); 
 
 export interface GameOption {
     object: string;
@@ -52,7 +56,6 @@ export default function LevelThree() {
     const [correctAnswers, setCorrectAnswers] = useState<number>(0);
     const [sound, setSound] = useState<Audio.Sound | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
     const [gameComplete, setGameComplete] = useState<boolean>(false);
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
     const recordedAnswers = useRef<QuestionAnswers[]>([]);
@@ -75,8 +78,7 @@ export default function LevelThree() {
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setError("Failed to load character. Redirecting...");
-                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+                setTimeout(() => router.replace("/error?message=Failed%20to%20load%20character%20profile"), 2000);
             }
         };
 
@@ -127,7 +129,7 @@ export default function LevelThree() {
                 setCurrentQuestion(0);
                 setLoading(false);
             } catch (err) {
-                setError('Failed to load game questions.');
+                router.replace("/error?message=Failed%20to%20load%20game%20questions");
                 setLoading(false);
             }
         };
@@ -141,7 +143,6 @@ export default function LevelThree() {
         }
     }, [currentQuestion, gameQuestions]);
 
-
     async function playCurrentSound() {
         try {
             if (soundObject.current) {
@@ -151,13 +152,23 @@ export default function LevelThree() {
             const soundPath = alphabetSounds[currentItem.letter];
             if (soundPath) {
                 await soundObject.current.loadAsync(soundPath);
+
+                // Get saved volume from AsyncStorage
+                const savedVolume = await AsyncStorage.getItem("volume");
+                const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+                console.log(`Loaded Volume: ${savedVolume}`);
+                console.log(`Applying Volume: ${volumeLevel}`);
+
+                // Apply volume before playing
+                await soundObject.current.setVolumeAsync(volumeLevel);
+
                 await soundObject.current.playAsync();
             }
         } catch (error) {
             console.error("Error playing sound:", error);
         }
     }
-
 
     function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {
@@ -229,20 +240,30 @@ export default function LevelThree() {
     }
 
     async function playAudio(soundFile: any) {
-        const { sound } = await Audio.Sound.createAsync(soundFile);
-        setSound(sound);
-        await sound.playAsync();
+        try {
+            const { sound } = await Audio.Sound.createAsync(soundFile);
+            
+            // Get saved volume from AsyncStorage
+            const savedVolume = await AsyncStorage.getItem("volume");
+            const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
+
+            if (loading) return <LoadingMessage backgroundNeeded={true}/>;
+
+            console.log(`Loaded Volume: ${savedVolume}`);
+            console.log(`Applying Volume: ${volumeLevel}`);
+
+            // Apply volume before playing
+            await sound.setVolumeAsync(volumeLevel);
+
+            setSound(sound);
+            await sound.playAsync();
+        } catch (error) {
+            console.error("Error playing audio:", error);
+        }
     }
 
-    if (loading) return <LoadingMessage backgroundNeeded={true}/>;
-
-    if (!character) {
-        console.warn("Character profile is null, redirecting...");
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text style={{ color: 'red' }}>{error}</Text>;
+    if (loading || !character) {
+        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
     }
 
     if (gameComplete) {

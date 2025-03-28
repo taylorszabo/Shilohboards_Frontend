@@ -19,39 +19,66 @@ export default function GameComplete(props: { game: string | string[], score: st
     const showScore = level !== "1"; // Hide score for Level 1
     const [character, setCharacter] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [childId, setChildId] = useState<string | null>(null);
+    const [childError, setChildError] = useState<string | null>(null);
 
     // Function to choose star image based on level
     const getStarImage = (level: string) => {
         if (level === "1") return require('../assets/GameOverStar-Silver.png');
         if (level === "2") return require('../assets/GameOverStar.png');
         if (level === "3") return require('../assets/GameOverStar-Purple.png');
-        return require('../assets/GameOverStar.png'); // fallback image incase of errors
+        return require('../assets/GameOverStar.png');
     };
+
+    useEffect(() => {
+        const getChildIdFromPlayerId = async () => {
+            try {
+                const parentId = await AsyncStorage.getItem("userId");
+                if (!parentId) {
+                    setChildError("No parent ID found.");
+                    return;
+                }
+
+                const response = await axios.get(`${API_BASE_URL}/users/children/${parentId}`);
+                const children = response.data;
+
+                if (!Array.isArray(children)) {
+                    setChildError("Invalid child data received.");
+                    return;
+                }
+
+                // Assume `playerId` is available in scope
+                const match = children.find((child: any) => String(child.profile_id) === String(playerId));
+                if (!match) {
+                    setChildError("No matching child found for this player.");
+                    return;
+                }
+
+                setChildId(match.id);
+                console.log("✅ Found childId:", match.id);
+            } catch (error) {
+                console.error("Error fetching childId:", error);
+                setChildError("Failed to fetch child ID.");
+            }
+        };
+        getChildIdFromPlayerId();
+    }, [playerId]);
 
     // Function to Save Star Count Correctly
     const saveStarCount = async () => {
         try {
             let category = Array.isArray(game) ? game[0] : game;
+            if (category === "Alphabet") category = "Letters";
+            if (!["Letters", "Numbers"].includes(category)) return;
 
-            // Normalize "Alphabet" to "Letters"
-            if (category === "Alphabet") {
-                category = "Letters";
-            }
+            await axios.post(`${API_BASE_URL}/users/rewards`, {
+                childId,
+                category,
+                level,
+            });
 
-            if (!["Letters", "Numbers"].includes(category)) {
-                console.warn("⚠️ Invalid category detected:", category);
-                return;
-            }
-
-            const key = `${category}_level${level}_count`; // Store correctly under Letters or Numbers
-            const currentCount = await AsyncStorage.getItem(key);
-            const newCount = currentCount ? parseInt(currentCount) + 1 : 1; // Always increment by 1
-
-            await AsyncStorage.setItem(key, newCount.toString());
-
-            console.log(`✅ Saved ${newCount} stars for ${category} Level ${level}`);
         } catch (error) {
-            console.error("❌ Error saving star count:", error);
+            console.error("❌ Error sending star count to backend:", error);
         }
     };
 
@@ -80,9 +107,11 @@ export default function GameComplete(props: { game: string | string[], score: st
     }, [playerId, router]);
 
     // Call function when game completes
-    React.useEffect(() => {
-        saveStarCount();
-    }, []);
+    useEffect(() => {
+        if (childId) {
+            saveStarCount();
+        }
+    }, [childId]);
 
     return (
         <BackgroundLayout>

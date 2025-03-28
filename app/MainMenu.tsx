@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import {StyleSheet, Text, View, Image, Pressable} from 'react-native';
+import {StyleSheet, Text, View, Image, Pressable, Dimensions} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -11,6 +11,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import LoadingMessage from '../reusableComponents/LoadingMessage';
 
+const { width, height } = Dimensions.get("window"); // 🔹 Used for layout responsiveness
+
 type HamburgerMenuItem = {
   text: string;
   icon: any;
@@ -20,7 +22,6 @@ type HamburgerMenuItem = {
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
-
 export default function MainMenu() {
   const { playerId } = useLocalSearchParams();
   const router = useRouter();
@@ -28,7 +29,6 @@ export default function MainMenu() {
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
   const [character, setCharacter] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleLogout = useCallback(async () => {
     try {
@@ -44,7 +44,7 @@ export default function MainMenu() {
     { text: "Switch User", icon: require("../assets/Icons/userProfile.png"), route: "/SelectCharacter" },
     { text: "Update Current Character", icon: require("../assets/Icons/editIcon.png"), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
     { text: "Settings", icon: require("../assets/Icons/settings.png"), route: "/Setting" },
-    { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: `/PerformanceReports?playerId=${playerId}`},
+    { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: `/PerformanceReports?playerId=${playerId}` },
     { text: "Reward Inventory", icon: require("../assets/Icons/rewardIcon.png"), route: "/Inventory" },
     { text: "Visit Official Website", icon: require("../assets/Icons/siteLink.png"), route: "/SiteLink" },
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
@@ -53,7 +53,7 @@ export default function MainMenu() {
   useEffect(() => {
     const fetchCharacterProfile = async () => {
       if (!playerId) {
-        router.replace("/SelectCharacter");
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
         return;
       }
 
@@ -62,12 +62,11 @@ export default function MainMenu() {
         if (response.data) {
           setCharacter(response.data);
         } else {
-          router.replace("/SelectCharacter");
+          router.replace("/error?message=Failed%20to%20load%20character%20profile");
         }
       } catch (error) {
         console.error("Error fetching character profile:", error);
-        setErrorMessage("Failed to load character. Redirecting...");
-        setTimeout(() => router.replace("/SelectCharacter"), 2000);
+        router.replace("/error?message=Failed%20to%20load%20character%20profile");
       } finally {
         setLoading(false);
       }
@@ -76,14 +75,13 @@ export default function MainMenu() {
     fetchCharacterProfile();
   }, [playerId, router]);
 
+  if (loading || !character) {
+    return <LoadingMessage backgroundNeeded={true}/>;
+  }
   //---------------------------------------------------------------------------
   return (
       <BackgroundLayout>
-            
             <View style={styles.container}>
-              {loading ? (
-                  <LoadingMessage />
-              ) : character ? (
                   <View style={{width: '100%', alignItems: 'center', flex: 1}}>
                     {/* // ===================== hamburger menu ===================== */}
                     {hamburgerMenuOpen &&
@@ -139,16 +137,12 @@ export default function MainMenu() {
                       <OptionCard lowerText="Numbers" square={false} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
                     </View>
                   </View>
-              ) : (
-                  <Text style={styles.errorText}>{errorMessage}</Text>
-              )}
             </View>
       </BackgroundLayout>
   );
 }
 
-
-// ================================== STYLING ==================================
+// ================================== STYLES ==================================
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -178,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF8F0',
     borderBottomWidth: 15,
     borderBottomColor: '#FCCF9D',
-    position: 'relative'
+    position: 'relative',
   },
   shilohLogoInHamburgerMenu: {
     position: 'absolute',
@@ -190,15 +184,13 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
-    padding: 25,
-    zIndex: 1
+    padding: width * 0.06, 
+    zIndex: 1,
   },
   headerText: {
-    verticalAlign: 'middle',
-    padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 24,
+    fontSize: RFPercentage(3.2),
     color: '#3E1911',
     maxWidth: 600
   },
@@ -211,8 +203,13 @@ const styles = StyleSheet.create({
   },
   hamburgerButton: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    top: height * 0.02,
+    left: width * 0.03,
+  },
+  hamburgerIcon: {
+    width: width * 0.07, 
+    height: width * 0.07,
+    resizeMode: "contain",
   },
   icons: {
     width: 30,
@@ -220,27 +217,27 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   linkList: {
-    marginTop: 25,
-    padding: 15,
-    height: '80%'
+    marginTop: height * 0.03,
+    padding: width * 0.04,
+    height: '80%',
   },
   linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 15,
+    gap: width * 0.03,
     height: '9%',
     borderBottomWidth: 2,
     borderBottomColor: '#3E1911',
   },
   linkText: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: RFPercentage(2.6), 
     color: '#3E1911',
   },
   errorText: {
     color: "red",
     textAlign: "center",
-    fontSize: 18,
-    marginTop: 20,
+    fontSize: RFPercentage(2.4),
+    marginTop: height * 0.02,
   },
 });

@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, useWindowDimensions, Image } from 'react-native';
+import { StyleSheet, Text, View, useWindowDimensions, Image, Dimensions } from 'react-native'; // 🔹 Added Dimensions
 import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
 import { useLocalSearchParams } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
-import { gamesArray  } from "../GameContent";
+import { gamesArray } from "../GameContent";
+import { RFPercentage } from 'react-native-responsive-fontsize'; // Added for responsive font sizes
+
+const { width, height } = Dimensions.get("window"); 
 
 type GameDescriptionQuery = {
   game: string;
   level: number;
-}
+};
 
 export default function GameDescriptions() {
   const { playerId = '[name]', game = gamesArray[0].title, level = '1', playerLastSelected = '0' } = useLocalSearchParams();
@@ -23,11 +26,11 @@ export default function GameDescriptions() {
     //if level 3 is selected/underlined while the alphabet game is chosen and then you switch to the numbers game,
     //set the level to 2 since level 3 doesn't exist in the numbers game
     if (query.game === gamesArray[0].title && query.level === gamesArray[0].numberOfLevels) {
-      setQuery({...query, level: 2, game: game});
+      setQuery({ ...query, level: 2, game: game });
       return;
     }
-    
-    setQuery({...query, game: game});
+
+    setQuery({ ...query, game: game });
   }
 
   //----------------------------------------------------------
@@ -125,10 +128,70 @@ export default function GameDescriptions() {
                         <Image source={require('../assets/GameDescriptionPics/Numbers_Level2.png')} style={styles.pics}/>
                     </View>
                 }
-
             </View>
+          ))}
+        </LinearGradient>
 
+        {/* ============================================= BODY ============================================= */}
+        <View style={styles.bodyContainer}>
+          {query.game === 'Alphabet' && query.level === 1 && (
+            <View style={styles.innerBodyContainer}>
+              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
+                In this activity, children are able to view each letter on top of the door and then they are
+                able to open the door to see an object that begins with that letter. They can also tap to
+                hear the short sound or the word. There is no score or report for level 1.
+              </Text>
+              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level1.png')} style={styles.pics} />
+            </View>
+          )}
+
+          {query.game === 'Alphabet' && query.level === 2 && (
+            <View style={styles.innerBodyContainer}>
+              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
+                In this activity, children are presented with a letter. They are given three objects to choose
+                from and the goal is to select the one that begins with the letter provided. They can tap the
+                letter to hear the short sound if that helps. The order of the letters, and the options, are
+                randomized each game.
+              </Text>
+              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level2.png')} style={styles.pics} />
+            </View>
+          )}
+
+          {query.game === 'Alphabet' && query.level === 3 && (
+            <View style={styles.innerBodyContainer}>
+              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
+                In this activity, audio plays at the beginning of each question with the letter long sound,
+                short sound, and a word that begins with the letter. They are presented with four letters and
+                the goal is to choose the correct one that matches the audio. They can replay the audio if
+                needed. The order of the letters/sounds, and the options, are randomized each game.
+              </Text>
+              <Image source={require('../assets/GameDescriptionPics/Alphabet_Level3.png')} style={styles.pics} />
+            </View>
+          )}
+
+          {query.game === 'Numbers' && query.level === 1 && (
+            <View style={styles.innerBodyContainer}>
+              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
+                In this activity, children are able to view each number on top of the door and then they are
+                able to open the door to see or count that many objects. They can also tap to hear the number.
+                There is no score or report for level 1.
+              </Text>
+              <Image source={require('../assets/GameDescriptionPics/Numbers_Level1.png')} style={styles.pics} />
+            </View>
+          )}
+
+          {query.game === 'Numbers' && query.level === 2 && (
+            <View style={styles.innerBodyContainer}>
+              <Text style={[styles.bodyText, { padding: 0, paddingHorizontal: 0, fontWeight: '500' }]}>
+                In this activity, children are presented with a picture of a certain number of objects. They are given three numbers to choose
+                from and the goal is to select the one that matches. The order of the numbers, and the options, are
+                randomized each game.
+              </Text>
+              <Image source={require('../assets/GameDescriptionPics/Numbers_Level2.png')} style={styles.pics} />
+            </View>
+          )}
         </View>
+      </View>
     </BackgroundLayout>
   );
 }
@@ -142,10 +205,11 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     flex: 1,
-    margin: 20,
+    marginVertical: height * 0.03, //Responsive vertical margin
+    marginHorizontal: width * 0.05,
     flexWrap: 'nowrap',
     overflow: 'hidden',
-    resizeMode: 'contain'
+    resizeMode: 'contain',
   },
   innerBodyContainer: {
     flex: 1,
@@ -163,8 +227,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     verticalAlign: 'middle',
-    padding: 20,
-    paddingHorizontal: 20,
+    paddingVertical: height * 0.025,
+    paddingHorizontal: width * 0.05,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 20,
@@ -172,10 +236,11 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     verticalAlign: 'middle',
-    padding: 7,
-    paddingHorizontal: 20,
-    fontWeight: 'bold',
-    fontSize: 18,
+    paddingVertical: height * 0.015,
+    paddingHorizontal: width * 0.05,
+    fontWeight: '500', // Used consistently
+    fontSize: RFPercentage(2.3), // Responsive font
+    lineHeight: RFPercentage(3.3), 
     color: '#3E1911',
     flexWrap: 'wrap',
     textAlign: 'center',
@@ -190,17 +255,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 4,
     borderBottomColor: 'rgba(62, 25, 17, 0.3)',
     flexDirection: 'row',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   selectedUnderline: {
-    borderBottomWidth: 7, 
-    borderBottomColor: '#3E1911'
+    borderBottomWidth: 7,
+    borderBottomColor: '#3E1911',
   },
   pics: {
-    maxHeight: '65%',
-    marginTop: 20,
+    maxHeight: height * 0.5, //Responsive image size
+    marginTop: height * 0.03,
     flex: 1,
     resizeMode: 'contain',
     flexShrink: 1,
-  }
+  },
 });

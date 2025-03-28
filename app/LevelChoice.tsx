@@ -1,6 +1,13 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  Dimensions, // 🔹 For responsive spacing
+} from "react-native";
+import { RFPercentage } from "react-native-responsive-fontsize"; // 🔹 For responsive fonts
 import CharacterCard from "../reusableComponents/CharacterCard";
 import OptionCard from "../reusableComponents/OptionCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
@@ -10,21 +17,21 @@ import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
 
-
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
+const { width, height } = Dimensions.get("window"); // 🔹 Responsive layout base
+
 export default function LevelChoice() {
-    const { game = "[game]", playerId = "0" } = useLocalSearchParams();
-    const router = useRouter();
+  const { game = "[game]", playerId = "0" } = useLocalSearchParams();
+  const router = useRouter();
 
     const [character, setCharacter] = useState<any | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
-    const [errorMessage, setErrorMessage] = useState<string>("");
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {
             if (!playerId || playerId === "0") {
-                router.replace("/SelectCharacter");
+                router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 return;
             }
 
@@ -33,28 +40,27 @@ export default function LevelChoice() {
                 if (response.data) {
                     setCharacter(response.data);
                 } else {
-                    router.replace("/SelectCharacter");
+                    router.replace("/error?message=Failed%20to%20load%20character%20profile");
                 }
             } catch (error) {
                 console.error("Error fetching character profile:", error);
-                setErrorMessage("Failed to load character. Redirecting...");
-                setTimeout(() => router.replace("/SelectCharacter"), 2000);
+                router.replace("/error?message=Failed%20to%20load%20character%20profile");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchCharacterProfile();
-    }, [playerId, router]);
+    fetchCharacterProfile();
+  }, [playerId, router]);
 
+    if (loading || !character) {
+        return <LoadingMessage backgroundNeeded={true}/>
+    }
+  
     return (
         <BackgroundLayout>
             <View style={styles.container}>
                 <CustomButton image={require("../assets/back.png")} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`} />
-
-                {loading ? (
-                    <LoadingMessage />
-                ) : character ? (
                     <>
                         <CharacterCard
                             id={character.id}
@@ -74,12 +80,11 @@ export default function LevelChoice() {
                             )}
                         </View>
                     </>
-                ) : (
-                    <Text style={styles.errorText}>{errorMessage}</Text>
-                )}
             </View>
-        </BackgroundLayout>
-    );
+          </>
+      </View>
+    </BackgroundLayout>
+  );
 }
 
 // ================================== STYLING ==================================

@@ -14,6 +14,9 @@ import LoadingMessage from "../reusableComponents/LoadingMessage";
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
+const { width, height } = Dimensions.get("window"); //  Added to use in responsive styles
+
+
 export default function CharacterCreation() {
     const router = useRouter();
     const windowHeight = useWindowDimensions().height;
@@ -61,8 +64,8 @@ export default function CharacterCreation() {
                 });
             }
         } catch (error) {
-            console.error("Error fetching character:", error);
-            setErrorMessage("Failed to load character data.");
+            console.error("Error fetching character profile:", error);
+            router.replace("/error?message=Failed%20to%20load%20character%20profile");
         }
     }
 
@@ -104,7 +107,7 @@ export default function CharacterCreation() {
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 console.error("Error saving character:", error.response?.data || error.message);
-                setErrorMessage("Failed to save character: " + (error.response?.data?.error || "Unknown error"));
+                router.replace("/error?message=Failed%20to%20save%20character%20profile");
             }
         } finally {
             setLoading(false);
@@ -140,6 +143,7 @@ export default function CharacterCreation() {
         <BackgroundLayout>
             <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
                 <Text style={[styles.headerText, { fontSize: 35 }]}>
+
                     {processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}
                 </Text>
 
@@ -289,7 +293,6 @@ const styles = StyleSheet.create({
     padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: 36,
     color: '#3E1911',
   },
   body: {
