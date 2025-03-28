@@ -10,7 +10,7 @@ import {
   Platform,
   TouchableOpacity
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import Slider from "@react-native-community/slider";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../reusableComponents/CustomButton";
@@ -24,6 +24,7 @@ export default function Settings() {
   const router = useRouter();
   const [volume, setVolume] = useState(50);
   const [tempVolume, setTempVolume] = useState(50);
+  const { playerId = "0" } = useLocalSearchParams();
 
   useEffect(() => {
     const loadVolume = async () => {
@@ -66,29 +67,15 @@ export default function Settings() {
     }
   };
 
-  if (loading) return <LoadingMessage backgroundNeeded={true}/>;
-
   return (
     <BackgroundLayout>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.flex}
       >
-        <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        <CustomButton
-  image={require("../assets/back.png")}
-  uniqueButtonStyling={styles.backButton}
-  functionToExecute={async () => {
-    const playerId = await AsyncStorage.getItem("selectedPlayerId"); 
-    if (playerId) {
-      router.replace(`/MainMenu?playerId=${playerId}`);
-    } else {
-      router.replace("/MainMenu");
-    }
-  }}
-/>
-
-
+          <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+          <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backButton} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
+          
           <Text style={styles.mainHeader}>Account Settings</Text>
 
           <View style={styles.topButtonContainer}>

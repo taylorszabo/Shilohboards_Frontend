@@ -143,11 +143,10 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     flex: 1,
-    marginVertical: height * 0.03, //Responsive vertical margin
-    marginHorizontal: width * 0.05,
+    margin: 20,
     flexWrap: 'nowrap',
     overflow: 'hidden',
-    resizeMode: 'contain',
+    resizeMode: 'contain'
   },
   innerBodyContainer: {
     flex: 1,
@@ -165,8 +164,8 @@ const styles = StyleSheet.create({
   },
   headerText: {
     verticalAlign: 'middle',
-    paddingVertical: height * 0.025,
-    paddingHorizontal: width * 0.05,
+    padding: 20,
+    paddingHorizontal: 20,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 20,
@@ -174,11 +173,10 @@ const styles = StyleSheet.create({
   },
   bodyText: {
     verticalAlign: 'middle',
-    paddingVertical: height * 0.015,
-    paddingHorizontal: width * 0.05,
-    fontWeight: '500', // Used consistently
-    fontSize: RFPercentage(2.3), // Responsive font
-    lineHeight: RFPercentage(3.3), 
+    padding: 7,
+    paddingHorizontal: 20,
+    fontWeight: 'bold',
+    fontSize: 18,
     color: '#3E1911',
     flexWrap: 'wrap',
     textAlign: 'center',
@@ -193,17 +191,17 @@ const styles = StyleSheet.create({
     borderBottomWidth: 4,
     borderBottomColor: 'rgba(62, 25, 17, 0.3)',
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   selectedUnderline: {
-    borderBottomWidth: 7,
-    borderBottomColor: '#3E1911',
+    borderBottomWidth: 7, 
+    borderBottomColor: '#3E1911'
   },
   pics: {
-    maxHeight: height * 0.5, //Responsive image size
-    marginTop: height * 0.03,
+    maxHeight: '65%',
+    marginTop: 20,
     flex: 1,
     resizeMode: 'contain',
     flexShrink: 1,
-  },
+  }
 });

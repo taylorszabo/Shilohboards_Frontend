@@ -43,10 +43,10 @@ export default function MainMenu() {
   const hamburgerMenuOptions: HamburgerMenuItem[] = [
     { text: "Switch User", icon: require("../assets/Icons/userProfile.png"), route: "/SelectCharacter" },
     { text: "Update Current Character", icon: require("../assets/Icons/editIcon.png"), route: `/CharacterCreation?isNewOrUpdateId=${playerId}` },
-    { text: "Settings", icon: require("../assets/Icons/settings.png"), route: "/Setting" },
+    { text: "Settings", icon: require("../assets/Icons/settings.png"), route: `/Setting?playerId=${playerId}` },
     { text: "Performance Reports", icon: require("../assets/Icons/performanceReportIcon.png"), route: `/PerformanceReports?playerId=${playerId}` },
-    { text: "Reward Inventory", icon: require("../assets/Icons/rewardIcon.png"), route: "/Inventory" },
-    { text: "Visit Official Website", icon: require("../assets/Icons/siteLink.png"), route: "/SiteLink" },
+    { text: "Reward Inventory", icon: require("../assets/Icons/rewardIcon.png"), route: `/Inventory?playerId=${playerId}`},
+    { text: "Visit Official Website", icon: require("../assets/Icons/siteLink.png"), route: `/SiteLink?playerId=${playerId}` },
     { text: "Logout", icon: require("../assets/Icons/exitIcon.png"), action: handleLogout },
   ];
 
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF8F0',
     borderBottomWidth: 15,
     borderBottomColor: '#FCCF9D',
-    position: 'relative',
+    position: 'relative'
   },
   shilohLogoInHamburgerMenu: {
     position: 'absolute',
@@ -184,13 +184,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 0,
     right: 0,
-    padding: width * 0.06, 
-    zIndex: 1,
+    padding: 25,
+    zIndex: 1
   },
   headerText: {
+    verticalAlign: 'middle',
+    padding: 20,
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: RFPercentage(3.2),
+    fontSize: 24,
     color: '#3E1911',
     maxWidth: 600
   },
@@ -203,13 +205,8 @@ const styles = StyleSheet.create({
   },
   hamburgerButton: {
     position: 'absolute',
-    top: height * 0.02,
-    left: width * 0.03,
-  },
-  hamburgerIcon: {
-    width: width * 0.07, 
-    height: width * 0.07,
-    resizeMode: "contain",
+    top: 0,
+    left: 0,
   },
   icons: {
     width: 30,
@@ -217,27 +214,27 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   linkList: {
-    marginTop: height * 0.03,
-    padding: width * 0.04,
-    height: '80%',
+    marginTop: 25,
+    padding: 15,
+    height: '80%'
   },
   linkRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: width * 0.03,
+    gap: 15,
     height: '9%',
     borderBottomWidth: 2,
     borderBottomColor: '#3E1911',
   },
   linkText: {
     fontWeight: 'bold',
-    fontSize: RFPercentage(2.6), 
+    fontSize: 20,
     color: '#3E1911',
   },
   errorText: {
     color: "red",
     textAlign: "center",
-    fontSize: RFPercentage(2.4),
-    marginTop: height * 0.02,
+    fontSize: 18,
+    marginTop: 20,
   },
 });

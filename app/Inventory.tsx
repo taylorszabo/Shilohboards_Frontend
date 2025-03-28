@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomButton from "../reusableComponents/CustomButton";
@@ -17,6 +17,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:30
 // Main functional component for Inventory Screen
 export default function InventoryScreen() {
     const router = useRouter();
+    const { playerId = "0" } = useLocalSearchParams();
 
     // State to store selected child account
     const [selectedUser, setSelectedUser] = React.useState<any>(null);
@@ -129,11 +130,7 @@ export default function InventoryScreen() {
         <BackgroundLayout>
             <View style={styles.container}>
                 {/* Back button in top left */}
-                <CustomButton
-                    image={require("../assets/back.png")}
-                    uniqueButtonStyling={styles.backBtnContainer}
-                    functionToExecute={() => router.canGoBack() ? router.back() : router.replace('/')}
-                />
+                <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
 
                 {/* Header */}
                 <Text style={styles.headerText}>Reward Inventory</Text>
