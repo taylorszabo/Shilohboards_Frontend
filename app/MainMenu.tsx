@@ -10,7 +10,6 @@ import { formatNameWithCapitals } from "../CharacterOptions";
 import {bgColorOptions, characterOptions} from "../CharacterOptions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 type HamburgerMenuItem = {
   text: string;
@@ -29,7 +28,6 @@ export default function MainMenu() {
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState<boolean>(false);
   const [character, setCharacter] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleLogout = useCallback(async () => {
     try {
