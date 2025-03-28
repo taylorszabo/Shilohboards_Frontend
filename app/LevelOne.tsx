@@ -20,7 +20,6 @@ import { Dimensions } from "react-native";//adding responsiveness
 import { Audio } from "expo-av";
 import SoundIcon from "../reusableComponents/SoundIcon";
 import ExitConfirmation from '../reusableComponents/ExitConfirmation';
-import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 

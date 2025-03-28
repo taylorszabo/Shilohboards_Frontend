@@ -8,7 +8,6 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
-import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";

@@ -3,5 +3,5 @@
 import ErrorScreen from "../reusableComponents/ErrorScreen";
 
 export default function NotFound() {
-    return <ErrorScreen errorMessage="The Page you are looking for cannot be found." />;
+    return <ErrorScreen errorMessage="The page you are looking for cannot be found." />;
 }
