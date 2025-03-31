@@ -112,13 +112,15 @@ export default function SelectCharacter() {
     }
   }
 
-
+  //when the cancel button is pressed in delete mode, empty the current list of characters
+  //to delete and return to regular mode instead of delete mode
   function cancelDeleteMode() {
     setInDeleteCharacterMode(false);
     setCharacterIdsToDelete([]);
   }
 
-
+  //this updates the list of characters to delete when the character card is pressed
+  //based on whether it is currently selected or not
   function updateDeleteList(userId: string) {
     setCharacterIdsToDelete((prev) =>
       prev.includes(userId)
