@@ -69,7 +69,6 @@ export default function CharacterCreation() {
 
     //--------------------------------------------------------------------------
     async function saveCharacter() {
-
         if (!parentId) {
             setErrorMessage("Error: Parent ID not found.");
             return;
@@ -84,6 +83,36 @@ export default function CharacterCreation() {
         setErrorMessage("");
 
         try {
+            // Fetch all children for the current parent
+            const childrenRes = await axios.get(`${API_URL}/users/children/${parentId}`);
+            const children = childrenRes.data;
+
+            // Fetch all their profiles
+            const profiles = await Promise.all(children.map(async (child: any) => {
+                try {
+                    const res = await axios.get(`${API_URL}/users/profile/${child.profile_id}`);
+                    return { ...res.data, child_id: child.id };
+                } catch {
+                    return null;
+                }
+            }));
+
+            const formattedName = characterCreated.name.trim().toLowerCase();
+
+            const isDuplicate = profiles.some(profile =>
+                profile &&
+                profile.profile_name.trim().toLowerCase() === formattedName &&
+                profile.profile_image === characterCreated.picture &&
+                profile.profile_color === characterCreated.bgColor &&
+                profile.child_id !== characterCreated.id
+            );
+
+            if (isDuplicate) {
+                setErrorMessage("The character you are creating already exists.");
+                setLoading(false);
+                return;
+            }
+
             const characterData = {
                 child_id: String(characterCreated.id),
                 profile_name: characterCreated.name,
@@ -111,6 +140,7 @@ export default function CharacterCreation() {
             setLoading(false);
         }
     }
+
 
     //--------------------------------------------------------------------------
     function verifyInformationEntered() {
