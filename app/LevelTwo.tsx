@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView} from 'react-native';
+import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, Platform} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -216,6 +216,16 @@ export default function LevelTwo() {
             isMounted = false;
         };
     }, [game]);
+
+    useEffect(() => {
+        if (Platform.OS === "web") {
+            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+                event.preventDefault();
+            };
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+    }, []);
 
     function selectAnswer(answerSubmitted: string) {
         if (!answerDisplayed) {

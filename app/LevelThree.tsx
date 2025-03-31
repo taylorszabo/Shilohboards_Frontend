@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import {StyleSheet, Text, View, ActivityIndicator, Platform} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -142,6 +142,16 @@ export default function LevelThree() {
             playCurrentSound();
         }
     }, [currentQuestion, gameQuestions]);
+
+    useEffect(() => {
+        if (Platform.OS === "web") {
+            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+                event.preventDefault();
+            };
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+    }, []);
 
     async function playCurrentSound() {
         try {

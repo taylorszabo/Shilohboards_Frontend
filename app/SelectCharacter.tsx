@@ -92,16 +92,23 @@ export default function SelectCharacter() {
     }
   };
 
-  function deleteSelectedCharacters() {
+  async function deleteSelectedCharacters() {
     if (characterIdsToDelete.length !== 0) {
-      console.log('Deleted the following user ids: ' + characterIdsToDelete)
-      //taylor to delete backend stuff here!!!
-      //delete profile/child and all game data saved for that user?
+      try {
+        for (const profileId of characterIdsToDelete) {
+          await axios.delete(`${API_URL}/users/child/${profileId}`);
+        }
 
-      //once deleted:
-      setCharacterIdsToDelete([]);
-      setInDeleteCharacterMode(false);
-      //set children state with updated current characters/children/users?
+        if (parentId) {
+          await fetchChildren(parentId);
+        }
+
+        setCharacterIdsToDelete([]);
+        setInDeleteCharacterMode(false);
+      } catch (error) {
+        console.error("Error deleting characters:", error);
+        router.replace("/error?message=Failed%20to%20delete%20characters");
+      }
     }
   }
 

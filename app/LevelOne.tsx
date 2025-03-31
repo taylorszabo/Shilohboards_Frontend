@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import {View, Text, TouchableOpacity, StyleSheet, Image, Platform} from "react-native";
 import CharacterCard from "../reusableComponents/CharacterCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -108,6 +108,16 @@ export default function LevelOne() {
             isMounted = false;
         };
     }, [game]);
+
+    useEffect(() => {
+        if (Platform.OS === "web") {
+            const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+                event.preventDefault();
+            };
+            window.addEventListener("beforeunload", handleBeforeUnload);
+            return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+        }
+    }, []);
 
 
     const getLocalExampleImage = (gameType: string, key?: string | number | undefined): number => {
