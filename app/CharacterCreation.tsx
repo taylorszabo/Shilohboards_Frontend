@@ -175,7 +175,6 @@ export default function CharacterCreation() {
                     {processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}
                 </Text>
 
-                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
                 {/* Step 1 - Enter Name & Choose Character */}
                 {processStep === 1 && (
@@ -266,6 +265,7 @@ export default function CharacterCreation() {
                             bgColor={characterCreated.bgColor}
                             heightPercentNumber={50}
                         />
+                        {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
                     </View>
                 )}
 
@@ -369,6 +369,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     textAlign: "center",
-    marginBottom: 10,
+    margin: 15,
+    fontSize: 20,
   },
 });
