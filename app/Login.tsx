@@ -103,7 +103,6 @@ export default function Login() {
         {showPasswordInfo && (
           <View style={styles.bubble}>
             <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Contain 1 uppercase letter</Text>
             <Text style={styles.bubbleText}>• Contain 1 number</Text>
           </View>
         )}

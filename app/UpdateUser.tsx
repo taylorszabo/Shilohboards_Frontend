@@ -4,9 +4,10 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  ActivityIndicator,
-  Dimensions,
   TouchableOpacity,
+  Dimensions,
+  Pressable,
+  Keyboard,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
@@ -24,6 +25,8 @@ const UpdateUser = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [showPasswordInfo, setShowPasswordInfo] = useState(false);
+
   const router = useRouter();
   const { playerId = "0" } = useLocalSearchParams();
 
@@ -56,9 +59,9 @@ const UpdateUser = () => {
 
       console.log("Update successful!", response.data);
       router.push("/Setting");
-    } catch (error: any) {
-      console.error("Update error:", error.response?.data || error.message);
-      const firebaseError = error.response?.data?.error?.message;
+    } catch (error) {
+      console.error("Update error:", (error as any).response?.data || (error as any).message);
+      const firebaseError = (error as any)?.response?.data?.error?.message;
 
       switch (firebaseError) {
         case "EMAIL_EXISTS":
@@ -81,6 +84,25 @@ const UpdateUser = () => {
   return (
     <BackgroundLayout>
       <View style={styles.container}>
+        {/* Fullscreen tap-away overlay */}
+        {showPasswordInfo && (
+          <Pressable
+            style={StyleSheet.absoluteFillObject}
+            onPress={() => {
+              Keyboard.dismiss();
+              setShowPasswordInfo(false);
+            }}
+          />
+        )}
+
+        {/* Password info bubble */}
+        {showPasswordInfo && (
+          <View style={styles.bubble}>
+            <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
+            <Text style={styles.bubbleText}>• Contain 1 number</Text>
+          </View>
+        )}
+
         <Text style={styles.title}>Update Account Information</Text>
 
         <TextInput
@@ -92,14 +114,24 @@ const UpdateUser = () => {
           autoCapitalize="none"
         />
 
-        <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
-          placeholder="Password"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+        {/* Password Input with Info Icon */}
+        <View style={{ width: width * 0.8, position: "relative", marginBottom: height * 0.015 }}>
+          <TextInput
+            style={[styles.input, { fontSize: width * 0.045 }]}
+            placeholder="Password"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            style={styles.infoIcon}
+            onPress={() => setShowPasswordInfo(true)}
+          >
+            <Text style={{ fontSize: 18 }}>ℹ️</Text>
+          </TouchableOpacity>
+        </View>
 
+        {/* Confirm Password Input WITHOUT Info Icon */}
         <TextInput
           style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
           placeholder="Confirm Password"
@@ -114,27 +146,21 @@ const UpdateUser = () => {
           <LoadingMessage />
         ) : (
           <>
-  {loading ? (
-    <LoadingMessage />
-) : (
-  <>
-    <CustomButton
-      text="Save"
-      functionToExecute={handleUpdateUser}
-      uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
-    />
+            <CustomButton
+              text="Save"
+              functionToExecute={handleUpdateUser}
+              uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+            />
 
-    <TouchableOpacity onPress={() => router.push(`/Setting?playerId=${playerId}`)}>
-      <Text style={styles.cancelText}>Cancel</Text>
-    </TouchableOpacity>
-  </>
-)}
-</>
+            <TouchableOpacity onPress={() => router.push(`/Setting?playerId=${playerId}`)}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </BackgroundLayout>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -158,7 +184,6 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
     textAlign: "center",
   },
-  
   input: {
     height: height * 0.07,
     backgroundColor: "#fff",
@@ -175,6 +200,33 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginBottom: 10,
+  },
+  infoIcon: {
+    position: "absolute",
+    right: 10,
+    top: height * 0.02,
+    zIndex: 2,
+  },
+  bubble: {
+    position: "absolute",
+    top: height * 0.32,
+    right: width * 0.1,
+    backgroundColor: "#fff",
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "#2aa0b8",
+    width: width * 0.8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    zIndex: 5,
+    elevation: 10,
+  },
+  bubbleText: {
+    fontSize: width * 0.035,
+    color: "#333",
   },
 });
 

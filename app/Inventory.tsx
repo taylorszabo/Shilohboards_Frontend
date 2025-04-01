@@ -29,7 +29,7 @@ export default function InventoryScreen() {
     const starIcon1 = require('../assets/GameOverStar-Silver.png'); 
     const starIcon2 = require('../assets/GameOverStar.png');   
     const starIcon3 = require('../assets/GameOverStar-Purple.png');
-    const categories = ["Letters", "Numbers"];
+    const categories = ["Alphabet", "Numbers"];
     const levels = [1, 2, 3];
 
     // stored level counts for a specific child
