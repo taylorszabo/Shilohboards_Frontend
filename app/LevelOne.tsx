@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
     submitBtnContainer: {
-        marginTop: 'auto', //Standard spacing
+        marginTop: 'auto', 
         flexDirection: 'row',
     },
     cubeRow: {

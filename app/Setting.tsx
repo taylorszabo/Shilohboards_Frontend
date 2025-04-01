@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity
+  TouchableOpacity,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import Slider from "@react-native-community/slider";
@@ -25,6 +25,7 @@ export default function Settings() {
   const [volume, setVolume] = useState(50);
   const [tempVolume, setTempVolume] = useState(50);
   const { playerId = "0" } = useLocalSearchParams();
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null); // Ref to store the timeout
 
   useEffect(() => {
     const loadVolume = async () => {
@@ -36,6 +37,18 @@ export default function Settings() {
     };
     loadVolume();
   }, []);
+
+  const handleSliderChange = (value: number) => {
+    // Clear the previous timeout if it exists
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
+    // Set a new timeout to update the state after a delay
+    debounceTimeout.current = setTimeout(() => {
+      setTempVolume(value);
+    }, 100); // Adjust the delay (in milliseconds) as needed
+  };
 
   const handleSaveVolume = async () => {
     await AsyncStorage.setItem("volume", tempVolume.toString());
@@ -56,7 +69,9 @@ export default function Settings() {
         return;
       }
 
-      await axios.delete(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/parent/${parentId}`);
+      await axios.delete(
+        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/parent/${parentId}`
+      );
 
       await AsyncStorage.clear();
       alert("Your account has been deleted.");
@@ -73,16 +88,28 @@ export default function Settings() {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.flex}
       >
-          <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-          <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backButton} onPressRoute={`/MainMenu?playerId=${playerId}`}/>
-          
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+        >
+          <CustomButton
+            image={require("../assets/back.png")}
+            uniqueButtonStyling={styles.backButton}
+            onPressRoute={`/MainMenu?playerId=${playerId}`}
+          />
+
           <Text style={styles.mainHeader}>Account Settings</Text>
 
           <View style={styles.topButtonContainer}>
             <CustomButton
               text="User Settings"
-              functionToExecute={() => router.push(`/UpdateUser?playerId=${playerId}`)}
-              uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+              functionToExecute={() =>
+                router.push(`/UpdateUser?playerId=${playerId}`)
+              }
+              uniqueButtonStyling={{
+                width: width * 0.6,
+                height: height * 0.08,
+              }}
             />
           </View>
 
@@ -98,7 +125,7 @@ export default function Settings() {
               maximumValue={100}
               step={1}
               value={tempVolume}
-              onValueChange={setTempVolume}
+              onValueChange={handleSliderChange} // Use the debounced handler
               minimumTrackTintColor="#3E1911"
               maximumTrackTintColor="#ccc"
               thumbTintColor="#3E1911"
