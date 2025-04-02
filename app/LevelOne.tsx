@@ -89,10 +89,11 @@ export default function LevelOne() {
                 if (!questionsArray || questionsArray.length === 0) {
                     throw new Error("No questions received from API.");
                 }
+                const clonedQuestions = JSON.parse(JSON.stringify(questionsArray));
 
                 if (isMounted) {
                     //sort in ascending order for either letter strings or numbers
-                    setGameQuestions(questionsArray.sort((a, b) => (typeof a.letter === "number" && typeof b.letter === "number") ? (a.letter as number) - (b.letter as number) : (a.letter as string).localeCompare(b.letter as string)));
+                    setGameQuestions(clonedQuestions.sort((a, b) => (typeof a.letter === "number" && typeof b.letter === "number") ? (a.letter as number) - (b.letter as number) : (a.letter as string).localeCompare(b.letter as string)));
                     setCurrentQuestion(0);
                     setLoading(false);
                 }
