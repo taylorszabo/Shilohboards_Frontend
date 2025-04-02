@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,70 +8,113 @@ import {
   Dimensions,
   Pressable,
   Keyboard,
+  Alert,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import CustomButton from "../reusableComponents/CustomButton";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
-const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
 const { width, height } = Dimensions.get("window");
 
+const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
+const FIREBASE_LOOKUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${FIREBASE_API_KEY}`;
+const FIREBASE_UPDATE_URL = `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${FIREBASE_API_KEY}`;
+const FIREBASE_REFRESH_URL = `https://securetoken.googleapis.com/v1/token?key=${FIREBASE_API_KEY}`;
+
 const UpdateUser = () => {
+  const router = useRouter();
+  const { playerId = "0" } = useLocalSearchParams();
+
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
   const [showPasswordInfo, setShowPasswordInfo] = useState(false);
 
-  const router = useRouter();
-  const { playerId = "0" } = useLocalSearchParams();
+  const fetchUserEmail = async () => {
+    try {
+      let authToken = await AsyncStorage.getItem("authToken");
+      const refreshToken = await AsyncStorage.getItem("refreshToken");
+
+      if (!authToken && refreshToken) {
+        const refreshResponse = await axios.post(FIREBASE_REFRESH_URL, {
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+        });
+        authToken = refreshResponse.data.id_token;
+        if (authToken) {
+          await AsyncStorage.setItem("authToken", authToken);
+        }
+        await AsyncStorage.setItem("refreshToken", refreshResponse.data.refresh_token);
+      }
+
+      const lookupResponse = await axios.post(FIREBASE_LOOKUP_URL, {
+        idToken: authToken,
+      });
+
+      const userEmail = lookupResponse.data.users[0].email;
+      setEmail(userEmail);
+    } catch (error) {
+      console.error("Failed to fetch user email:", error);
+      setErrorMessage("Failed to load user information.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserEmail();
+  }, []);
 
   const handleUpdateUser = async () => {
     setErrorMessage("");
 
-    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+    if (!email.trim() || !newPassword.trim() || !confirmPassword.trim()) {
       setErrorMessage("Please fill in all fields.");
       return;
     }
 
-    if (password.length < 6) {
+    if (newPassword.length < 6) {
       setErrorMessage("Password must be at least 6 characters long.");
       return;
     }
 
-    if (password !== confirmPassword) {
+    if (newPassword !== confirmPassword) {
       setErrorMessage("Passwords do not match.");
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await axios.post(FIREBASE_SIGNUP_URL, {
-        email,
-        password,
+      setLoading(true);
+
+      const authToken = await AsyncStorage.getItem("authToken");
+      const updatePayload: any = {
+        idToken: authToken,
         returnSecureToken: true,
-      });
+      };
 
-      console.log("Update successful!", response.data);
-      router.push("/Setting");
-    } catch (error) {
-      console.error("Update error:", (error as any).response?.data || (error as any).message);
-      const firebaseError = (error as any)?.response?.data?.error?.message;
+      if (email) updatePayload.email = email;
+      if (newPassword) updatePayload.password = newPassword;
 
-      switch (firebaseError) {
+      const updateResponse = await axios.post(FIREBASE_UPDATE_URL, updatePayload);
+
+      await AsyncStorage.setItem("authToken", updateResponse.data.idToken);
+      await AsyncStorage.setItem("refreshToken", updateResponse.data.refreshToken);
+
+      alert("Account information updated!");
+      router.replace(`/Setting?playerId=${playerId}`);
+    } catch (error: any) {
+      const code = error?.response?.data?.error?.message;
+      switch (code) {
         case "EMAIL_EXISTS":
           setErrorMessage("This email is already in use.");
           break;
-        case "INVALID_EMAIL":
-          setErrorMessage("Please enter a valid email address.");
-          break;
-        case "WEAK_PASSWORD":
-          setErrorMessage("Password must be at least 6 characters.");
+        case "INVALID_ID_TOKEN":
+          setErrorMessage("Your session expired. Please log in again.");
           break;
         default:
           setErrorMessage("Update failed. Please try again.");
@@ -80,6 +123,63 @@ const UpdateUser = () => {
       setLoading(false);
     }
   };
+
+  const handleDeleteAccount = async () => {
+    Alert.alert(
+        "Confirm Deletion",
+        "Are you sure you want to delete your account? This action cannot be undone.",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: async () => {
+              try {
+                const idToken = await AsyncStorage.getItem("authToken");
+                if (!idToken) {
+                  alert("You are not authenticated.");
+                  return;
+                }
+
+                const response = await fetch(
+                    `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${process.env.EXPO_PUBLIC_FIREBASE_API_KEY}`,
+                    {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ idToken }),
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                  if (data.error?.message === "TOKEN_EXPIRED" || data.error?.message === "CREDENTIAL_TOO_OLD_LOGIN_AGAIN") {
+                    alert("Please sign in again before deleting your account.");
+                    return;
+                  } else {
+                    console.error("Delete error:", data);
+                    alert("Failed to delete account.");
+                    return;
+                  }
+                }
+
+                await AsyncStorage.clear();
+                alert("Account deleted.");
+                router.replace("/Login");
+
+              } catch (err) {
+                console.error("Unexpected error:", err);
+                alert("An error occurred. Please try again.");
+              }
+            },
+          },
+        ]
+    );
+  };
+
 
   return (
     <BackgroundLayout>
@@ -120,8 +220,8 @@ const UpdateUser = () => {
             style={[styles.input, { fontSize: width * 0.045 }]}
             placeholder="Password"
             secureTextEntry
-            value={password}
-            onChangeText={setPassword}
+            value={newPassword}
+            onChangeText={setNewPassword}
           />
           <TouchableOpacity
             style={styles.infoIcon}
@@ -146,6 +246,19 @@ const UpdateUser = () => {
           <LoadingMessage />
         ) : (
           <>
+          <View style={styles.bottomButtonContainer}>
+            <View style={styles.buttonRow}>
+            <CustomButton
+                text="Delete Account"
+                functionToExecute={handleDeleteAccount}
+                uniqueButtonStyling={{
+                  width: width * 0.5,
+                  backgroundColor: "#FF4C4C",
+                  marginRight: 10,
+                }}
+            />
+            </View>
+          </View>
             <CustomButton
               text="Save"
               functionToExecute={handleUpdateUser}
@@ -227,6 +340,17 @@ const styles = StyleSheet.create({
   bubbleText: {
     fontSize: width * 0.035,
     color: "#333",
+  },
+  bottomButtonContainer: {
+    position: "absolute",
+    bottom: height * 0.035,
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

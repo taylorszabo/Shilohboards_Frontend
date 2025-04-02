@@ -33,7 +33,9 @@ export default function MainMenu() {
   const handleLogout = useCallback(async () => {
     try {
       await AsyncStorage.removeItem("authToken");
+      await AsyncStorage.removeItem("refreshToken");
       await AsyncStorage.removeItem("userId");
+      await AsyncStorage.removeItem("parentId");
       router.replace("/Login");
     } catch (error) {
       console.error("Logout failed:", error);

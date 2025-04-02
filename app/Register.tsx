@@ -61,8 +61,6 @@ const Register = () => {
         returnSecureToken: true,
       });
 
-      console.log("Registration Successful!", response.data);
-
       // ✅ Set success message
       setSuccessMessage("Registration successful! Redirecting to login...");
       

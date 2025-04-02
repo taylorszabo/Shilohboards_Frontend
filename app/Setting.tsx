@@ -100,18 +100,21 @@ export default function Settings() {
 
           <Text style={styles.mainHeader}>Account Settings</Text>
 
-          <View style={styles.topButtonContainer}>
-            <CustomButton
+          <CustomButton
               text="User Settings"
-              functionToExecute={() =>
-                router.push(`/UpdateUser?playerId=${playerId}`)
-              }
+              functionToExecute={async () => {
+                try {
+                  router.replace("/Login?fromSettings=true");
+                } catch (err) {
+                  console.error("Failed to clear session data:", err);
+                  alert("Something went wrong while logging out.");
+                }
+              }}
               uniqueButtonStyling={{
                 width: width * 0.6,
                 height: height * 0.08,
               }}
-            />
-          </View>
+          />
 
           <View style={styles.line} />
 
@@ -139,15 +142,6 @@ export default function Settings() {
 
         <View style={styles.bottomButtonContainer}>
           <View style={styles.buttonRow}>
-            <CustomButton
-              text="Delete"
-              functionToExecute={handleDeleteAccount}
-              uniqueButtonStyling={{
-                width: width * 0.4,
-                backgroundColor: "#FF4C4C",
-                marginRight: 10,
-              }}
-            />
             <CustomButton
               text="Save"
               functionToExecute={handleSaveVolume}
