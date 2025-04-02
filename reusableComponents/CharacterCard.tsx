@@ -1,10 +1,8 @@
 import * as React from "react";
-import { Text, Image, Pressable, StyleSheet, Dimensions, ViewStyle } from "react-native";
+import { Text, Image, Pressable, StyleSheet, ViewStyle } from "react-native";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import { tempCharacterArray, characterOptions, formatNameWithCapitals } from "../CharacterOptions";
-
-const screenWidth = Dimensions.get("window").width; // Get device width
 
 type Props = {
     heightPercentNumber?: number;
@@ -83,7 +81,7 @@ export default function CharacterCard(props: Props) {
             ]}
             onPress={() => handlePressEvent()}
         >
-            {/* Image Handling Fix */}
+            {/* Image Handling */}
             <Image
                 source={
                     characterData
@@ -93,7 +91,7 @@ export default function CharacterCard(props: Props) {
                 style={styles.image}
             />
 
-            {/* Name Handling Fix */}
+            {/* Name Handling */}
             <Text style={[styles.text, { fontSize: fontSize }]}>
                 {characterData
                     ? formatNameWithCapitals(characterData.name)

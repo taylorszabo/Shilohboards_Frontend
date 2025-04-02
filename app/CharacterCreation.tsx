@@ -191,6 +191,7 @@ export default function CharacterCreation() {
                             maxLength={maxCharacterNameLength}
                             onChangeText={(input) => setCharacterCreated({ ...characterCreated, name: input.replace(/[.*+?^${}()|[\]\\/@#%^&_=<>:;"`,~!]/g, "") })}
                         />
+                        <Text style={{marginBottom: 20, width: '80%', textAlign: 'right', maxWidth: 500, color: '#3E1911'}}>2-{maxCharacterNameLength} characters</Text>
 
                         <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
                             Please choose your character:
@@ -342,7 +343,6 @@ const styles = StyleSheet.create({
     maxWidth: 500,
     backgroundColor: 'white',
     padding: 13,
-    marginBottom: 20,
     borderRadius: 8,
     borderRightWidth: 2,
     borderBottomWidth: 3,

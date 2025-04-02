@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Text, Image, Pressable, StyleSheet, Dimensions } from 'react-native';
+import { Text, Image, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 
 type Props = {
     square: boolean;
@@ -11,6 +11,7 @@ type Props = {
     image?: any;
     upperText?: string;
     lowerText?: string;
+    lowerTextSize?: number;
     disabled?: boolean;
     onPressRoute?: string;
     textSize?: number;
@@ -25,6 +26,7 @@ export default function OptionCard(props: Props) {
             bgColor = '#FFF8F0', 
             image, 
             lowerText, 
+            lowerTextSize = 0.15,
             upperText = 'Option', 
             customWidth = '85%', 
             disabled = false, 
@@ -37,6 +39,7 @@ export default function OptionCard(props: Props) {
     } = props;
 
     const router = useRouter();
+    const [containerWidth, setContainerWidth] = useState(1);
 
     let firstLetter;
     let restOfText;
@@ -45,6 +48,13 @@ export default function OptionCard(props: Props) {
         firstLetter = lowerText.charAt(0);
         restOfText = lowerText.slice(1);
     }
+
+    const onLayout = useCallback((event: { nativeEvent: { layout: { width: any } } }) => {
+            const { width } = event.nativeEvent.layout;
+            setContainerWidth(width); //set parent container width
+        }, []);
+    
+    const fontSize = containerWidth * lowerTextSize; //% of parent container width
 
     //------------------- FUNCTION ------------------
     function handlePressEvent() {   
@@ -60,13 +70,13 @@ export default function OptionCard(props: Props) {
     //-----------------------------------------------
     return (
         <Pressable disabled={disabled} testID={testID}
+            onLayout={onLayout}
             style={({ pressed }) => [
                 styles.card, 
                 selected && styles.selectedStyling, 
                 square ? {aspectRatio: 1} : {width: customWidth},
                 { 
                     backgroundColor: bgColor, 
-                    ...(image && { padding: 20 }) 
                 },
                 pressed && styles.pressedStyle
             ]} 
@@ -79,7 +89,7 @@ export default function OptionCard(props: Props) {
             }
             
             {lowerText &&
-                <Text style={styles.lowText}>
+                <Text style={[styles.lowText, { fontSize: fontSize }]}>
                     {boldFirstLetter ? (
                         <Text style={styles.boldUnderline}>{firstLetter}</Text>
                     ) : (
@@ -104,11 +114,12 @@ const styles = StyleSheet.create({
         borderRightWidth: 2,
         borderBottomWidth: 3,
         borderColor: '#A9A9A9',
-        maxWidth: '100%'
+        maxWidth: '100%',
+        padding: 10
     },
     image: {
-        width: '80%',
-        height: '80%',
+        width: '100%',
+        flex: 1,
         resizeMode: 'contain' //keep aspect ratio
     },
     lowText: {

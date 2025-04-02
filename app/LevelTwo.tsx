@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, Platform} from 'react-native';
+import {StyleSheet, Text, View, Image, ActivityIndicator, ScrollView, Platform, TouchableOpacity} from 'react-native';
 import CharacterCard from '../reusableComponents/CharacterCard';
 import CustomButton from '../reusableComponents/CustomButton';
 import OptionCard from '../reusableComponents/OptionCard';
@@ -70,6 +70,7 @@ export default function LevelTwo() {
     const [exitPopupOpen, setExitPopupOpen] = useState<boolean>(false);
     const recordedAnswers = useRef<QuestionAnswers[]>([]);
     const soundObject = useRef(new Audio.Sound());
+    const [expandNumberImage, setExpandNumberImage] = useState<boolean>(false);
 
 
     const getLocalImage = (gameType: string, key: string | number): number => {
@@ -233,6 +234,7 @@ export default function LevelTwo() {
     function submitAnswer() {
         if (!answerSelected) return;
 
+        setExpandNumberImage(false);
         setAnswerDisplayed(true);
 
         const correctAnswer = gameQuestions[currentQuestion].options.find(opt => opt.correct);
@@ -300,6 +302,8 @@ export default function LevelTwo() {
         } else {
             endGame();
         }
+
+        setExpandNumberImage(false);
     }
 
     async function playAudio(soundFile: any) {
@@ -357,7 +361,27 @@ export default function LevelTwo() {
                     </Text>
 
                     {/* =============== Main Section =============== */}
-                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '85%', gap: 30, flex: 1, marginBottom: 15}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'center', width: '90%', gap: 30, flex: 1, marginBottom: 15, position: 'relative'}}>
+                        {/* expandedNumberPopup */}
+                        {expandNumberImage && 
+                            <View style={styles.expandedNumberPopup}>
+                                    <Image
+                                        source={gameQuestions[currentQuestion].exampleImage}
+                                        style={{flex: 1, maxWidth: '95%', resizeMode: 'contain'}}
+                                    />
+                                    <TouchableOpacity 
+                                        onPress={() => setExpandNumberImage(false)} 
+                                        style={{
+                                            width: `15%`, 
+                                            aspectRatio: 1, 
+                                            marginVertical: 10
+                                        }}
+                                    >
+                                        <Image source={require('../assets/Icons/shrink.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
+                                    </TouchableOpacity>
+                            </View>
+                        }
+                        
                         {/* ========================================= LEFT SIDE ============================================ */}
                         <View style={styles.leftSideContainer}>
                             <View style={{height: '30%', width: '100%', alignItems: 'center'}}>
@@ -366,14 +390,35 @@ export default function LevelTwo() {
                                     style={styles.alphaNumLeftImage}
                                 />
                             </View>
-                            {game === "Alphabet" &&
+                            {game === "Alphabet" ?
                                 <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
                                     <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
                                     <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>
+                                :
+                                <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
+                                    <Text style={styles.alphaNumLeftInstructionText}>Tap the icon below to expand</Text>
+                                    <TouchableOpacity 
+                                        onPress={() => setExpandNumberImage(true)} 
+                                        style={{
+                                            width: `30%`, 
+                                            aspectRatio: 1, 
+                                            backgroundColor: '#FFF8F0', 
+                                            padding: 12, 
+                                            borderRadius: 10,
+                                            borderRightWidth: 1,
+                                            borderBottomWidth: 1,
+                                            borderRightColor: '#A9A9A9',
+                                            borderBottomColor: '#A9A9A9'
+                                        }}
+                                    >
+                                        <Image source={require('../assets/Icons/expand.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
+                                    </TouchableOpacity>
+                                </View>
                             }
                         </View>
 
+                        {/* ========================================= RIGHT SIDE ============================================ */}
                         <View style={styles.rightSideContainer}>
                             {gameQuestions[currentQuestion].options.map((option, index) => (
                                 <OptionCard
@@ -472,5 +517,17 @@ const styles = StyleSheet.create({
     height: 30,
     width: 30,
     resizeMode: 'contain',
+  },
+  expandedNumberPopup: {
+    flex: 1, 
+    width: '100%', 
+    height: '100%', 
+    backgroundColor: '#FFF8F0', 
+    position: 'absolute', 
+    zIndex: 14, 
+    borderWidth: 5, 
+    borderColor: "#3E1911", 
+    justifyContent: 'center', 
+    alignItems: 'center'
   }
 });

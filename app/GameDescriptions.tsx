@@ -46,7 +46,7 @@ export default function GameDescriptions() {
             <Text style={styles.bodyText}>Select the following options to view what each game & level is teaching:</Text>
 
             {/* ---------------- Game Row ---------------- */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
+            <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                 {[...gamesArray].map((game, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, game.title === query.game && styles.selectedUnderline]} 
@@ -55,10 +55,10 @@ export default function GameDescriptions() {
                         </Text>
                     </View>
                 ))}
-            </LinearGradient>
+            </View>
 
             {/* ---------------- Level Row ---------------- */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
+            <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                 {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].map((level, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, index + 1 === query.level && styles.selectedUnderline]} 
@@ -67,7 +67,7 @@ export default function GameDescriptions() {
                         </Text>
                     </View>
                 ))}
-            </LinearGradient>
+            </View>
 
             {/* ============================================= BODY ============================================= */}
             <View style={styles.bodyContainer}>

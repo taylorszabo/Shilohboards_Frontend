@@ -19,7 +19,7 @@ export default function SoundIcon(props: { widthPercent: number; onPress?: () =>
                 borderBottomColor: '#A9A9A9'
             }}
         >
-            <Image source={require('../assets/listen.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
+            <Image source={require('../assets/Icons/listenEar.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
         </TouchableOpacity>
     );
 }
