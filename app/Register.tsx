@@ -42,8 +42,8 @@ const Register = () => {
       return;
     }
 
-    if (password.length < 6) {
-      setErrorMessage("Password must be at least 6 characters long.");
+    if (password.length < 6 || !/\d/.test(password)) {
+      setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
       return;
     }
 
@@ -72,7 +72,6 @@ const Register = () => {
       console.error("Registration error:", (error as any).response?.data || (error as any).message);
 
       const firebaseError = (axios.isAxiosError(error) && error.response?.data?.error?.message) || null;
-
       switch (firebaseError) {
         case "EMAIL_EXISTS":
           setErrorMessage("This email is already in use.");
@@ -81,7 +80,7 @@ const Register = () => {
           setErrorMessage("Please enter a valid email address.");
           break;
         case "WEAK_PASSWORD":
-          setErrorMessage("Password must be at least 6 characters.");
+          setErrorMessage("Password must be at least 6 characters and include 1 number.");
           break;
         default:
           setErrorMessage("Registration failed. Please try again.");
@@ -227,7 +226,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginBottom: 10,
+    margin: 10,
   },
   successText: {
     color: "green",
