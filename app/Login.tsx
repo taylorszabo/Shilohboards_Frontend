@@ -158,6 +158,9 @@ export default function Login() {
     uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
   />
 )}
+        <TouchableOpacity onPress={() => router.push("/ResetPassword")}>
+          <Text style={styles.registerText}>Forgot Password?</Text>
+        </TouchableOpacity>
         {fromSettings !== "true" ?
         <TouchableOpacity onPress={() => router.push("/Register")}>
           <Text style={styles.registerText}>Register New Account</Text>
