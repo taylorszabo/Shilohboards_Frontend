@@ -173,9 +173,7 @@ export default function LevelOne() {
             // Get saved volume from AsyncStorage
             const savedVolume = await AsyncStorage.getItem("volume");
             const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
-      
-            console.log(`Loaded Volume: ${savedVolume}`);
-            console.log(`Applying Volume: ${volumeLevel}`);
+
       
             // Apply volume before playing
             await soundObject.current.setVolumeAsync(volumeLevel);

@@ -32,8 +32,6 @@ const Register = () => {
   const router = useRouter();
 
   const handleRegister = async () => {
-    console.log("Register button pressed");
-
     setErrorMessage("");
     setSuccessMessage(""); // Clear success message on new attempt
 
