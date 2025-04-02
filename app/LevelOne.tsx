@@ -89,9 +89,10 @@ export default function LevelOne() {
                 if (!questionsArray || questionsArray.length === 0) {
                     throw new Error("No questions received from API.");
                 }
+                const clonedQuestions = JSON.parse(JSON.stringify(questionsArray));
 
                 if (isMounted) {
-                    setGameQuestions(questionsArray);
+                    setGameQuestions(clonedQuestions);
                     setCurrentQuestion(0);
                     setLoading(false);
                 }
