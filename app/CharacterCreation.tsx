@@ -83,34 +83,35 @@ export default function CharacterCreation() {
         setErrorMessage("");
 
         try {
-            // Fetch all children for the current parent
-            const childrenRes = await axios.get(`${API_URL}/users/children/${parentId}`);
-            const children = childrenRes.data;
+            // Only check for duplicates if editing an existing character or if not explicitly "New"
+            if (isNewOrUpdateId !== "New") {
+                const childrenRes = await axios.get(`${API_URL}/users/children/${parentId}`);
+                const children = childrenRes.data;
 
-            // Fetch all their profiles
-            const profiles = await Promise.all(children.map(async (child: any) => {
-                try {
-                    const res = await axios.get(`${API_URL}/users/profile/${child.profile_id}`);
-                    return { ...res.data, child_id: child.id };
-                } catch {
-                    return null;
+                const profiles = await Promise.all(children.map(async (child: any) => {
+                    try {
+                        const res = await axios.get(`${API_URL}/users/profile/${child.profile_id}`);
+                        return { ...res.data, child_id: child.id };
+                    } catch {
+                        return null;
+                    }
+                }));
+
+                const formattedName = characterCreated.name.trim().toLowerCase();
+
+                const isDuplicate = profiles.some(profile =>
+                    profile &&
+                    profile.profile_name.trim().toLowerCase() === formattedName &&
+                    profile.profile_image === characterCreated.picture &&
+                    profile.profile_color === characterCreated.bgColor &&
+                    profile.child_id !== characterCreated.id
+                );
+
+                if (isDuplicate) {
+                    setErrorMessage("The character you are creating already exists.");
+                    setLoading(false);
+                    return;
                 }
-            }));
-
-            const formattedName = characterCreated.name.trim().toLowerCase();
-
-            const isDuplicate = profiles.some(profile =>
-                profile &&
-                profile.profile_name.trim().toLowerCase() === formattedName &&
-                profile.profile_image === characterCreated.picture &&
-                profile.profile_color === characterCreated.bgColor &&
-                profile.child_id !== characterCreated.id
-            );
-
-            if (isDuplicate) {
-                setErrorMessage("The character you are creating already exists.");
-                setLoading(false);
-                return;
             }
 
             const characterData = {
@@ -121,12 +122,14 @@ export default function CharacterCreation() {
             };
 
             if (isNewOrUpdateId === "New") {
+                // Save the profile first, then create the child linking it to the parent
                 await axios.post(`${API_URL}/users/profile`, characterData);
                 await axios.post(`${API_URL}/users/create-child`, {
                     parentId: parentId,
                     profileId: characterCreated.id,
                 });
             } else {
+                // Update existing profile
                 await axios.put(`${API_URL}/users/profile/${characterCreated.id}`, characterData);
             }
 

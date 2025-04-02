@@ -26,7 +26,6 @@ export default function SoundPressable({ soundFile, styling, children }: SoundPr
         shouldDuckAndroid: true, // Lowers the volume of other apps when playing audio
         playThroughEarpieceAndroid: false, // Ensures audio is routed through the speaker
       });
-      console.log("Audio mode configured successfully.");
     } catch (error) {
       console.error("Error configuring audio mode:", error);
     }
@@ -52,8 +51,6 @@ export default function SoundPressable({ soundFile, styling, children }: SoundPr
       const savedVolume = await AsyncStorage.getItem("volume");
       const volumeLevel = savedVolume ? parseFloat(savedVolume) / 100 : 1.0; // Default to 1.0
 
-      console.log(`Loaded Volume: ${savedVolume}`);
-      console.log(`Applying Volume: ${volumeLevel}`);
 
       // Apply volume to new sound
       await newSound.setVolumeAsync(volumeLevel);

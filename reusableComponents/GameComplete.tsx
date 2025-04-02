@@ -55,7 +55,6 @@ export default function GameComplete(props: { game: string | string[], score: st
                 }
 
                 setChildId(match.id);
-                console.log("✅ Found childId:", match.id);
             } catch (error) {
                 console.error("Error fetching childId:", error);
                 setChildError("Failed to fetch child ID.");

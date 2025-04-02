@@ -114,8 +114,6 @@ export default function LevelTwo() {
                 const savedVolume = await AsyncStorage.getItem("volume");
                 const volumeLevel = savedVolume ? Number(savedVolume) / 100 : 1.0;
 
-                console.log(`Loaded Volume: ${savedVolume}`);
-                console.log(`Applying Volume: ${volumeLevel}`);
 
                 // Apply volume before playing
                 await soundObject.current.setVolumeAsync(volumeLevel);
@@ -136,7 +134,6 @@ export default function LevelTwo() {
             }
 
             try {
-                console.log(`Fetching profile for playerId: ${playerId}`);
                 const response = await axios.get(`${API_BASE_URL}/users/profile/${playerId}`);
 
                 if (response.data) {
@@ -315,8 +312,6 @@ export default function LevelTwo() {
 
             if (loading) return <LoadingMessage backgroundNeeded={true}/>;
 
-            console.log(`Loaded Volume: ${savedVolume}`);
-            console.log(`Applying Volume: ${volumeLevel}`);
 
 
             // Apply volume before playing

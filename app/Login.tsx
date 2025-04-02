@@ -16,12 +16,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios, { AxiosError } from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
-import CustomButton from "../reusableComponents/CustomButton"; 
+import CustomButton from "../reusableComponents/CustomButton";
+import { useLocalSearchParams } from "expo-router";
 
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_AUTH_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`;
 const { width, height } = Dimensions.get("window");
+
 
 export default function Login() {
   const router = useRouter();
@@ -30,12 +32,13 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [showPasswordInfo, setShowPasswordInfo] = useState(false);
+  const { fromSettings } = useLocalSearchParams();
 
   useEffect(() => {
     const checkUser = async () => {
       const token = await AsyncStorage.getItem("authToken");
-      if (token) {
-        router.push("/SelectCharacter");
+      if (token && fromSettings !== "true") {
+          router.push("/SelectCharacter");
       }
     };
     checkUser();
@@ -57,7 +60,11 @@ export default function Login() {
       await AsyncStorage.setItem("refreshToken", refreshToken);
       await AsyncStorage.setItem("parentId", localId);
 
-      router.push("/SelectCharacter");
+      if (fromSettings === "true") {
+        router.push("/UpdateUser");
+      } else {
+        router.push("/SelectCharacter");
+      }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         const firebaseError = error.response?.data?.error?.message;
@@ -111,7 +118,8 @@ export default function Login() {
           source={require("../assets/logo.png")}
           style={[styles.logo, { width: width * 0.5, height: width * 0.5 }]}
         />
-        <Text style={styles.title}>Login</Text>
+        {fromSettings === "true" ? <Text style={styles.title}>Confirm Old Email and Password</Text>: <Text style={styles.title}>Login</Text>}
+
 
         <TextInput
           style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
@@ -150,10 +158,15 @@ export default function Login() {
     uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
   />
 )}
-
+        <TouchableOpacity onPress={() => router.push("/ResetPassword")}>
+          <Text style={styles.registerText}>Forgot Password?</Text>
+        </TouchableOpacity>
+        {fromSettings !== "true" ?
         <TouchableOpacity onPress={() => router.push("/Register")}>
           <Text style={styles.registerText}>Register New Account</Text>
         </TouchableOpacity>
+        : null
+        }
       </View>
     </BackgroundLayout>
   );
