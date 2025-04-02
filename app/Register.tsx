@@ -78,7 +78,7 @@ const Register = () => {
           setErrorMessage("Please enter a valid email address.");
           break;
         case "WEAK_PASSWORD":
-          setErrorMessage("Password must be at least 6 characters and include 1 number.");
+          setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
           break;
         default:
           setErrorMessage("Registration failed. Please try again.");
