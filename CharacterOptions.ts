@@ -22,7 +22,7 @@ export const characterOptions: Character[] = [
 export const bgColorOptions: string[] = ['#C3E2E5', '#C0E3B9', '#FDFFB8', '#FFDDF6', '#FFD195', '#FFA3A3'];
 
 //validations ---------------------------------------------------
-export const maxCharacterNameLength = 22;
+export const maxCharacterNameLength = 20;
 
 export const isNameInvalid = (name: string): boolean => {
     return name.trim().length < 2 || name.trim().length > maxCharacterNameLength;

@@ -117,7 +117,7 @@ export default function MainMenu() {
 
                     {/* // ===================== main menu game option screen ===================== */}
                     <CustomButton
-                        image={require("../assets/hamburgerMenuIcon.png")}
+                        image={require("../assets/Icons/hamburgerMenuIcon.png")}
                         uniqueButtonStyling={styles.hamburgerButton}
                         uniqueImageStyling={{ width: 28, height: 28 }}
                         functionToExecute={() => setHamburgerMenuOpen(true)}
@@ -135,8 +135,8 @@ export default function MainMenu() {
                     </Text>
 
                     <View style={styles.cardDiv}>
-                      <OptionCard lowerText="Alphabet" square={false} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
-                      <OptionCard lowerText="Numbers" square={false} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
+                      <OptionCard lowerText="Alphabet" lowerTextSize={0.056} square={false} onPressRoute={`/LevelChoice?game=Alphabet&playerId=${playerId}`} image={require("../assets/ABC_2.png")} />
+                      <OptionCard lowerText="Numbers" lowerTextSize={0.056} square={false} onPressRoute={`/LevelChoice?game=Numbers&playerId=${playerId}`} image={require("../assets/123_2.png")} />
                     </View>
                   </View>
             </View>

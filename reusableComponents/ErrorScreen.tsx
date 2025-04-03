@@ -18,7 +18,7 @@ export default function ErrorScreen(props: { errorMessage?: string}) {
                )}
            </View>
             <View style={styles.submitBtnContainer}>
-                <CustomButton text='Return' onPressRoute={`/SelectCharacter`} />
+                <CustomButton text='Return' onPressRoute={`/Login`} />
             </View>
         </BackgroundLayout>
     );
@@ -54,6 +54,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontWeight: 'bold',
         fontSize: 30,
-        color: '#f94c4c',
+        color: '#a73d26',
     },
 });

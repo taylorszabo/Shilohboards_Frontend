@@ -154,7 +154,7 @@ export default function PerformanceReports() {
 
             {/* =============== Names Row =============== */}
             {children.length < 6 ?
-                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
+                <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                     {[...children].map((user) => (
                         <View key={user.id}>
                             <Text
@@ -165,9 +165,9 @@ export default function PerformanceReports() {
                             </Text>
                         </View>
                     ))}
-                </LinearGradient>
+                </View>
                 :
-                <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={styles.selectionBarsDropdown}>
+                <View style={[styles.selectionBarsDropdown, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                     <RNPickerSelect
                         onValueChange={(value) => setQuery({ ...query, playerId: value })}
                         items={children.map((user) => ({
@@ -179,11 +179,11 @@ export default function PerformanceReports() {
                         placeholder={{}}
                         style={pickerSelectStyles}
                     />
-                </LinearGradient>
+                </View>
             }
 
             {/* =============== Game Row =============== */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
+            <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                 {[...gamesArray].map((game, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, game.title === query.game && styles.selectedUnderline]} 
@@ -192,10 +192,10 @@ export default function PerformanceReports() {
                         </Text>
                     </View>
                 ))}
-            </LinearGradient>
+            </View>
 
             {/* =============== Level Row =============== */}
-            <LinearGradient colors={['#E1CEB6', 'rgba(0, 0, 0, 0)']} style={[styles.selectionBars, windowWidth > 800 && {justifyContent: 'center'}]}>
+            <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                 {[...Array(gamesArray[query.game === gamesArray[0].title ? 0 : 1].numberOfLevels)].slice(1).map((level, index) => (
                     <View key={index}>
                         <Text style={[styles.bodyText, index + 2 === query.level && styles.selectedUnderline]} 
@@ -204,7 +204,7 @@ export default function PerformanceReports() {
                         </Text>
                     </View>
                 ))}
-            </LinearGradient>
+            </View>
 
             <Text style={styles.bodyText}>Number of Games Completed: {completedGames}</Text>
 

@@ -162,7 +162,7 @@ export default function SelectCharacter() {
               <Text style={styles.errorText}>{errorMessage || "No characters found. Please create a new one."}</Text>
           ) : (
               <ScrollView contentContainerStyle={styles.grid} showsVerticalScrollIndicator={true} overScrollMode="always">
-                {children.map((user) => {
+                {children.sort((a, b) => a.profile_name.localeCompare(b.profile_name)).map((user) => {
                   if (!user || !user.profile_image || !user.profile_color) return null;
                   const characterOption = characterOptions.find((option) => option.id === user.profile_image);
                   const bgColor = bgColorOptions.includes(user.profile_color) ? user.profile_color : "#FFFFFF";

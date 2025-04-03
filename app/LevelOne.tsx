@@ -92,7 +92,11 @@ export default function LevelOne() {
                 const clonedQuestions = JSON.parse(JSON.stringify(questionsArray));
 
                 if (isMounted) {
-                    setGameQuestions(clonedQuestions);
+                    //sort in ascending order for either letter strings or numbers
+                    setGameQuestions(questionsArray.sort((a, b) => (typeof a.letter === "number" && typeof b.letter === "number") ? (a.letter as number) - (b.letter as number) : (a.letter as string).localeCompare(b.letter as string)));
+
+                    //setGameQuestions(clonedQuestions); //other possible solution if issues with ascending order persist
+
                     setCurrentQuestion(0);
                     setLoading(false);
                 }
@@ -216,11 +220,10 @@ export default function LevelOne() {
                     <Text style={styles.voiceoverText}>Tap ear to hear voiceover</Text>
                 </TouchableOpacity>
                  
-                <View style={{margin: '10%'}}>
-                    <SoundIcon widthPercent={25} onPress={playSound}/>
+                <View style={{margin: 25, width: '100%', maxWidth: 500, alignItems: 'center'}}>
+                    <SoundIcon widthPercent={18} onPress={playSound}/>
                 </View>
-                
-               
+
                 {doorOpened ? (
                     <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
                         <View style={styles.cube}>
@@ -228,7 +231,6 @@ export default function LevelOne() {
                         </View>
 
                         <View style={styles.cubeBackContainer}>
-                        
                             <View style={styles.cube}></View>
                         </View>
 
@@ -236,11 +238,7 @@ export default function LevelOne() {
                 ) : (
                     <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
                         <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
-
-                        <View style={styles.cubeBackContainer}>
-                         
-                        </View>
-
+                        <View style={styles.cubeBackContainer}></View>
                     </TouchableOpacity>
                 )}
 
@@ -264,7 +262,7 @@ const styles = StyleSheet.create({
         marginTop: height * 0.02,
     },
     voiceoverText: {
-        fontSize: RFPercentage(2.4), // Responsive font size
+        fontSize: 18, // Responsive font size
         color: '#3E1911',
         fontWeight: '500',
         paddingHorizontal: width * 0.05, //Consistent padding
@@ -313,7 +311,7 @@ const styles = StyleSheet.create({
         resizeMode: "contain",
     },
     title: {
-        fontSize: width * 0.07,  // Scales based on screen width
+        fontSize: 28,  // Scales based on screen width
         fontWeight: "700",
         color: "#3E1911",
         textAlign: "center",
