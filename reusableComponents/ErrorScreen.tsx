@@ -18,7 +18,7 @@ export default function ErrorScreen(props: { errorMessage?: string}) {
                )}
            </View>
             <View style={styles.submitBtnContainer}>
-                <CustomButton text='Return' onPressRoute={`/SelectCharacter`} />
+                <CustomButton text='Return' onPressRoute={`/Login`} />
             </View>
         </BackgroundLayout>
     );
