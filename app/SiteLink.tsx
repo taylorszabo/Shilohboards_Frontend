@@ -1,10 +1,10 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  Dimensions,
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    Dimensions, Platform,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -17,8 +17,23 @@ const SiteLink = () => {
   const router = useRouter();
   const { playerId = "0" } = useLocalSearchParams();
 
+    useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+    }, []);
+
   const handleLinkPress = () => {
-    router.push("https://shilohboards.com");
+      if (Platform.OS === "web") {
+          window.open("https://shilohboards.com", '_blank')
+      }
+      else{
+          router.push("https://shilohboards.com");
+      }
   };
 
   return (

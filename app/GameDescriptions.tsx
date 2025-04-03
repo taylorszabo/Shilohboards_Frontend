@@ -3,10 +3,11 @@ import { StyleSheet, Text, View, useWindowDimensions, Image, Dimensions } from '
 import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
-import { useLocalSearchParams } from 'expo-router';
+import {router, useLocalSearchParams} from 'expo-router';
 import BackgroundLayout from '../reusableComponents/BackgroundLayout';
 import { gamesArray } from "../GameContent";
-import { RFPercentage } from 'react-native-responsive-fontsize'; // Added for responsive font sizes
+import { RFPercentage } from 'react-native-responsive-fontsize';
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Added for responsive font sizes
 
 const { width, height } = Dimensions.get("window"); 
 
@@ -20,6 +21,16 @@ export default function GameDescriptions() {
   const windowHeight = useWindowDimensions().height;
   const windowWidth = useWindowDimensions().width;
   const [query, setQuery] = useState<GameDescriptionQuery>({game: game.toString(), level: parseInt(level.toString())});
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push('/Login');
+      }
+    };
+    checkUser();
+  }, []);
 
   //----------------------------------------------------------
   function setGameSelected(game: string) {
@@ -76,7 +87,7 @@ export default function GameDescriptions() {
                         <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are able to view each letter on top of the door and then they are 
                             able to open the door to see an object that begins with that letter. They can also tap to
-                            hear the short sound or the word. There is no score or report for level 1.
+                            hear the sound or the word. There is no score or report for level 1.
                         </Text>
                         <Image source={require('../assets/GameDescriptionPics/Alphabet_Level1.png')} style={styles.pics}/>
                     </View>
@@ -86,8 +97,7 @@ export default function GameDescriptions() {
                     <View style={styles.innerBodyContainer}>
                         <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, children are presented with a letter. They are given three objects to choose
-                            from and the goal is to select the one that begins with the letter provided. They can tap the 
-                            letter to hear the short sound if that helps. The order of the letters, and the options, are
+                            from and the goal is to select the one that begins with the letter provided. The order of the letters, and the options, are
                             randomized each game.
                         </Text>
                         <Image source={require('../assets/GameDescriptionPics/Alphabet_Level2.png')} style={styles.pics}/>
@@ -98,7 +108,7 @@ export default function GameDescriptions() {
                     <View style={styles.innerBodyContainer}>
                         <Text style={[styles.bodyText, styles.descriptionText]}>
                             In this activity, audio plays at the beginning of each question with the letter long sound,
-                            short sound, and a word that begins with the letter. They are presented with four letters and 
+                            short sound, and a word that begins with the letter. They are presented with four letters and
                             the goal is to choose the correct one that matches the audio. They can replay the audio if
                             needed. The order of the letters/sounds, and the options, are
                             randomized each game.

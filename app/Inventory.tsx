@@ -8,6 +8,7 @@ import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import LoadingMessage from '../reusableComponents/LoadingMessage';
 import { formatNameWithCapitals } from "../CharacterOptions";
+import {useEffect} from "react";
 
 // Get screen dimensions for responsive styling
 const { width, height } = Dimensions.get("window");
@@ -29,8 +30,9 @@ export default function InventoryScreen() {
     const starIcon1 = require('../assets/GameOverStar-Silver.png'); 
     const starIcon2 = require('../assets/GameOverStar.png');   
     const starIcon3 = require('../assets/GameOverStar-Purple.png');
-    const categories = ["Alphabet", "Numbers"];
+    const categories = ["Letters", "Numbers"];
     const levels = [1, 2, 3];
+
 
     // stored level counts for a specific child
     const fetchLevelCounts = async (childId: string) => {
@@ -54,6 +56,14 @@ export default function InventoryScreen() {
 
     // getting all child accounts for a parent
     const fetchChildren = React.useCallback(async (parentId: string) => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+
         setLoading(true);
         try {
             const response = await axios.get(`${process.env.EXPO_PUBLIC_BACKEND_URL}/users/children/${parentId}`);
@@ -117,8 +127,12 @@ export default function InventoryScreen() {
 
     // child is selected from the dropdown
     const handleSelectUser = (userId: string) => {
-        const user = childAccounts.find(u => u.id === userId);
-        if (user) {
+        if(userId === '')
+        {
+            setSelectedUser('');
+        }
+        else{
+            const user = childAccounts.find(u => u.id === userId);
             setSelectedUser(user);
             fetchLevelCounts(user.id);
         }
@@ -151,11 +165,13 @@ export default function InventoryScreen() {
                 </View>
 
                 {/* Inventory breakdown per category and level */}
-                {selectedUser && (
+                {selectedUser !== '' && selectedUser && (
                     <View style={styles.inventoryContainer}>
                         {categories.map((category) => (
                             <View key={category} style={styles.column}>
-                                <Text style={styles.sectionTitle}>{category}</Text>
+                                <Text style={styles.sectionTitle}>
+                                    {category === "Letters" ? "Alphabet" : category}
+                                </Text>
                                 {levels.filter(level => !(category === "Numbers" && level === 3)).map((level) => (
                                     <View key={`${category}_level${level}`}>
                                         <Text style={styles.level}>Level {level}</Text>

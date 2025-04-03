@@ -35,6 +35,16 @@ const UpdateUser = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [showPasswordInfo, setShowPasswordInfo] = useState(false);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push('/Login');
+      }
+    };
+    checkUser();
+  }, []);
+
   const fetchUserEmail = async () => {
     try {
       let authToken = await AsyncStorage.getItem("authToken");
@@ -106,7 +116,8 @@ const UpdateUser = () => {
       await AsyncStorage.setItem("refreshToken", updateResponse.data.refreshToken);
 
       alert("Account information updated!");
-      router.replace(`/Setting?playerId=${playerId}`);
+      await AsyncStorage.clear();
+      router.replace("/Login");
     } catch (error: any) {
       const code = error?.response?.data?.error?.message;
       switch (code) {
@@ -123,6 +134,7 @@ const UpdateUser = () => {
       setLoading(false);
     }
   };
+
 
   const handleDeleteAccount = async () => {
     Alert.alert(
@@ -199,19 +211,19 @@ const UpdateUser = () => {
         {showPasswordInfo && (
           <View style={styles.bubble}>
             <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Contain 1 number</Text>
+            <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
           </View>
         )}
 
-        <Text style={styles.title}>Update Account Information</Text>
-
+        <Text style={styles.title}>Update Password</Text>
         <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
+          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045, backgroundColor: "#e6e6e6", color: "#555555"}]}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
+          editable={false}
         />
 
         {/* Password Input with Info Icon */}
@@ -225,7 +237,7 @@ const UpdateUser = () => {
           />
           <TouchableOpacity
             style={styles.infoIcon}
-            onPress={() => setShowPasswordInfo(true)}
+            onPress={() => setShowPasswordInfo(prev => !prev)}
           >
             <Text style={{ fontSize: 18 }}>ℹ️</Text>
           </TouchableOpacity>
@@ -243,7 +255,7 @@ const UpdateUser = () => {
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
         {loading ? (
-          <LoadingMessage />
+          <LoadingMessage smallVersion={true} oneRow={true}/>
         ) : (
           <>
           <View style={styles.bottomButtonContainer}>
@@ -253,7 +265,7 @@ const UpdateUser = () => {
                 functionToExecute={handleDeleteAccount}
                 uniqueButtonStyling={{
                   width: width * 0.5,
-                  backgroundColor: "#FF4C4C",
+                  backgroundColor: "#ED5454",
                   marginRight: 10,
                 }}
             />
@@ -265,7 +277,7 @@ const UpdateUser = () => {
               uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
             />
 
-            <TouchableOpacity onPress={() => router.push(`/Setting?playerId=${playerId}`)}>
+            <TouchableOpacity onPress={() => router.push(`/SelectCharacter`)}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
           </>
@@ -288,6 +300,12 @@ const styles = StyleSheet.create({
     color: "#3E1911",
     marginBottom: height * 0.04,
     textAlign: "center",
+  },
+  textCSS: {
+    paddingVertical: 10,
+    fontSize: 24,
+    color: '#3E1911',
+    textAlign: 'center',
   },
   cancelText: {
     marginTop: height * 0.03,
@@ -322,7 +340,7 @@ const styles = StyleSheet.create({
   },
   bubble: {
     position: "absolute",
-    top: height * 0.32,
+    top: height * 0.26,
     right: width * 0.1,
     backgroundColor: "#fff",
     padding: 10,

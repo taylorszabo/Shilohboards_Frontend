@@ -11,11 +11,12 @@ import { RFPercentage } from "react-native-responsive-fontsize"; // 🔹 For res
 import CharacterCard from "../reusableComponents/CharacterCard";
 import OptionCard from "../reusableComponents/OptionCard";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import {router, useLocalSearchParams, useRouter} from "expo-router";
 import CustomButton from "../reusableComponents/CustomButton";
 import axios from "axios";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -27,6 +28,17 @@ export default function LevelChoice() {
 
     const [character, setCharacter] = useState<any | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+    }, []);
+
 
     useEffect(() => {
         const fetchCharacterProfile = async () => {

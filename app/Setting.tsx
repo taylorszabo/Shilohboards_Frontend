@@ -28,6 +28,16 @@ export default function Settings() {
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null); // Ref to store the timeout
 
   useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push('/Login');
+      }
+    };
+    checkUser();
+  }, []);
+
+  useEffect(() => {
     const loadVolume = async () => {
       const savedVolume = await AsyncStorage.getItem("volume");
       if (savedVolume) {
@@ -53,34 +63,9 @@ export default function Settings() {
   const handleSaveVolume = async () => {
     await AsyncStorage.setItem("volume", tempVolume.toString());
     setVolume(tempVolume);
-    alert("Volume settings saved!");
+    alert("Settings Saved");
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = confirm(
-      "Are you sure you want to delete your account? This action cannot be undone."
-    );
-    if (!confirmDelete) return;
-
-    try {
-      const parentId = await AsyncStorage.getItem("userId");
-      if (!parentId) {
-        alert("Parent ID not found.");
-        return;
-      }
-
-      await axios.delete(
-        `${process.env.EXPO_PUBLIC_BACKEND_URL}/users/parent/${parentId}`
-      );
-
-      await AsyncStorage.clear();
-      alert("Your account has been deleted.");
-      router.replace("/");
-    } catch (error) {
-      console.error("Account deletion failed:", error);
-      alert("Failed to delete account. Please try again.");
-    }
-  };
 
   return (
     <BackgroundLayout>

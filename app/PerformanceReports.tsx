@@ -30,6 +30,7 @@ export default function PerformanceReports() {
         game: game.toString(),
         level: parseInt(level.toString()),
     });
+
  
     useEffect(() => {
         if (children.length > 0 && query.playerId === 0) {
@@ -68,6 +69,13 @@ export default function PerformanceReports() {
 
     useEffect(() => {
         const fetchParentId = async () => {
+            const checkUser = async () => {
+                const token = await AsyncStorage.getItem("authToken");
+                if (!token) {
+                    router.push('/Login');
+                }
+            };
+            checkUser();
             const userId = await AsyncStorage.getItem("userId");
             if (userId) {
                 setParentId(userId);
@@ -153,7 +161,7 @@ export default function PerformanceReports() {
             <Text style={styles.bodyText}>Select the following options to view results:</Text>
 
             {/* =============== Names Row =============== */}
-            {children.length < 6 ?
+            {children.length < 3 ?
                 <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                     {[...children].map((user) => (
                         <View key={user.id}>

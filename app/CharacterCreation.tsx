@@ -36,6 +36,16 @@ export default function CharacterCreation() {
     const [errorMessage, setErrorMessage] = useState<string>("");
     const [infoBeingVerified, setInfoBeingVerified] = useState<boolean>(false);
 
+    useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+    }, []);
+
     //--------------------------------------------------------------------------
     useEffect(() => {
         const fetchParentId = async () => {
@@ -84,7 +94,6 @@ export default function CharacterCreation() {
 
         try {
             // Only check for duplicates if editing an existing character or if not explicitly "New"
-            if (isNewOrUpdateId !== "New") {
                 const childrenRes = await axios.get(`${API_URL}/users/children/${parentId}`);
                 const children = childrenRes.data;
 
@@ -98,7 +107,6 @@ export default function CharacterCreation() {
                 }));
 
                 const formattedName = characterCreated.name.trim().toLowerCase();
-
                 const isDuplicate = profiles.some(profile =>
                     profile &&
                     profile.profile_name.trim().toLowerCase() === formattedName &&
@@ -107,12 +115,11 @@ export default function CharacterCreation() {
                     profile.child_id !== characterCreated.id
                 );
 
-                if (isDuplicate) {
+                if (isDuplicate && isNewOrUpdateId === "New") {
                     setErrorMessage("The character you are creating already exists.");
                     setLoading(false);
                     return;
                 }
-            }
 
             const characterData = {
                 child_id: String(characterCreated.id),
@@ -286,7 +293,7 @@ export default function CharacterCreation() {
                             <LoadingMessage smallVersion={true} oneRow={true} />
                         ) : (
                             <CustomButton
-                                text="Finish"
+                                text={isNewOrUpdateId === "New" ? "Finish" : "Update"}
                                 image={require("../assets/forward.png")}
                                 uniqueButtonStyling={styles.forwardBtnContainer}
                                 functionToExecute={() => saveCharacter()}

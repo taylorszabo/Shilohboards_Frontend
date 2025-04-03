@@ -72,6 +72,16 @@ export default function LevelTwo() {
     const soundObject = useRef(new Audio.Sound());
     const [expandNumberImage, setExpandNumberImage] = useState<boolean>(false);
 
+    useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+    }, []);
+
 
     const getLocalImage = (gameType: string, key: string | number): number => {
         if (gameType === "Alphabet" && typeof key === "string" && alphabetImages[key]) {

@@ -63,6 +63,16 @@ export default function LevelThree() {
     const soundObject = useRef(new Audio.Sound());
 
     useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
+    }, []);
+
+    useEffect(() => {
         const fetchCharacterProfile = async () => {
             if (!playerId || playerId === "0") {
                 router.replace("/SelectCharacter");

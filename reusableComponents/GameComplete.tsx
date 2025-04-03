@@ -9,6 +9,7 @@ import ProgressBar from "./ProgressBar";
 import {useEffect, useState} from "react";
 import { characterOptions, bgColorOptions } from "../CharacterOptions";
 import axios from "axios";
+import LoadingMessage from "./LoadingMessage";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://localhost:3000";
 
@@ -137,7 +138,7 @@ export default function GameComplete(props: { game: string | string[], score: st
                     <CustomButton text='Main Menu' onPressRoute={`/MainMenu?playerId=${playerId}`} uniqueButtonStyling={styles.submitBtnContainer}/>
                 </View>
             ) : (
-                <Text style={styles.textCSS}>Loading character...</Text>
+                <LoadingMessage />
             )}
         </BackgroundLayout>
     );

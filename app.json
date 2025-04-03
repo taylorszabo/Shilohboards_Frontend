@@ -19,8 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/app-icon.png"
       },
       "permissions": ["AUDIO_RECORDING", "MEDIA_LIBRARY"]
     },

@@ -51,6 +51,7 @@ export default function LevelOne() {
     const questionsFetched = useRef(false);
     const soundObject = useRef(new Audio.Sound());
 
+
     // Fetch character profile from backend
     useEffect(() => {
         const fetchCharacterProfile = async () => {
@@ -115,6 +116,13 @@ export default function LevelOne() {
     }, [game]);
 
     useEffect(() => {
+        const checkUser = async () => {
+            const token = await AsyncStorage.getItem("authToken");
+            if (!token) {
+                router.push('/Login');
+            }
+        };
+        checkUser();
         if (Platform.OS === "web") {
             const handleBeforeUnload = (event: BeforeUnloadEvent) => {
                 event.preventDefault();

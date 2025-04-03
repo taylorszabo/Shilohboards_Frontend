@@ -35,6 +35,7 @@ export default function Login() {
   const { fromSettings } = useLocalSearchParams();
 
   useEffect(() => {
+
     const checkUser = async () => {
       const token = await AsyncStorage.getItem("authToken");
       if (token && fromSettings !== "true") {
@@ -110,7 +111,7 @@ export default function Login() {
         {showPasswordInfo && (
           <View style={styles.bubble}>
             <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Contain 1 number</Text>
+            <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
           </View>
         )}
 
@@ -141,7 +142,7 @@ export default function Login() {
 
           <TouchableOpacity
             style={styles.infoIcon}
-            onPress={() => setShowPasswordInfo(true)}
+            onPress={() => setShowPasswordInfo(prev => !prev)}
           >
             <Text style={{ fontSize: 18 }}>ℹ️</Text>
           </TouchableOpacity>

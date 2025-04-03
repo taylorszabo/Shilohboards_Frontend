@@ -106,7 +106,7 @@ const Register = () => {
         {showPasswordInfo && (
           <View style={styles.bubble}>
             <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Contain 1 number</Text>
+            <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
           </View>
         )}
 
@@ -136,7 +136,7 @@ const Register = () => {
           />
           <TouchableOpacity
             style={styles.infoIcon}
-            onPress={() => setShowPasswordInfo(true)}
+            onPress={() => setShowPasswordInfo(prev => !prev)}
           >
             <Text style={{ fontSize: 18 }}>ℹ️</Text>
           </TouchableOpacity>

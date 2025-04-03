@@ -30,12 +30,19 @@ export default function MainMenu() {
   const [character, setCharacter] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
+  useEffect(() => {
+    const checkUser = async () => {
+      const token = await AsyncStorage.getItem("authToken");
+      if (!token) {
+        router.push('/Login');
+      }
+    };
+    checkUser();
+  }, []);
+
   const handleLogout = useCallback(async () => {
     try {
-      await AsyncStorage.removeItem("authToken");
-      await AsyncStorage.removeItem("refreshToken");
-      await AsyncStorage.removeItem("userId");
-      await AsyncStorage.removeItem("parentId");
+      await AsyncStorage.clear();
       router.replace("/Login");
     } catch (error) {
       console.error("Logout failed:", error);
