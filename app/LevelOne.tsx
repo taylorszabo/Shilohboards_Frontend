@@ -93,7 +93,10 @@ export default function LevelOne() {
 
                 if (isMounted) {
                     //sort in ascending order for either letter strings or numbers
-                    setGameQuestions(clonedQuestions.sort((a, b) => (typeof a.letter === "number" && typeof b.letter === "number") ? (a.letter as number) - (b.letter as number) : (a.letter as string).localeCompare(b.letter as string)));
+                    setGameQuestions(questionsArray.sort((a, b) => (typeof a.letter === "number" && typeof b.letter === "number") ? (a.letter as number) - (b.letter as number) : (a.letter as string).localeCompare(b.letter as string)));
+
+                    //setGameQuestions(clonedQuestions); //other possible solution if issues with ascending order persist
+
                     setCurrentQuestion(0);
                     setLoading(false);
                 }
