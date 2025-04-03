@@ -392,8 +392,6 @@ export default function LevelTwo() {
                             </View>
                             {game === "Alphabet" ?
                                 <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
-                                    <Text style={styles.alphaNumLeftInstructionText}>Tap the ear to play sound</Text>
-                                    <SoundIcon widthPercent={30} onPress={playCurrentSound}/>
                                 </View>
                                 :
                                 <View style={{alignItems: 'center', width: '100%', marginVertical: 10}}>
