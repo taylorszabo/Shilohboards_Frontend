@@ -182,7 +182,7 @@ export default function CharacterCreation() {
             <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
                 <Text style={[styles.headerText, { fontSize: 35 }]}>
 
-                    {processStep !== numberOfSteps ? "Let's Create Your Character:" : "Character Review"}
+                    {processStep !== numberOfSteps ? `Let's ${isNewOrUpdateId === "New" ? "Create Your Character" : "Update Your Character"}` : "Character Review"}
                 </Text>
 
 

@@ -161,7 +161,7 @@ export default function PerformanceReports() {
             <Text style={styles.bodyText}>Select the following options to view results:</Text>
 
             {/* =============== Names Row =============== */}
-            {children.length < 3 ?
+            {children.length < 4 ?
                 <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                     {[...children].map((user) => (
                         <View key={user.id}>
