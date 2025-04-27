@@ -118,17 +118,18 @@ export default function Login() {
 
 
         <TextInput
-          style={[styles.input, { width: '80%', fontSize: 20, marginBottom: 15, minWidth: '80%' }, width > 800 && {minWidth: 450 }]}
+          style={[styles.input, { width: '80%', fontSize: 20, marginBottom: 15, minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
+          multiline={false}
           keyboardType="email-address"
         />
 
-        <View style={[{ width: '80%', position: "relative", justifyContent: "center", alignItems: 'center', minWidth: '80%'}, width > 800 && {minWidth: 450 }]}>
+        <View style={[{ width: '80%', position: "relative", justifyContent: "center", alignItems: 'center', minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}>
           <TextInput
-            style={[styles.input, { fontSize: 20, width: '100%', minWidth: '100%' }]}
+            style={[styles.input, { fontSize: 20, width: '100%', minWidth: '100%', maxWidth: '100%' }]}
             placeholder="Password"
             secureTextEntry
             value={password}
@@ -200,8 +201,8 @@ const styles = StyleSheet.create({
   input: {
     position: 'relative',
     backgroundColor: "#fff",
+    textAlignVertical: 'center',
     borderRadius: 10,
-    paddingVertical: 10,
     paddingHorizontal: 12,
     borderWidth: 1,
     borderColor: "#494649",
@@ -209,6 +210,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
     shadowRadius: 4,
+    height: 55
   },
   errorText: {
     color: "red",
@@ -223,7 +225,7 @@ const styles = StyleSheet.create({
   },
   infoIcon: {
     position: "absolute",
-    right: 10,
+    right: -30,
     top: 0,
     bottom: 0,
     zIndex: 2,
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
   bubble: {
     position: "absolute",
     top: '50%',
-    transform: [{ translateY: -90 }],
+    transform: [{ translateY: -92 }],
     right: 0,
     left: 0,
     backgroundColor: "#fff",
