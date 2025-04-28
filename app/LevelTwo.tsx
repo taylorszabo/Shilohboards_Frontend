@@ -339,7 +339,7 @@ export default function LevelTwo() {
     }
 
     if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+        return (<LoadingMessage backgroundNeeded={true}/>)
     }
     if (gameComplete) {
         return <GameComplete level="2" game={game} score={`${correctAnswers}/${gameQuestions.length}`} />;

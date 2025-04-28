@@ -114,7 +114,7 @@ export default function Login() {
           />
         </View>
         
-        {fromSettings === "true" ? <Text style={styles.title}>Confirm Old Email and Password</Text>: <Text style={styles.title}>Login</Text>}
+        {fromSettings === "true" ? <Text style={styles.title}>Confirm Old Email and Password</Text> : <Text style={styles.title}>Login</Text>}
 
 
         <TextInput
@@ -123,7 +123,6 @@ export default function Login() {
           value={email}
           onChangeText={setEmail}
           autoCapitalize="none"
-          multiline={false}
           keyboardType="email-address"
         />
 
@@ -200,6 +199,8 @@ const styles = StyleSheet.create({
   },
   input: {
     position: 'relative',
+    height: 55,
+    minHeight: 55,
     backgroundColor: "#fff",
     textAlignVertical: 'center',
     borderRadius: 10,
@@ -209,12 +210,11 @@ const styles = StyleSheet.create({
     shadowColor: "rgba(0, 0, 0, 0.25)",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 1,
-    shadowRadius: 4,
-    height: 55
+    shadowRadius: 4
   },
   errorText: {
     color: "red",
-    marginBottom: 10,
+    marginTop: 10,
   },
   registerText: {
     marginTop: height * 0.03,
