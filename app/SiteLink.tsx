@@ -60,28 +60,25 @@ const SiteLink = () => {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      justifyContent: "flex-start",
+      justifyContent: 'center',
       alignItems: "center",
-      paddingHorizontal: width * 0.08,
-      paddingTop: height * 0.08,
+      paddingBottom: 120,
     },
     logo: {
-      width: width * 0.6,
-      height: width * 0.6,
+      width: 350,
+      height: 350,
       resizeMode: "contain",
-      marginTop: height * 0.01,
-      marginBottom: height * 0.05,
     },
     linkButton: {
-      width: width * 0.9,
-      height: height * 0.15,
-      marginTop: height * 0.0,
+      width: '85%',
+      maxWidth: 500,
     },
     backBtnContainer: {
-      position: "absolute",
-      top: height * 0.02,
-      left: width * 0.02,
-      paddingVertical: height * 0.02,
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      zIndex: 5,
+      paddingVertical: 20
     },
   });
   
