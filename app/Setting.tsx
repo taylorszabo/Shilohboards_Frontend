@@ -54,27 +54,15 @@ export default function Settings() {
     isSliding.current = true;
   };
 
-  // const handleSliderChange = (value: number) => {
-  //   // Clear the previous timeout if it exists
-  //   if (debounceTimeout.current) {
-  //     clearTimeout(debounceTimeout.current);
-  //   }
-
-  //   // Set a new timeout to update the state after a delay
-  //   debounceTimeout.current = setTimeout(() => {
-  //     setTempVolume(value);
-  //   }, 100); // Adjust the delay (in milliseconds) as needed
-  // };
-
   const handleValueChange = (value: number) => {
     if (isSliding.current) {
-      setCurrentValue(value); // Update only the local dragging value
+      setCurrentValue(value);
     }
   };
 
   const handleSlidingComplete = (value: number) => {
     isSliding.current = false;
-    setTempVolume(value); // Now commit it after releasing
+    setTempVolume(value);
   };
 
   const handleSaveVolume = async () => {

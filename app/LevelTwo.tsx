@@ -377,14 +377,15 @@ export default function LevelTwo() {
                             <View style={styles.expandedNumberPopup}>
                                     <Image
                                         source={gameQuestions[currentQuestion].exampleImage}
-                                        style={{flex: 1, maxWidth: '95%', resizeMode: 'contain'}}
+                                        style={{flex: 1, maxWidth: '95%', margin: 10, resizeMode: 'contain'}}
                                     />
                                     <TouchableOpacity 
                                         onPress={() => setExpandNumberImage(false)} 
                                         style={{
                                             width: `15%`, 
                                             aspectRatio: 1, 
-                                            marginVertical: 10
+                                            marginBottom: 10,
+                                            marginTop: 5
                                         }}
                                     >
                                         <Image source={require('../assets/Icons/shrink.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
