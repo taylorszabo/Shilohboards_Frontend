@@ -389,7 +389,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '1%'
+    gap: '1%',
+    maxWidth: 600
   },
   answerContainer: {
     flex: 1,

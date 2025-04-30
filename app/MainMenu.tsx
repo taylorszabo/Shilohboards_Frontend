@@ -185,9 +185,10 @@ const styles = StyleSheet.create({
   },
   shilohLogoInHamburgerMenu: {
     position: 'absolute',
-    bottom: -100,
+    bottom: 0,
+    transform: [{ translateY: 90 }],
     resizeMode: 'contain',
-    height: '170%'
+    height: 250
   },
   closeHamburgerMenuBtn: {
     position: 'absolute',
@@ -223,7 +224,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   linkList: {
-    marginTop: 25,
+    marginTop: 35,
     padding: 15,
     height: '80%'
   },

@@ -347,7 +347,7 @@ export default function LevelTwo() {
 
     return (
         <BackgroundLayout>
-            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.container}>
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
                 {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
                 <CharacterCard
@@ -458,7 +458,7 @@ export default function LevelTwo() {
                         <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                     }
                 </View>
-            </ScrollView>
+            </View>
         </BackgroundLayout>
     );
 }

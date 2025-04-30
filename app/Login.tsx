@@ -154,7 +154,7 @@ export default function Login() {
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
         {loading ? (
-  <LoadingMessage smallVersion={true} />
+          <LoadingMessage smallVersion={true} />
 ) : (
   <CustomButton
     text="Sign In"
@@ -192,7 +192,7 @@ const styles = StyleSheet.create({
     resizeMode: "contain",
   },
   title: {
-    fontSize: 33,
+    fontSize: 30,
     fontWeight: "700",
     color: "#3E1911",
     margin: 25,
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   bubble: {
     position: "absolute",
     top: '50%',
-    transform: [{ translateY: -92 }],
+    transform: [{ translateY: -90 }],
     right: 0,
     left: 0,
     backgroundColor: "#fff",
@@ -245,15 +245,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#2aa0b8",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
     zIndex: 5,
-    elevation: 10,
   },
   bubbleText: {
-    fontSize: 15,
+    fontSize: 14,
     color: "#3E1911",
   },
 });

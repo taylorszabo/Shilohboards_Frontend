@@ -22,6 +22,11 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
+    width: '100%',
+    height: '100%',
+    maxWidth: 2000,
+    maxHeight: 1200,
+    marginHorizontal: 'auto'
   },
 });
 

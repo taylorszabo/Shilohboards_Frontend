@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, useWindowDimensions } from 'react-native';
 import { Dispatch, SetStateAction } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomButton from '../reusableComponents/CustomButton';
@@ -11,9 +11,10 @@ type Props = {
 
 export default function ExitConfirmation(props: Props) {
     const { onExit, setExitPopupOpen } = props;
+    const windowHeight = useWindowDimensions().height;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
             <LinearGradient
                 colors={['rgba(225, 206, 182, 0.2)', 'rgba(0, 0, 0, 0)', 'rgba(225, 206, 182, 0.2)']}
                 style={styles.popupBox}

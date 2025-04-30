@@ -158,7 +158,7 @@ export default function InventoryScreen() {
                         onValueChange={(itemValue) => handleSelectUser(itemValue)}
                     >
                         <Picker.Item label="-- Select Account --" value="" />
-                        {childAccounts.map((user) => (
+                        {childAccounts.sort((a, b) => a.profile_name.localeCompare(b.profile_name)).map((user) => (
                             <Picker.Item key={user.id} label={formatNameWithCapitals(user.profile_name)} value={user.id} />
                         ))}
                     </Picker>
@@ -176,10 +176,10 @@ export default function InventoryScreen() {
                                     <View key={`${category}_level${level}`}>
                                         <Text style={styles.level}>Level {level}</Text>
                                         <View style={styles.itemRow}>
-                                        {
-                                         level === 1 ? <Image source={starIcon1} style={styles.starIcon} /> :
-                                         level === 2 ? <Image source={starIcon2} style={styles.starIcon} /> :
-                                         level === 3 ? <Image source={starIcon3} style={styles.starIcon} /> : null
+                                            {
+                                                level === 1 ? <Image source={starIcon1} style={styles.starIcon} /> :
+                                                level === 2 ? <Image source={starIcon2} style={styles.starIcon} /> :
+                                                level === 3 ? <Image source={starIcon3} style={styles.starIcon} /> : null
                                             }
                                             <Text style={styles.itemText}>
                                                 x {levelCounts[`${selectedUser.id}_${category}_level${level}_count`] || 0}
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerText: {
-        fontSize: 28,
+        fontSize: 26,
         fontWeight: 'bold',
         color: '#3E1911',
         margin: 25,

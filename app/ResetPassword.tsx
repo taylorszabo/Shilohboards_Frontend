@@ -84,7 +84,7 @@ const ResetPassword = () => {
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
           {loading ? (
-              <LoadingMessage />
+              <LoadingMessage smallVersion={true}/>
           ) : (
               <>
                 <CustomButton
@@ -114,14 +114,14 @@ const styles = StyleSheet.create({
     width: '100%'
   },
   title: {
-    fontSize: 33,
+    fontSize: 30,
     fontWeight: "700",
     color: "#3E1911",
-    marginBottom: height * 0.04,
+    marginBottom: 35,
     textAlign: "center",
   },
   cancelText: {
-    marginTop: height * 0.03,
+    marginTop: 25,
     color: "#3E1911",
     fontSize: 20,
     fontWeight: "400",
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 12,
-    marginBottom: height * 0.015,
     borderWidth: 1,
     borderColor: "#494649",
     shadowColor: "rgba(0, 0, 0, 0.25)",

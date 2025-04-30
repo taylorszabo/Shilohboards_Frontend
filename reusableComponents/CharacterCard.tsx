@@ -122,7 +122,8 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#3E1911",
         fontWeight: "bold",
-        maxWidth: '100%'
+        maxWidth: '100%',
+        paddingHorizontal: 5
     },
     selectedStyling: {
         borderWidth: 5, 
