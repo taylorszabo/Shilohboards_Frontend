@@ -183,7 +183,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingBottom: 40,
-    margin: 'auto'
+    margin: 'auto',
+    width: '100%'
   },
   logo: {
     width: '100%',

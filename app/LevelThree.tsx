@@ -302,7 +302,7 @@ export default function LevelThree() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600}}>
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600, maxHeight: 900}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
                             <Text style={[styles.headerText, {width: '40%'}]}>

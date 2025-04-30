@@ -232,26 +232,28 @@ export default function LevelOne() {
                     <SoundIcon widthPercent={18} onPress={playSound}/>
                 </View>
 
-                {doorOpened ? (
-                    <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
-                        <View style={styles.cube}>
-                            <Image source={getLocalObjectImage(String(game), currentItem.objectImage)} style={styles.numberImage} />
-                        </View>
+                <View style={{flex: 1, maxHeight: 550, alignItems: 'center'}}>
+                    {doorOpened ? (
+                        <TouchableOpacity onPress={() => setDoorOpened(false)} style={styles.stackedCubeContainer}>
+                            <View style={styles.cube}>
+                                <Image source={getLocalObjectImage(String(game), currentItem.objectImage)} style={styles.numberImage} />
+                            </View>
 
-                        <View style={styles.cubeBackContainer}>
-                            <View style={styles.cube}></View>
-                        </View>
+                            <View style={styles.cubeBackContainer}>
+                                <View style={styles.cube}></View>
+                            </View>
 
-                    </TouchableOpacity>
-                ) : (
-                    <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
-                        <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
-                        <View style={styles.cubeBackContainer}></View>
-                    </TouchableOpacity>
-                )}
+                        </TouchableOpacity>
+                    ) : (
+                        <TouchableOpacity onPress={() => setDoorOpened(true)} style={styles.cube}>
+                            <Image source={getLocalExampleImage(String(game), currentItem.letter)} style={styles.numberImage} />
+                            <View style={styles.cubeBackContainer}></View>
+                        </TouchableOpacity>
+                    )}
+                
 
-                <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} />
-
+                    <CustomButton uniqueButtonStyling={styles.submitBtnContainer} text="Next" functionToExecute={moveToNextQuestion} image={require("../assets/forward.png")} />
+                </View>
             </View>
             
         </BackgroundLayout>
@@ -272,20 +274,15 @@ const styles = StyleSheet.create({
     voiceoverText: {
         fontSize: 18, // Responsive font size
         color: '#3E1911',
-        fontWeight: '500',
-        paddingHorizontal: width * 0.05, //Consistent padding
+        fontWeight: '700',
         textAlign: 'center',
       },
-    ear: {
-        width: width * 0.08,
-        height: width * 0.08,  // Keeping it proportional
-        resizeMode: "contain",
-        marginLeft: width * 0.02,
-    },
     cube: {
-        width: width * 0.5,   // Makes cube adapt to screen size
-        height: height * 0.3, // Adjust height dynamically
-        borderRadius: width * 0.05,
+        width: 250,   // Makes cube adapt to screen size
+        height: height * 0.32, // Adjust height dynamically
+        maxWidth: 300,
+        maxHeight: 350,
+        borderRadius: 15,
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
@@ -310,13 +307,10 @@ const styles = StyleSheet.create({
     cubeBackContainer: {
         position: "absolute",
         top: 0,
-        right: width * 0.5,  // Adjust dynamically based on screen width
+        bottom: 0,
+        left: 0,
+        transform: [{ translateX: -252 }],
         zIndex: 0, // Moves it behind the main image
-    },
-    backIcon: {
-        height: 30,
-        width: 30,
-        resizeMode: "contain",
     },
     title: {
         fontSize: 28,  // Scales based on screen width
@@ -324,20 +318,6 @@ const styles = StyleSheet.create({
         color: "#3E1911",
         textAlign: "center",
         paddingVertical: 20
-    },
-    nextButton: {
-        width: width * 0.3,  
-        height: height * 0.07,
-        backgroundColor: "#C3E2E5",
-        borderRadius: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: height * 0.02,
-    },
-    buttonText: {
-        fontSize: width * 0.05,
-        fontWeight: "600",
-        color: "#3E1911",
     },
     backBtnContainer: {
         position: 'absolute',
@@ -348,12 +328,6 @@ const styles = StyleSheet.create({
     submitBtnContainer: {
         marginTop: 'auto', 
         flexDirection: 'row',
-    },
-    cubeRow: {
-        marginVertical: height * 0.03, 
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: width * 0.03,
     },
 });
 

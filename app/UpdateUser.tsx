@@ -292,10 +292,9 @@ const styles = StyleSheet.create({
     minWidth: 350,
     justifyContent: "center",
     alignItems: "center",
-    //paddingBottom: height * 0.08,
     margin: 'auto',
-    marginTop: height * 0.1
-    //backgroundColor: 'red'
+    marginTop: height * 0.1,
+    width: '100%'
   },
   title: {
     fontSize: 33,

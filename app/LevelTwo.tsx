@@ -359,7 +359,7 @@ export default function LevelTwo() {
                 <Text style={[styles.headerText, {fontSize: 28}]}>{game} - Level 2</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700, maxHeight: 900}}>
                     {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
                         {answerDisplayed
