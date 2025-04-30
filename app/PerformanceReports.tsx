@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     padding: 20,
     paddingHorizontal: 20,
+    marginTop: 8,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 20,

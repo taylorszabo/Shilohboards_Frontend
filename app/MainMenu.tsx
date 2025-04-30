@@ -204,7 +204,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     color: '#3E1911',
-    maxWidth: 600
+    maxWidth: 600,
+    width: '100%',
   },
   cardDiv: {
     gap: 15,

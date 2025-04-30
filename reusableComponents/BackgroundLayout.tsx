@@ -19,6 +19,8 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    maxWidth: '100%',
+    maxHeight: '100%',
   },
   overlay: {
     flex: 1,
