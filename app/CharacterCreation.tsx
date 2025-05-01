@@ -247,7 +247,7 @@ export default function CharacterCreation() {
                         <Text style={[styles.instructionText, { fontSize: 20 }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
                             Please choose your background colour:
                         </Text>
-                        <View style={styles.optionCardContainer}>
+                        <View style={[styles.optionCardContainer, {flex: 0.8}]}>
                             <View style={{gap: '3%', alignItems: 'flex-end', flex: 1}}>
                                 {bgColorOptions.slice(0, bgColorOptions.length / 2).map((item) => (
                                     <OptionCard
