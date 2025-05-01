@@ -8,7 +8,7 @@ import {
   Dimensions,
   Pressable,
   Keyboard,
-  Alert,
+  Alert, Platform,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import axios from "axios";
@@ -137,59 +137,67 @@ const UpdateUser = () => {
 
 
   const handleDeleteAccount = async () => {
-    Alert.alert(
-        "Confirm Deletion",
-        "Are you sure you want to delete your account? This action cannot be undone.",
-        [
-          {
-            text: "Cancel",
-            style: "cancel",
-          },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: async () => {
-              try {
-                const idToken = await AsyncStorage.getItem("authToken");
-                if (!idToken) {
-                  alert("You are not authenticated.");
-                  return;
-                }
+    const confirmDeletion = async () => {
+      try {
+        const idToken = await AsyncStorage.getItem("authToken");
+        if (!idToken) {
+          alert("You are not authenticated.");
+          return;
+        }
 
-                const response = await fetch(
-                    `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${process.env.EXPO_PUBLIC_FIREBASE_API_KEY}`,
-                    {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ idToken }),
-                    }
-                );
+        const response = await fetch(
+            `https://identitytoolkit.googleapis.com/v1/accounts:delete?key=${process.env.EXPO_PUBLIC_FIREBASE_API_KEY}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ idToken }),
+            }
+        );
 
-                const data = await response.json();
+        const data = await response.json();
 
-                if (!response.ok) {
-                  if (data.error?.message === "TOKEN_EXPIRED" || data.error?.message === "CREDENTIAL_TOO_OLD_LOGIN_AGAIN") {
-                    alert("Please sign in again before deleting your account.");
-                    return;
-                  } else {
-                    console.error("Delete error:", data);
-                    alert("Failed to delete account.");
-                    return;
-                  }
-                }
+        if (!response.ok) {
+          if (
+              data.error?.message === "TOKEN_EXPIRED" ||
+              data.error?.message === "CREDENTIAL_TOO_OLD_LOGIN_AGAIN"
+          ) {
+            alert("Please sign in again before deleting your account.");
+            return;
+          } else {
+            console.error("Delete error:", data);
+            alert("Failed to delete account.");
+            return;
+          }
+        }
 
-                await AsyncStorage.clear();
-                alert("Account deleted.");
-                router.replace("/Login");
+        await AsyncStorage.clear();
+        alert("Account deleted.");
+        router.replace("/Login");
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        alert("An error occurred. Please try again.");
+      }
+    };
 
-              } catch (err) {
-                console.error("Unexpected error:", err);
-                alert("An error occurred. Please try again.");
-              }
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(
+          "Are you sure you want to delete your account? This action cannot be undone."
+      );
+      if (confirmed) await confirmDeletion();
+    } else {
+      Alert.alert(
+          "Confirm Deletion",
+          "Are you sure you want to delete your account? This action cannot be undone.",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Delete",
+              style: "destructive",
+              onPress: confirmDeletion,
             },
-          },
-        ]
-    );
+          ]
+      );
+    }
   };
 
 
