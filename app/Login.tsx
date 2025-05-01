@@ -216,9 +216,10 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginTop: 10,
+    textAlign: 'center',
   },
   registerText: {
-    marginTop: height * 0.03,
+    marginTop: 25,
     color: "#3E1911",
     fontSize: 18,
     fontWeight: "400",

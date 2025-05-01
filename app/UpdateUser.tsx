@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cancelText: {
-    marginTop: height * 0.03,
+    marginTop: 20,
     color: "#3E1911",
     fontSize: 18,
     fontWeight: "400",

@@ -43,7 +43,7 @@ const Register = () => {
     }
 
     if (password.length < 6 || !/\d/.test(password)) {
-      setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
+      setErrorMessage("Password must be at least 6 characters long and contain at least 1 number.");
       return;
     }
 
@@ -80,7 +80,7 @@ const Register = () => {
           setErrorMessage("Please enter a valid email address.");
           break;
         case "WEAK_PASSWORD":
-          setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
+          setErrorMessage("Password must be at least 6 characters long and contain at least 1 number.");
           break;
         default:
           setErrorMessage("Registration failed. Please try again.");
@@ -220,6 +220,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     marginTop: 10,
+    textAlign: 'center',
+    marginHorizontal: 30
   },
   successText: {
     color: "green",
