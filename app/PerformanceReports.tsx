@@ -24,7 +24,7 @@ type ReportQuery = {
 
 export default function PerformanceReports() {
     const [children, setChildren] = useState<any[]>([]);
-    const { playerId, game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
+    const { playerId, game = gamesArray[0].title, level = '2', playerLastSelected = playerId } = useLocalSearchParams();
     const [query, setQuery] = useState<ReportQuery>({
         playerId: parseInt(playerLastSelected.toString()),
         game: game.toString(),
