@@ -82,7 +82,7 @@ export default function LevelChoice() {
                             heightPercentNumber={15}
                         />
 
-                        <Text style={styles.headerText}>Choose a level for the {game} Activity:</Text>
+                        <Text style={styles.headerText}>Choose a Level for the {game} Activity:</Text>
 
                         <View style={[styles.cardDiv, game === "Alphabet" ? {flex: 0.6} : {flex: 0.4}]}>
                             <OptionCard upperText="Level 1" square={false} onPressRoute={`/LevelOne?game=${game}&playerId=${playerId}`} />

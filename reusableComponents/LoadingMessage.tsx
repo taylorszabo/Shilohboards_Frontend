@@ -13,7 +13,7 @@ export default function LoadingMessage(props: {backgroundNeeded?: boolean, small
     if (backgroundNeeded) {
         return (
             <BackgroundLayout>
-                <View style={{flex: screenSpaceTakenUp, justifyContent: 'center', alignItems: 'center', gap: gapSize, flexDirection: colOrRowDirection}}>
+                <View style={{flex: screenSpaceTakenUp, justifyContent: 'center', alignItems: 'center', gap: gapSize, flexDirection: colOrRowDirection, padding: 15}}>
                     <Text style={{color: '#3E1911', fontSize: textSize, fontWeight: 'bold'}}>Loading...</Text>
                     <ActivityIndicator size={spinnerSize} color="#8c9eaa" />
                 </View>
@@ -22,7 +22,7 @@ export default function LoadingMessage(props: {backgroundNeeded?: boolean, small
     }
 
     return (
-        <View style={{flex: screenSpaceTakenUp, justifyContent: 'center', alignItems: 'center', gap: gapSize, flexDirection: colOrRowDirection}}>
+        <View style={{flex: screenSpaceTakenUp, justifyContent: 'center', alignItems: 'center', gap: gapSize, flexDirection: colOrRowDirection, padding: 15}}>
             <Text style={{color: '#3E1911', fontSize: textSize, fontWeight: 'bold'}}>Loading...</Text>
             <ActivityIndicator size={spinnerSize} color="#8c9eaa" />
         </View>

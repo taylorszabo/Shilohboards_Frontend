@@ -215,17 +215,12 @@ const UpdateUser = () => {
           />
         )}
 
-        {/* Password info bubble */}
-        {showPasswordInfo && (
-          <View style={styles.bubble}>
-            <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
-          </View>
-        )}
+        
 
         <Text style={styles.title}>Update Password</Text>
+
         <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045, backgroundColor: "#e6e6e6", color: "#555555"}]}
+          style={[styles.input, { width: '80%', fontSize: 20, marginBottom: 15, minWidth: '80%', maxWidth: '80%', backgroundColor: "#e6e6e6", color: "#555555" }, width > 800 && {minWidth: 450 }]}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
@@ -235,9 +230,9 @@ const UpdateUser = () => {
         />
 
         {/* Password Input with Info Icon */}
-        <View style={{ width: width * 0.8, position: "relative", marginBottom: height * 0.015 }}>
+        <View style={[{ width: '80%', position: "relative", justifyContent: "center", alignItems: 'center', minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}>
           <TextInput
-            style={[styles.input, { fontSize: width * 0.045 }]}
+            style={[styles.input, { fontSize: 20, width: '100%', minWidth: '100%', maxWidth: '100%' }]}
             placeholder="Password"
             secureTextEntry
             value={newPassword}
@@ -249,11 +244,19 @@ const UpdateUser = () => {
           >
             <Text style={{ fontSize: 18 }}>ℹ️</Text>
           </TouchableOpacity>
+
+          {/* Password info bubble */}
+          {showPasswordInfo && (
+            <View style={styles.bubble}>
+              <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
+              <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
+            </View>
+          )}
         </View>
 
         {/* Confirm Password Input WITHOUT Info Icon */}
         <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
+          style={[styles.input, { width: '80%', fontSize: 20, marginTop: 15, minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}
           placeholder="Confirm Password"
           secureTextEntry
           value={confirmPassword}
@@ -266,28 +269,23 @@ const UpdateUser = () => {
           <LoadingMessage smallVersion={true} oneRow={true}/>
         ) : (
           <>
-          <View style={styles.bottomButtonContainer}>
-            <View style={styles.buttonRow}>
-            <CustomButton
-                text="Delete Account"
-                functionToExecute={handleDeleteAccount}
-                uniqueButtonStyling={{
-                  width: width * 0.5,
-                  backgroundColor: "#ED5454",
-                  marginRight: 10,
-                }}
-            />
-            </View>
-          </View>
             <CustomButton
               text="Save"
               functionToExecute={handleUpdateUser}
-              uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+              uniqueButtonStyling={{ width: '55%', marginTop: 30, minWidth: 200 }}
             />
 
             <TouchableOpacity onPress={() => router.push(`/SelectCharacter`)}>
               <Text style={styles.cancelText}>Cancel</Text>
             </TouchableOpacity>
+
+            <CustomButton
+                text="Delete Account"
+                image={require('../assets/Icons/delete.png')}
+                uniqueImageStyling={{height: 30, width: 30, resizeMode: 'contain'}}
+                functionToExecute={handleDeleteAccount}
+                uniqueButtonStyling={{ width: '55%', marginTop: 'auto', minWidth: 230, backgroundColor: "#ED5454", flexDirection: 'row-reverse',}}
+            />
           </>
         )}
       </View>
@@ -298,15 +296,19 @@ const UpdateUser = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxWidth: 700,
+    minWidth: 350,
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: height * 0.08,
+    margin: 'auto',
+    marginTop: height * 0.1,
+    width: '100%'
   },
   title: {
-    fontSize: width * 0.08,
+    fontSize: 30,
     fontWeight: "700",
     color: "#3E1911",
-    marginBottom: height * 0.04,
+    marginBottom: 25,
     textAlign: "center",
   },
   textCSS: {
@@ -316,19 +318,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cancelText: {
-    marginTop: height * 0.03,
+    marginTop: 20,
     color: "#3E1911",
-    fontSize: width * 0.05,
+    fontSize: 18,
     fontWeight: "400",
     textDecorationLine: "underline",
     textAlign: "center",
   },
   input: {
-    height: height * 0.07,
+    position: 'relative',
+    height: 55,
+    minHeight: 55,
     backgroundColor: "#fff",
+    textAlignVertical: 'center',
     borderRadius: 10,
     paddingHorizontal: 12,
-    marginBottom: height * 0.015,
     borderWidth: 1,
     borderColor: "#494649",
     shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -338,45 +342,34 @@ const styles = StyleSheet.create({
   },
   errorText: {
     color: "red",
-    marginBottom: 10,
+    marginTop: 10,
   },
   infoIcon: {
     position: "absolute",
-    right: 10,
-    top: height * 0.02,
+    right: -30,
+    top: 0,
+    bottom: 0,
     zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 'auto',
   },
   bubble: {
     position: "absolute",
-    top: height * 0.26,
-    right: width * 0.1,
+    top: '50%',
+    transform: [{ translateY: -90 }],
+    right: 0,
+    left: 0,
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#2aa0b8",
-    width: width * 0.8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
     zIndex: 5,
-    elevation: 10,
   },
   bubbleText: {
-    fontSize: width * 0.035,
-    color: "#333",
-  },
-  bottomButtonContainer: {
-    position: "absolute",
-    bottom: height * 0.035,
-    width: "100%",
-    alignItems: "center",
-  },
-  buttonRow: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    fontSize: 14,
+    color: "#3E1911",
   },
 });
 

@@ -24,7 +24,7 @@ type ReportQuery = {
 
 export default function PerformanceReports() {
     const [children, setChildren] = useState<any[]>([]);
-    const { playerId, game = gamesArray[0].title, level = '2', playerLastSelected = '0' } = useLocalSearchParams();
+    const { playerId, game = gamesArray[0].title, level = '2', playerLastSelected = playerId } = useLocalSearchParams();
     const [query, setQuery] = useState<ReportQuery>({
         playerId: parseInt(playerLastSelected.toString()),
         game: game.toString(),
@@ -163,7 +163,7 @@ export default function PerformanceReports() {
             {/* =============== Names Row =============== */}
             {children.length < 5 ?
                 <View style={[styles.selectionBars, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
-                    {[...children].map((user) => (
+                    {[...children].sort((a, b) => a.profile_name.localeCompare(b.profile_name)).map((user) => (
                         <View key={user.id}>
                             <Text
                                 style={[styles.bodyText, user.id === query.playerId && styles.selectedUnderline]}
@@ -178,7 +178,7 @@ export default function PerformanceReports() {
                 <View style={[styles.selectionBarsDropdown, {backgroundColor: 'rgba(252, 229, 206, 0.5)'}, windowWidth > 800 && {justifyContent: 'center'}] }>
                     <RNPickerSelect
                         onValueChange={(value) => setQuery({ ...query, playerId: value })}
-                        items={children.map((user) => ({
+                        items={children.sort((a, b) => a.profile_name.localeCompare(b.profile_name)).map((user) => ({
                             label: formatNameWithCapitals(user.profile_name),
                             value: user.id,
                             color: '#3E1911',
@@ -274,6 +274,7 @@ const styles = StyleSheet.create({
     verticalAlign: 'middle',
     padding: 20,
     paddingHorizontal: 20,
+    marginTop: 8,
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 20,
@@ -323,7 +324,7 @@ const styles = StyleSheet.create({
   letterNumberStyle: {
     fontWeight: 'bold', 
     color: '#3E1911',
-    fontSize: 17
+    fontSize: 15
   },
   gameInstructionLink: {
     marginTop: 'auto',

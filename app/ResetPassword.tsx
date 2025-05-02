@@ -73,7 +73,7 @@ const ResetPassword = () => {
           <Text style={styles.title}>Reset Your Password</Text>
 
           <TextInput
-              style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
+              style={[styles.input, { width: '80%', fontSize: 20, marginBottom: 15, minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}
               placeholder="Email"
               value={email}
               onChangeText={setEmail}
@@ -84,13 +84,13 @@ const ResetPassword = () => {
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
           {loading ? (
-              <LoadingMessage />
+              <LoadingMessage smallVersion={true}/>
           ) : (
               <>
                 <CustomButton
                     text="Send Reset Email"
                     functionToExecute={handleResetPassword}
-                    uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+                    uniqueButtonStyling={{ width: '50%', marginTop: 30, minWidth: 230 }}
                 />
 
                 <TouchableOpacity onPress={() => router.push(`/Login`)}>
@@ -106,31 +106,33 @@ const ResetPassword = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxWidth: 700,
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: height * 0.08,
+    paddingBottom: 40,
+    margin: 'auto',
+    width: '100%'
   },
   title: {
-    fontSize: width * 0.08,
+    fontSize: 30,
     fontWeight: "700",
     color: "#3E1911",
-    marginBottom: height * 0.04,
+    marginBottom: 35,
     textAlign: "center",
   },
   cancelText: {
-    marginTop: height * 0.03,
+    marginTop: 25,
     color: "#3E1911",
-    fontSize: width * 0.05,
+    fontSize: 20,
     fontWeight: "400",
     textDecorationLine: "underline",
     textAlign: "center",
   },
   input: {
-    height: height * 0.07,
+    height: 55,
     backgroundColor: "#fff",
     borderRadius: 10,
     paddingHorizontal: 12,
-    marginBottom: height * 0.015,
     borderWidth: 1,
     borderColor: "#494649",
     shadowColor: "rgba(0, 0, 0, 0.25)",

@@ -9,12 +9,14 @@ import {
   Dimensions,
   Pressable,
   Keyboard,
+  ScrollView
 } from "react-native";
 import { useRouter } from "expo-router";
 import axios from "axios";
 import BackgroundLayout from "../reusableComponents/BackgroundLayout";
 import LoadingMessage from "../reusableComponents/LoadingMessage";
 import CustomButton from "../reusableComponents/CustomButton";
+//import { ScrollView } from "react-native-gesture-handler";
 
 const FIREBASE_API_KEY = process.env.EXPO_PUBLIC_FIREBASE_API_KEY;
 const FIREBASE_SIGNUP_URL = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`;
@@ -41,7 +43,7 @@ const Register = () => {
     }
 
     if (password.length < 6 || !/\d/.test(password)) {
-      setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
+      setErrorMessage("Password must be at least 6 characters long and contain at least 1 number.");
       return;
     }
 
@@ -78,7 +80,7 @@ const Register = () => {
           setErrorMessage("Please enter a valid email address.");
           break;
         case "WEAK_PASSWORD":
-          setErrorMessage("Password must be at least 6 characters long and contain at least one number.");
+          setErrorMessage("Password must be at least 6 characters long and contain at least 1 number.");
           break;
         default:
           setErrorMessage("Registration failed. Please try again.");
@@ -102,22 +104,17 @@ const Register = () => {
           />
         )}
 
-        {/* Password info bubble */}
-        {showPasswordInfo && (
-          <View style={styles.bubble}>
-            <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
-            <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
-          </View>
-        )}
+        <View style={{width: '75%', height: '25%', alignItems: 'center', justifyContent: 'center'}}>
+          <Image
+            source={require("../assets/logo.png")}
+            style={[styles.logo]}
+          />
+        </View>
 
-        <Image
-          source={require("../assets/logo.png")}
-          style={[styles.logo, { width: width * 0.5, height: width * 0.5 }]}
-        />
         <Text style={styles.title}>Register New Account</Text>
 
         <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
+          style={[styles.input, { width: '80%', fontSize: 20, marginBottom: 15, minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
@@ -126,9 +123,9 @@ const Register = () => {
         />
 
         {/* Password Input with Info Icon */}
-        <View style={{ width: width * 0.8, position: "relative", marginBottom: height * 0.015 }}>
+        <View style={[{ width: '80%', position: "relative", justifyContent: "center", alignItems: 'center', minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}>
           <TextInput
-            style={[styles.input, { fontSize: width * 0.045 }]}
+            style={[styles.input, { fontSize: 20, width: '100%', minWidth: '100%', maxWidth: '100%' }]}
             placeholder="Password"
             secureTextEntry
             value={password}
@@ -138,13 +135,21 @@ const Register = () => {
             style={styles.infoIcon}
             onPress={() => setShowPasswordInfo(prev => !prev)}
           >
-            <Text style={{ fontSize: 18 }}>ℹ️</Text>
+            <Text style={{ fontSize: 18, marginVertical: 'auto' }}>ℹ️</Text>
           </TouchableOpacity>
+
+          {/* Password info bubble */}
+          {showPasswordInfo && (
+            <View style={styles.bubble}>
+              <Text style={styles.bubbleText}>• Password must be at least 6 characters.</Text>
+              <Text style={styles.bubbleText}>• Must contain at least 1 number</Text>
+            </View>
+          )}
         </View>
 
         {/* Confirm Password Input without Info Icon */}
         <TextInput
-          style={[styles.input, { width: width * 0.8, fontSize: width * 0.045 }]}
+          style={[styles.input, { width: '80%', fontSize: 20, marginTop: 15, minWidth: '80%', maxWidth: '80%' }, width > 800 && {minWidth: 450 }]}
           placeholder="Confirm Password"
           secureTextEntry
           value={confirmPassword}
@@ -163,7 +168,7 @@ const Register = () => {
           <CustomButton
             text="Sign Up"
             functionToExecute={handleRegister}
-            uniqueButtonStyling={{ width: width * 0.6, height: height * 0.08 }}
+            uniqueButtonStyling={{ width: '55%', marginTop: 30, minWidth: 200 }}
           />
         )}
 
@@ -178,26 +183,33 @@ const Register = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    maxWidth: 700,
     justifyContent: "center",
     alignItems: "center",
-    paddingBottom: height * 0.08,
+    paddingBottom: 40,
+    margin: 'auto',
+    width: '100%'
   },
   logo: {
+    width: '100%',
+    aspectRatio: 1,
     resizeMode: "contain",
   },
   title: {
-    fontSize: width * 0.08,
+    fontSize: 30,
     fontWeight: "700",
     color: "#3E1911",
-    marginBottom: height * 0.04,
+    margin: 25,
     textAlign: "center",
   },
   input: {
-    height: height * 0.07,
+    position: 'relative',
+    height: 55,
+    minHeight: 55,
     backgroundColor: "#fff",
+    textAlignVertical: 'center',
     borderRadius: 10,
     paddingHorizontal: 12,
-    marginBottom: height * 0.015,
     borderWidth: 1,
     borderColor: "#494649",
     shadowColor: "rgba(0, 0, 0, 0.25)",
@@ -205,65 +217,50 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 4,
   },
-  button: {
-    backgroundColor: "#C3E2E5",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-    marginTop: height * 0.02,
-    shadowColor: "rgba(0, 0, 0, 0.25)",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 1,
-    shadowRadius: 4,
-  },
-  buttonText: {
-    color: "#3E1911",
-    fontSize: width * 0.06,
-    fontWeight: "700",
-    textAlign: "center",
-  },
   errorText: {
     color: "red",
-    margin: 10,
+    marginTop: 10,
+    textAlign: 'center',
+    marginHorizontal: 30
   },
   successText: {
     color: "green",
-    marginBottom: 10,
-    fontSize: width * 0.045,
+    marginTop: 10,
+    fontSize: 18,
     textAlign: "center",
   },
   registerText: {
-    marginTop: height * 0.03,
+    marginTop: 20,
     color: "#3E1911",
-    fontSize: width * 0.05,
+    fontSize: 18,
     fontWeight: "400",
     textDecorationLine: "underline",
   },
   infoIcon: {
     position: "absolute",
-    right: 10,
-    top: height * 0.02,
+    right: -30,
+    top: 0,
+    bottom: 0,
     zIndex: 2,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: 'auto',
   },
   bubble: {
     position: "absolute",
-    top: height * 0.32,
-    right: width * 0.1,
+    top: '50%',
+    transform: [{ translateY: -90 }],
+    right: 0,
+    left: 0,
     backgroundColor: "#fff",
     padding: 10,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#2aa0b8",
-    width: width * 0.8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
     zIndex: 5,
-    elevation: 10,
   },
   bubbleText: {
-    fontSize: width * 0.035,
+    fontSize: 14,
     color: "#333",
   },
 });

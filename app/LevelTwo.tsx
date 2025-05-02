@@ -339,7 +339,7 @@ export default function LevelTwo() {
     }
 
     if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+        return (<LoadingMessage backgroundNeeded={true}/>)
     }
     if (gameComplete) {
         return <GameComplete level="2" game={game} score={`${correctAnswers}/${gameQuestions.length}`} />;
@@ -347,7 +347,7 @@ export default function LevelTwo() {
 
     return (
         <BackgroundLayout>
-            <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
+            <View style={styles.container}>
                 <CustomButton image={require('../assets/back.png')} uniqueButtonStyling={styles.backBtnContainer} functionToExecute={() => setExitPopupOpen(true)} />
                 {exitPopupOpen && <ExitConfirmation onExit={handleExit} setExitPopupOpen={setExitPopupOpen} />}
                 <CharacterCard
@@ -359,7 +359,7 @@ export default function LevelTwo() {
                 <Text style={[styles.headerText, {fontSize: 28}]}>{game} - Level 2</Text>
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
-                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700}}>
+                <View style={{ alignItems: "center", flex: 1, width: "100%", position: "relative", maxWidth: 700, maxHeight: 900}}>
                     {/* =============== Top Instruction =============== */}
                     <Text style={styles.headerText}>
                         {answerDisplayed
@@ -377,14 +377,15 @@ export default function LevelTwo() {
                             <View style={styles.expandedNumberPopup}>
                                     <Image
                                         source={gameQuestions[currentQuestion].exampleImage}
-                                        style={{flex: 1, maxWidth: '95%', resizeMode: 'contain'}}
+                                        style={{flex: 1, maxWidth: '95%', margin: 10, resizeMode: 'contain'}}
                                     />
                                     <TouchableOpacity 
                                         onPress={() => setExpandNumberImage(false)} 
                                         style={{
                                             width: `15%`, 
                                             aspectRatio: 1, 
-                                            marginVertical: 10
+                                            marginBottom: 10,
+                                            marginTop: 5
                                         }}
                                     >
                                         <Image source={require('../assets/Icons/shrink.png')} style={{resizeMode: 'contain', maxHeight: '100%', maxWidth: '100%'}} />
@@ -458,7 +459,7 @@ export default function LevelTwo() {
                         <CustomButton uniqueButtonStyling={styles.submitBtnContainerInvisible} text="Submit"  disabled={true} image={require("../assets/Icons/submit.png")} uniqueImageStyling={styles.btnIcon} />
                     }
                 </View>
-            </ScrollView>
+            </View>
         </BackgroundLayout>
     );
 }

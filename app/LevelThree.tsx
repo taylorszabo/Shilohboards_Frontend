@@ -278,7 +278,7 @@ export default function LevelThree() {
     }
 
     if (loading || !character) {
-        return (<BackgroundLayout><ActivityIndicator size="large" color="#0000ff" /></BackgroundLayout>)
+        return (<LoadingMessage backgroundNeeded={true}/>)
     }
 
     if (gameComplete) {
@@ -302,10 +302,10 @@ export default function LevelThree() {
                 <ProgressBar fillPercent={(currentQuestion / gameQuestions.length) * 100} />
 
                 {currentQuestion !== gameQuestions.length ? (
-                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600}}>
+                    <View style={{alignItems: 'center', flex: 1, width: '100%', position: 'relative', maxWidth: 600, maxHeight: 900}}>
                         {/* =============== Sound =============== */}
                         <View style={styles.topPortion}>
-                            <Text style={[styles.headerText, {width: '40%'}]}>
+                            <Text style={[styles.headerText, {paddingLeft: 0, width: '40%'}]}>
                                 Tap the ear to replay sound
                             </Text>
                             <SoundIcon widthPercent={15} onPress={playCurrentSound}/>
@@ -389,7 +389,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: '1%'
+    gap: '1%',
+    maxWidth: 500,
+    width: '100%'
   },
   answerContainer: {
     flex: 1,
@@ -412,6 +414,7 @@ const styles = StyleSheet.create({
   submitBtnContainer: {
     marginTop: 'auto', 
     flexDirection: 'row',
+    flexWrap: 'wrap'
   },
   submitBtnContainerInvisible: {
     marginTop: 'auto',
@@ -444,19 +447,4 @@ const styles = StyleSheet.create({
     borderBottomWidth: 3,
     borderColor: '#A9A9A9',
   },
-  replayBtn: {
-    width: '25%', 
-    aspectRatio: 1, 
-    padding: '3%', 
-    borderRadius: 10,
-    borderRightWidth: 2,
-    borderBottomWidth: 3,
-    borderColor: '#A9A9A9',
-    backgroundColor: '#FFF8F0',
-  },
-  replayIconPic: {
-    height: '100%',
-    width: '100%',
-    resizeMode: 'contain'
-  }
 });

@@ -158,7 +158,7 @@ export default function InventoryScreen() {
                         onValueChange={(itemValue) => handleSelectUser(itemValue)}
                     >
                         <Picker.Item label="-- Select Account --" value="" />
-                        {childAccounts.map((user) => (
+                        {childAccounts.sort((a, b) => a.profile_name.localeCompare(b.profile_name)).map((user) => (
                             <Picker.Item key={user.id} label={formatNameWithCapitals(user.profile_name)} value={user.id} />
                         ))}
                     </Picker>
@@ -176,10 +176,10 @@ export default function InventoryScreen() {
                                     <View key={`${category}_level${level}`}>
                                         <Text style={styles.level}>Level {level}</Text>
                                         <View style={styles.itemRow}>
-                                        {
-                                         level === 1 ? <Image source={starIcon1} style={styles.starIcon} /> :
-                                         level === 2 ? <Image source={starIcon2} style={styles.starIcon} /> :
-                                         level === 3 ? <Image source={starIcon3} style={styles.starIcon} /> : null
+                                            {
+                                                level === 1 ? <Image source={starIcon1} style={styles.starIcon} /> :
+                                                level === 2 ? <Image source={starIcon2} style={styles.starIcon} /> :
+                                                level === 3 ? <Image source={starIcon3} style={styles.starIcon} /> : null
                                             }
                                             <Text style={styles.itemText}>
                                                 x {levelCounts[`${selectedUser.id}_${category}_level${level}_count`] || 0}
@@ -200,27 +200,27 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
-        padding: width * 0.05,
     },
     headerText: {
-        fontSize: width * 0.07,
+        fontSize: 24,
         fontWeight: 'bold',
         color: '#3E1911',
-        marginBottom: 50,
+        margin: 25,
         textAlign: 'center',
     },
     subHeaderText: {
-        fontSize: width * 0.05,
+        fontSize: 22,
         color: '#3E1911',
-        marginBottom: height * 0.02,
+        marginBottom: 30,
         textAlign: 'center',
     },
     dropdownWrapper: {
         width: '80%',
+        maxWidth: 500,
         borderColor: '#3E1911',
         borderWidth: 2,
         borderRadius: 8,
-        marginBottom: height * 0.02,
+        marginBottom: 20,
         backgroundColor: 'white',
     },
     picker: {
@@ -232,41 +232,42 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         width: '100%',
-        marginTop: height * 0.02,
+        maxWidth: 500,
+        marginTop: 10
     },
     column: {
         alignItems: 'center',
     },
     sectionTitle: {
-        fontSize: width * 0.06,
+        fontSize: 25,
         fontWeight: 'bold',
         color: '#3E1911',
-        marginBottom: height * 0.02,
     },
     level: {
-        fontSize: width * 0.05,
+        fontSize: 20,
         fontWeight: 'bold',
         color: '#3E1911',
-        marginTop: height * 0.01,
+        marginTop: 20,
     },
     itemRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: height * 0.01,
+        marginTop: 10,
     },
     starIcon: {
-        width: width * 0.06,
-        height: width * 0.06,
-        marginRight: width * 0.02,
+        width: 40,
+        height: 40,
+        marginRight: 10,
     },
     itemText: {
-        fontSize: width * 0.05,
+        fontSize: 25,
         color: '#3E1911',
     },
     backBtnContainer: {
         position: 'absolute',
-        top: height * 0.02,
-        left: width * 0.02,
-        paddingVertical: height * 0.02,
+        top: 0,
+        left: 0,
+        zIndex: 5,
+        paddingVertical: 20
     },
 });

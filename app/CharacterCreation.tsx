@@ -191,8 +191,7 @@ export default function CharacterCreation() {
     return (
         <BackgroundLayout>
             <View style={[styles.container, { minHeight: Math.round(windowHeight) }]}>
-                <Text style={[styles.headerText, { fontSize: 35 }]}>
-
+                <Text style={[styles.headerText, { fontSize: 25 }]}>
                     {processStep !== numberOfSteps ? `Let's ${isNewOrUpdateId === "New" ? "Create Your Character" : "Update Your Character"}` : "Character Review"}
                 </Text>
 
@@ -200,7 +199,7 @@ export default function CharacterCreation() {
                 {/* Step 1 - Enter Name & Choose Character */}
                 {processStep === 1 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isNameInvalid(characterCreated.name) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 20 }, infoBeingVerified && isNameInvalid(characterCreated.name) && {color: 'red'}]}>
                             Please enter your name:
                         </Text>
                         <TextInput
@@ -211,7 +210,7 @@ export default function CharacterCreation() {
                         />
                         <Text style={{marginBottom: 20, width: '80%', textAlign: 'right', maxWidth: 500, color: '#3E1911'}}>2-{maxCharacterNameLength} characters</Text>
 
-                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 20 }, infoBeingVerified && isCharacterInvalid(characterCreated.picture) && {color: 'red'}]}>
                             Please choose your character:
                         </Text>
                         <View style={styles.optionCardContainer}>
@@ -245,10 +244,10 @@ export default function CharacterCreation() {
                 {/* Step 2 - Choose Background Color */}
                 {processStep === 2 && (
                     <View style={styles.body}>
-                        <Text style={[styles.instructionText, { fontSize: 25 }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
+                        <Text style={[styles.instructionText, { fontSize: 20 }, infoBeingVerified && isBgColorInvalid(characterCreated.bgColor) && {color: 'red'}]}>
                             Please choose your background colour:
                         </Text>
-                        <View style={styles.optionCardContainer}>
+                        <View style={[styles.optionCardContainer, {flex: 0.8}]}>
                             <View style={{gap: '3%', alignItems: 'flex-end', flex: 1}}>
                                 {bgColorOptions.slice(0, bgColorOptions.length / 2).map((item) => (
                                     <OptionCard
@@ -354,7 +353,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#3E1911',
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 20,
+    paddingHorizontal: 10
   },
   input : {
     width: '80%',
@@ -373,6 +373,7 @@ const styles = StyleSheet.create({
     width: '100%',
     gap: '3%',
     marginBottom: 20,
+    maxHeight: 750
   },
   bottomBtns: {
     width: '100%',
